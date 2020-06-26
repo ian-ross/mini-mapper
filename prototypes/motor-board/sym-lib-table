@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name mini-mapper)(type Legacy)(uri ${KIPRJMOD}/../../lib/mini-mapper.lib)(options "")(descr ""))
+)
