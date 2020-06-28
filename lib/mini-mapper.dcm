@@ -19,21 +19,27 @@ F ~
 $ENDCMP
 #
 $CMP Conn_01x02
-D 10 MHz, 850 µA Op Amps, SOIC-8/MSOP-8
-K dual opamp
-F http://ww1.microchip.com/downloads/en/DeviceDoc/22141b.pdf
+D Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)
+K connector
+F ~
 $ENDCMP
 #
 $CMP Motor_DC
-D Dual Wideband, Current-Feedback Operational Amplifier, SOIC-8
-K dual current feedback opamp
-F http://www.ti.com/lit/ds/sbos224d/sbos224d.pdf
+D DC Motor, alternative symbol
+K DC Motor
+F ~
 $ENDCMP
 #
 $CMP R
-D Dual Rail-to-Rail Input/Output Operational Amplifier, DIP-8/SOIC-8/VSSOP-8
-K dual opamp
-F http://www.ti.com/lit/ds/symlink/tlv2375.pdf
+D Resistor
+K R res resistor
+F ~
+$ENDCMP
+#
+$CMP TB67H450FNG
+D PWM chopper type DC brushed motor driver
+K motor driver
+F https://www.mouser.com/pdfDocs/TB67H450FNG_datasheet_en_20190401.pdf
 $ENDCMP
 #
 $CMP TLV9051
