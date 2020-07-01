@@ -19,8 +19,8 @@ U 1 1 5EF667BD
 P 4000 3350
 F 0 "U2" H 4200 3825 50  0000 C CNN
 F 1 "TB67H450FNG" H 4000 3500 50  0000 C CNN
-F 2 "" H 4100 3300 50  0001 C CNN
-F 3 "" H 4100 3300 50  0001 C CNN
+F 2 "mini-mapper:SOIC127P600X175-9N" H 4100 3300 50  0001 C CNN
+F 3 "https://www.mouser.com/pdfDocs/TB67H450FNG_datasheet_en_20190401.pdf" H 4100 3300 50  0001 C CNN
 	1    4000 3350
 	1    0    0    -1  
 $EndComp
@@ -68,7 +68,7 @@ U 1 1 5EF6879B
 P 4200 4125
 F 0 "R3" H 4270 4171 50  0000 L CNN
 F 1 "400m" H 4270 4080 50  0000 L CNN
-F 2 "" V 4130 4125 50  0001 C CNN
+F 2 "mini-mapper:R_0805" V 4130 4125 50  0001 C CNN
 F 3 "~" H 4200 4125 50  0001 C CNN
 	1    4200 4125
 	1    0    0    -1  
@@ -82,8 +82,8 @@ Wire Wire Line
 Connection ~ 4000 4350
 Wire Wire Line
 	4000 4350 4000 4400
-Text Notes 3650 5175 0    50   ~ 0
-Current sense resistor\nCurrent: 0 ≤ I ≤ 250 mA\nKeep Vsense ≤ 100 mV\nMax Rsense = 0.4 Ω ⇒\n   0 ≤ V ≤ 0.1 V\n(Pmax = 25 mW)\n
+Text Notes 3625 4800 0    50   Italic 10
+Current sense resistor
 $Comp
 L mini-mapper:VM #PWR09
 U 1 1 5EF69E1B
@@ -140,7 +140,7 @@ U 1 1 5EF81CFE
 P 2750 3975
 F 0 "R1" H 2820 4021 50  0000 L CNN
 F 1 "7K" H 2820 3930 50  0000 L CNN
-F 2 "" V 2680 3975 50  0001 C CNN
+F 2 "mini-mapper:R_0805" V 2680 3975 50  0001 C CNN
 F 3 "~" H 2750 3975 50  0001 C CNN
 	1    2750 3975
 	1    0    0    -1  
@@ -151,7 +151,7 @@ U 1 1 5EF821E0
 P 2750 4375
 F 0 "R2" H 2820 4421 50  0000 L CNN
 F 1 "2K" H 2820 4330 50  0000 L CNN
-F 2 "" V 2680 4375 50  0001 C CNN
+F 2 "mini-mapper:R_0805" V 2680 4375 50  0001 C CNN
 F 3 "~" H 2750 4375 50  0001 C CNN
 	1    2750 4375
 	1    0    0    -1  
@@ -247,8 +247,8 @@ Wire Wire Line
 Connection ~ 3150 4650
 Wire Wire Line
 	3150 4650 3150 4625
-Text Notes 1375 4900 0    50   ~ 0
-Set current limiting\nreference voltage\n\nIout(max) = 0.1 Vref / Rsense\n\nWant Iout(max) = 250 mA\nwith VM = 4.5 V\n\nWith Rsense = 0.4 Ω\n\nVref = 10 x 0.25 x 0.4 = 1 V\n
+Text Notes 1125 3850 0    50   Italic 10
+Current limiting reference voltage
 Wire Wire Line
 	2875 2675 3375 2675
 Connection ~ 3375 2675
@@ -352,7 +352,7 @@ U 1 1 5EF99706
 P 5500 4775
 F 0 "R6" H 5430 4729 50  0000 R CNN
 F 1 "220K" H 5430 4820 50  0000 R CNN
-F 2 "" V 5430 4775 50  0001 C CNN
+F 2 "mini-mapper:R_0805" V 5430 4775 50  0001 C CNN
 F 3 "~" H 5500 4775 50  0001 C CNN
 	1    5500 4775
 	-1   0    0    1   
@@ -363,7 +363,7 @@ U 1 1 5EF99DCA
 P 5400 4300
 F 0 "R5" H 5330 4254 50  0000 R CNN
 F 1 "330K" H 5330 4345 50  0000 R CNN
-F 2 "" V 5330 4300 50  0001 C CNN
+F 2 "mini-mapper:R_0805" V 5330 4300 50  0001 C CNN
 F 3 "~" H 5400 4300 50  0001 C CNN
 	1    5400 4300
 	-1   0    0    1   
@@ -447,7 +447,7 @@ U 1 1 5EFAA4AA
 P 5300 4775
 F 0 "R4" H 5475 4725 50  0000 R CNN
 F 1 "12K" H 5525 4825 50  0000 R CNN
-F 2 "" V 5230 4775 50  0001 C CNN
+F 2 "mini-mapper:R_0805" V 5230 4775 50  0001 C CNN
 F 3 "~" H 5300 4775 50  0001 C CNN
 	1    5300 4775
 	-1   0    0    1   
@@ -493,4 +493,8 @@ Text Label 2400 3450 0    50   ~ 0
 IN2
 Text Label 5850 4050 0    50   ~ 0
 Vsense
+Text Notes 3625 5400 0    50   ~ 0
+Current: 0 ≤ I ≤ 250 mA\nKeep Vsense ≤ 100 mV\n\nRsense = 0.4 Ω ⇒\n   0 ≤ Vsense ≤ 0.1 V\n\n(Pmax = 25 mW)\n
+Text Notes 1125 4575 0    50   ~ 0
+Iout(max) = 0.1 Vref / Rsense\n\nWant Iout(max) = 250 mA\nwith VM = 4.5 V\n\nSetting Rsense = 0.4 Ω\n\nVref = 10 x 0.25 x 0.4 = 1 V\n
 $EndSCHEMATC

@@ -102,7 +102,7 @@ ENDDEF
 DEF mini-mapper_R R 0 0 N Y 1 F N
 F0 "R" 80 0 50 V V C CNN
 F1 "mini-mapper_R" 0 0 50 V V C CNN
-F2 "" -70 0 50 V I C CNN
+F2 "mini-mapper:R_0805" -70 0 50 V I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
  R_*
@@ -119,7 +119,7 @@ ENDDEF
 DEF mini-mapper_TB67H450FNG U 0 40 Y Y 1 F N
 F0 "U" 150 450 50 H V C CNN
 F1 "mini-mapper_TB67H450FNG" 0 150 50 H V C CNN
-F2 "" 100 -50 50 H I C CNN
+F2 "mini-mapper:SOIC127P600X175-9N" 100 -50 50 H I C CNN
 F3 "" 100 -50 50 H I C CNN
 DRAW
 S -300 400 300 -450 0 1 0 f
