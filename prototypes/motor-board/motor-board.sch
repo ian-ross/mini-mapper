@@ -21,6 +21,8 @@ F 0 "U2" H 4200 3825 50  0000 C CNN
 F 1 "TB67H450FNG" H 4000 3500 50  0000 C CNN
 F 2 "mini-mapper:SOIC127P600X175-9N" H 4100 3300 50  0001 C CNN
 F 3 "https://www.mouser.com/pdfDocs/TB67H450FNG_datasheet_en_20190401.pdf" H 4100 3300 50  0001 C CNN
+F 4 "TB67H450FNG" H 4000 3350 50  0001 C CNN "MPN"
+F 5 "https://toshiba.semicon-storage.com/us/semiconductor/product/motor-driver-ics/brushed-dc-motor-driver-ics/detail.TB67H450FNG.html" H 4000 3350 50  0001 C CNN "Link"
 	1    4000 3350
 	1    0    0    -1  
 $EndComp
@@ -118,7 +120,7 @@ U 1 1 5EF81780
 P 3375 2875
 F 0 "C3" H 3490 2921 50  0000 L CNN
 F 1 "0.1U" H 3490 2830 50  0000 L CNN
-F 2 "" H 3413 2725 50  0001 C CNN
+F 2 "mini-mapper:C_0805" H 3413 2725 50  0001 C CNN
 F 3 "~" H 3375 2875 50  0001 C CNN
 	1    3375 2875
 	1    0    0    -1  
@@ -129,7 +131,7 @@ U 1 1 5EF81A93
 P 3150 4475
 F 0 "C2" H 3265 4521 50  0000 L CNN
 F 1 "0.1U" H 3265 4430 50  0000 L CNN
-F 2 "" H 3188 4325 50  0001 C CNN
+F 2 "mini-mapper:C_0805" H 3188 4325 50  0001 C CNN
 F 3 "~" H 3150 4475 50  0001 C CNN
 	1    3150 4475
 	1    0    0    -1  
@@ -341,8 +343,10 @@ U 1 1 5EF98393
 P 5025 4050
 F 0 "U1" H 5025 4275 50  0000 C CNN
 F 1 "TLV9051" H 5025 3800 50  0000 C CNN
-F 2 "" H 5025 4050 50  0001 C CNN
-F 3 "www.st.com/resource/en/datasheet/tsv911.pdf" H 5025 4050 50  0001 C CNN
+F 2 "mini-mapper:SOT-23-5" H 5025 4050 50  0001 C CNN
+F 3 "https://www.ti.com/lit/ds/symlink/tlv9052.pdf" H 5025 4050 50  0001 C CNN
+F 4 "TLV9051IDBVR" H 5025 4050 50  0001 C CNN "MPN"
+F 5 "https://www.ti.com/product/TLV9052" H 5025 4050 50  0001 C CNN "Link"
 	1    5025 4050
 	1    0    0    -1  
 $EndComp
@@ -406,8 +410,8 @@ U 2 1 5EFA26E1
 P 3775 6200
 F 0 "U1" H 3803 6246 50  0000 L CNN
 F 1 "TLV9051" H 3803 6155 50  0000 L CNN
-F 2 "" H 3775 6200 50  0001 C CNN
-F 3 "www.st.com/resource/en/datasheet/tsv911.pdf" H 3775 6200 50  0001 C CNN
+F 2 "mini-mapper:SOT-23-5" H 3775 6200 50  0001 C CNN
+F 3 "https://www.ti.com/lit/ds/symlink/tlv9052.pdf" H 3775 6200 50  0001 C CNN
 	2    3775 6200
 	1    0    0    -1  
 $EndComp

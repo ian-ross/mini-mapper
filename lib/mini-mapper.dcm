@@ -45,7 +45,7 @@ $ENDCMP
 $CMP TLV9051
 D Dual rail-to-rail input/output 8 MHz operational amplifiers, MiniSO-8
 K dual opamp
-F www.st.com/resource/en/datasheet/tsv911.pdf
+F https://www.ti.com/lit/ds/symlink/tlv9052.pdf
 $ENDCMP
 #
 $CMP VM
