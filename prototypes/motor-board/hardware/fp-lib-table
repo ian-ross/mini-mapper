@@ -1,3 +1,3 @@
 (fp_lib_table
-  (lib (name mini-mapper)(type KiCad)(uri ${KIPRJMOD}/../../lib/mini-mapper.pretty)(options "")(descr ""))
+  (lib (name mini-mapper)(type KiCad)(uri ${KIPRJMOD}/lib/mini-mapper.pretty)(options "")(descr ""))
 )

@@ -1,0 +1,221 @@
+\documentclass[a4paper,11pt,article]{memoir}
+
+\usepackage[utf8]{inputenc}
+\usepackage{fourier}
+\usepackage{amsmath,amssymb}
+\usepackage{xstring,ifthen,xcolor}
+\usepackage{xspace}
+\usepackage{url}
+
+\usepackage{color}
+\definecolor{orange}{rgb}{0.75,0.5,0}
+\definecolor{magenta}{rgb}{1,0,1}
+\definecolor{cyan}{rgb}{0,1,1}
+\definecolor{grey}{rgb}{0.25,0.25,0.25}
+\newcommand{\outline}[1]{{\color{grey}{\scriptsize #1}}}
+\newcommand{\todo}[1]{{\color{red}\textit{\textbf{#1}}}}
+\newcommand{\note}[1]{{\color{blue}\textit{\textbf{#1}}}}
+\newcommand{\citenote}[1]{{\color{orange}{[\textit{\textbf{#1}}]}}}
+
+\usepackage{tikz}
+\usepackage{pgfmath}
+\usetikzlibrary{calc,shapes,positioning}
+
+\title{Mini-Mapper:\,Motor prototype board design notes}
+\author{Ian~Ross}
+
+\graphicspath{{figs/}}
+
+\begin{document}
+
+\maketitle
+
+These notes describe the motor prototype board for the Mini-Mapper
+robot. This is intended as a platform to test motor driver and motor
+encoder setup, and to develop motor early control algorithms
+(particularly constant-speed PID control and soft start).
+
+
+\section*{Requirements}
+
+\begin{itemize}
+  \item{Power single Dagu DG01D gearmotor (4.5\,V, 250\,mA max.);}
+  \item{PWM speed control, bidirectional, coast/brake functionality;}
+  \item{Rotation measurement using optical encoder;}
+  \item{Interface to STM32F767ZI Nucleo-144 board;}
+  \item{Clean mechanical design for interface between motor and motor
+    encoder disk.}
+\end{itemize}
+
+
+\section*{Mechanical design}
+
+\begin{itemize}
+  \item{Final PCB to be mounted on top chassis plate of robot: do this
+    also for prototype motor board, to get placement right.}
+  \item{Principal constraints are:
+    \begin{itemize}
+      \item{Access to mounting holes on top chassis plate
+        (there is interference with the motor under some holes);}
+      \item{Clearance under PCB:\@{}both for the possibility of
+        mounting components on the bottom of the PCB and for space for
+        routing wires and to avoid shorts to chassis plate from THT
+        components;}
+      \item{Alignment of photoencoder with motor encoder disk:
+        photointerrupter slot and optical axis need to align with the
+        holes in the motor encoder disk, there needs to be no
+        interference between the photointerrupter and the motor body,
+        and there needs to be little enough interference between the
+        photointerrupter and the top chassis plate to make modifying
+        the chassis plate easy.}
+  \end{itemize}}
+  \item{Motor encoder disk needs to be manufacturable by hand, which
+    means a simple disk with holes, rather than slots. This leads to a
+    strong alignment requirement in the vertical direction between the
+    motor encoder disk and the photointerrupter optical axis.}
+\end{itemize}
+
+
+\section*{Component choices}
+
+\paragraph{Motor driver: Toshiba TB67H450FNG}
+
+Chosen to match supply voltage requirements for motors, to have a
+standard PWM-capable control interface, internal current regulation
+and an easy-to-use package.
+
+\paragraph{Current sense opamp: TI TLV9051}
+
+This is a low-side current sensing application, which imposes some
+requirements on the input range of the opamp. The TLV9051 is
+specifically intended for this application.
+
+\paragraph{Photointerrupter: Vishay TCST1202}
+
+Phototransistor type photointerrupter, because we're not going to get
+a perfect transistion between full occlusion and full non-occlusion of
+the photointerrupter's optical aperture, so it will be useful to be
+able to set thresholds for occluded/non-occluded switching. The
+primary constraints here are mechanical, since most devices like this
+have similar electrical characteristics. The selected device has a
+0.5\,mm wide optical aperture, which matches up with some simulations
+I've done, and it can be mounted without interference with the motor
+body using reasonably sized standard hardware (i.e. 5\,mm standoffs
+between the PCB and the top chassis plate).
+
+\paragraph{Motor encoder comparator: ???}
+
+The requirements here are simple, so a jellybean comparator is a good
+choice. Not an LM339 though! Something more modern.
+
+\todo{Choose comparator.}
+
+\paragraph{4.5\,V regulator: ???}
+
+Need a linear regulator to produce 4.5\,V from a 5\,V input.
+
+\todo{Choose 4.5\,V linear regulator.}
+
+\paragraph{Power connectors}
+
+\todo{Measure barrel plug from 5\,V wall wart to select barrel jack.}
+
+\paragraph{Nucleo board connectors}
+
+0.1'' headers.
+
+\todo{Decide on connector layout: Nucleo, power, motor.}
+
+
+\section*{Schematic capture}
+
+\subsection*{Motor driver}
+
+\begin{itemize}
+  \item{Power decoupling: following schematic in application note.}
+  \item{Current sense resistor: motors run from a 4.5\,V supply, and
+    want to keep the maximum sense voltage to some small fraction of
+    this. For a maximum current of 250\,mA, a sense resistor of
+    400\,$\mathrm{m\Omega}$ gives a maximum sense voltage of 100\,mV.}
+  \item{Current regulation: the maximum allowed motor coil current is
+    set following the datasheet's instructions for setting the
+    $V_\mathrm{ref}$ input.}
+  \item{Current sensing: this is a simple non-inverting amplifier
+    setup converting the 0--100\,mV sense voltage to a suitable range
+    for input to the microcontroller's ADC (0--3\,V). Following a
+    suggestion in a TI app
+    note\footnote{\url{http://www.ti.com/lit/an/slva959a/slva959a.pdf}}
+    about layout for motor drivers, the current sensing connections
+    are highlighted to be routed as a differential pair (trying the
+    net tie trick suggested in the app note to make the routing less
+    confusing).}
+\end{itemize}
+
+\subsection*{Motor encoder}
+
+\begin{itemize}
+  \item{The LED side of this is simple.}
+  \item{On the phototransistor side, ...}
+  \item{}
+  \item{}
+\end{itemize}
+
+\subsection*{Nucleo board interface}
+
+Connections:
+\begin{itemize}
+  \item{3.3\,V power and ground;}
+  \item{Two GPIO outputs for motor control (PWM-capable);}
+  \item{One ADC input for motor coil current sense;}
+  \item{One GPIO input for photoencoder pulses (interrupt-capable).}
+\end{itemize}
+
+Use 0.1'' headers on motor board, and connect to Nucleo board using
+jumper cables, since the connections we'll want are pretty spread out.
+
+\begin{center}
+  \begin{tabular}{lcccc}
+    \textbf{Use} & \textbf{PCB} & \textbf{Nucleo} & \textbf{Conn} & \textbf{Pin} \\
+    Power  & \texttt{3V3} & \texttt{+3V3} & CN8 & 7\\
+    Ground & \texttt{GND} & \texttt{GND} & CN8 & 11 \\
+    Motor control & \texttt{IN1} & \texttt{PA6} (\texttt{TIM3\_CH1}) & CN7 & 12 \\
+    Motor control & \texttt{IN2} & \texttt{PA7} (\texttt{TIM3\_CH2}) & CN7 & 14 \\
+    Motor current sense & \texttt{Vsense} & \texttt{PA3} (\texttt{ADC1\_IN3}) & CN9 & 1 \\
+    Encoder pulses & \texttt{PULSE} & \texttt{PC3}? & CN9 & 5 \\
+  \end{tabular}
+\end{center}
+
+\todo{Label connections with use and Nucleo pin names on schematic and
+  silkscreen.}
+
+\subsection*{Power}
+
+Supplies:
+\begin{itemize}
+  \item{Need 4.5\,V (250\,mA max.) for motor, and 3.3\,V for logic
+    (not sure about current requirements there).}
+  \item{For prototype board, use 3.3\,V supply from Nucleo board, and
+    use external 5\,V wall wart supply plus linear regulator for
+    4.5\,V supply.}
+\end{itemize}
+
+\todo{Calculate current draw from 3.3\,V supply and compare to 500\,mA
+limit for supply from Nucleo board.}
+
+
+\section*{Layout}
+
+\todo{Mechanical board outline: photoencoder placement, mounting
+  holes.}
+
+
+\section*{Assembly}
+
+\paragraph{Mounting hardware}
+
+5\,mm spacers between PCB and top chassis plate, M2.5 bolts and nuts
+to secure PCB.
+
+\paragraph{Power supply connections}
+
+\end{document}
