@@ -42,10 +42,10 @@ Wire Wire Line
 Wire Wire Line
 	5200 2050 5200 2000
 $Comp
-L power:GND #PWR05
+L power:GND #PWR08
 U 1 1 5EF680BB
 P 3650 2775
-F 0 "#PWR05" H 3650 2525 50  0001 C CNN
+F 0 "#PWR08" H 3650 2525 50  0001 C CNN
 F 1 "GND" H 3655 2602 50  0000 C CNN
 F 2 "" H 3650 2775 50  0001 C CNN
 F 3 "" H 3650 2775 50  0001 C CNN
@@ -53,10 +53,10 @@ F 3 "" H 3650 2775 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L mini-mapper:R R2
+L mini-mapper:R R4
 U 1 1 5EF6879B
 P 3850 2500
-F 0 "R2" H 3920 2546 50  0000 L CNN
+F 0 "R4" H 3920 2546 50  0000 L CNN
 F 1 "400m" H 3920 2455 50  0000 L CNN
 F 2 "mini-mapper:R_0805" V 3780 2500 50  0001 C CNN
 F 3 "~" H 3850 2500 50  0001 C CNN
@@ -84,10 +84,10 @@ $EndComp
 Wire Wire Line
 	3650 1000 3650 1050
 $Comp
-L mini-mapper:Conn_01x02 J1
+L mini-mapper:Conn_01x02 J2
 U 1 1 5EF7C04A
 P 1450 1825
-F 0 "J1" H 1368 1500 50  0000 C CNN
+F 0 "J2" H 1368 1500 50  0000 C CNN
 F 1 "Conn_01x02" H 1368 1591 50  0000 C CNN
 F 2 "" H 1450 1825 50  0001 C CNN
 F 3 "~" H 1450 1825 50  0001 C CNN
@@ -110,10 +110,10 @@ F 3 "~" H 3025 1250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L mini-mapper:C C3
+L mini-mapper:C C4
 U 1 1 5EF81A93
 P 2800 2850
-F 0 "C3" H 2915 2896 50  0000 L CNN
+F 0 "C4" H 2915 2896 50  0000 L CNN
 F 1 "0.1U" H 2915 2805 50  0000 L CNN
 F 2 "mini-mapper:C_0805" H 2838 2700 50  0001 C CNN
 F 3 "~" H 2800 2850 50  0001 C CNN
@@ -121,10 +121,10 @@ F 3 "~" H 2800 2850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L mini-mapper:R R1
+L mini-mapper:R R3
 U 1 1 5EF81CFE
 P 2400 2350
-F 0 "R1" H 2470 2396 50  0000 L CNN
+F 0 "R3" H 2470 2396 50  0000 L CNN
 F 1 "7K" H 2470 2305 50  0000 L CNN
 F 2 "mini-mapper:R_0805" V 2330 2350 50  0001 C CNN
 F 3 "~" H 2400 2350 50  0001 C CNN
@@ -132,10 +132,10 @@ F 3 "~" H 2400 2350 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L mini-mapper:R R4
+L mini-mapper:R R6
 U 1 1 5EF821E0
 P 2400 2750
-F 0 "R4" H 2470 2796 50  0000 L CNN
+F 0 "R6" H 2470 2796 50  0000 L CNN
 F 1 "2K" H 2470 2705 50  0000 L CNN
 F 2 "mini-mapper:R_0805" V 2330 2750 50  0001 C CNN
 F 3 "~" H 2400 2750 50  0001 C CNN
@@ -154,10 +154,10 @@ F 3 "~" H 2525 1250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR03
+L power:GND #PWR04
 U 1 1 5EF832CB
 P 3025 1450
-F 0 "#PWR03" H 3025 1200 50  0001 C CNN
+F 0 "#PWR04" H 3025 1200 50  0001 C CNN
 F 1 "GND" H 3030 1277 50  0000 C CNN
 F 2 "" H 3025 1450 50  0001 C CNN
 F 3 "" H 3025 1450 50  0001 C CNN
@@ -165,10 +165,10 @@ F 3 "" H 3025 1450 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR02
+L power:GND #PWR03
 U 1 1 5EF83951
 P 2525 1450
-F 0 "#PWR02" H 2525 1200 50  0001 C CNN
+F 0 "#PWR03" H 2525 1200 50  0001 C CNN
 F 1 "GND" H 2530 1277 50  0000 C CNN
 F 2 "" H 2525 1450 50  0001 C CNN
 F 3 "" H 2525 1450 50  0001 C CNN
@@ -176,10 +176,10 @@ F 3 "" H 2525 1450 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR06
+L power:GND #PWR010
 U 1 1 5EF83D45
 P 2800 3075
-F 0 "#PWR06" H 2800 2825 50  0001 C CNN
+F 0 "#PWR010" H 2800 2825 50  0001 C CNN
 F 1 "GND" H 2805 2902 50  0000 C CNN
 F 2 "" H 2800 3075 50  0001 C CNN
 F 3 "" H 2800 3075 50  0001 C CNN
@@ -202,10 +202,10 @@ Connection ~ 3650 1050
 Wire Wire Line
 	3650 1050 3650 1225
 $Comp
-L mini-mapper:VM #PWR04
+L mini-mapper:VM #PWR06
 U 1 1 5EF87B52
 P 2400 2150
-F 0 "#PWR04" H 2200 2000 50  0001 C CNN
+F 0 "#PWR06" H 2200 2000 50  0001 C CNN
 F 1 "VM" H 2415 2323 50  0000 C CNN
 F 2 "" H 2400 2150 50  0001 C CNN
 F 3 "" H 2400 2150 50  0001 C CNN
@@ -241,80 +241,80 @@ Connection ~ 3025 1050
 $Comp
 L power:PWR_FLAG #FLG01
 U 1 1 5EF90A9E
-P 9500 2175
-F 0 "#FLG01" H 9500 2250 50  0001 C CNN
-F 1 "PWR_FLAG" V 9500 2303 50  0000 L CNN
-F 2 "" H 9500 2175 50  0001 C CNN
-F 3 "~" H 9500 2175 50  0001 C CNN
-	1    9500 2175
+P 9050 1150
+F 0 "#FLG01" H 9050 1225 50  0001 C CNN
+F 1 "PWR_FLAG" V 9050 1278 50  0000 L CNN
+F 2 "" H 9050 1150 50  0001 C CNN
+F 3 "~" H 9050 1150 50  0001 C CNN
+	1    9050 1150
 	0    1    1    0   
 $EndComp
 $Comp
 L power:PWR_FLAG #FLG02
 U 1 1 5EF90FCA
-P 9500 2375
-F 0 "#FLG02" H 9500 2450 50  0001 C CNN
-F 1 "PWR_FLAG" V 9500 2503 50  0000 L CNN
-F 2 "" H 9500 2375 50  0001 C CNN
-F 3 "~" H 9500 2375 50  0001 C CNN
-	1    9500 2375
+P 9050 1350
+F 0 "#FLG02" H 9050 1425 50  0001 C CNN
+F 1 "PWR_FLAG" V 9050 1478 50  0000 L CNN
+F 2 "" H 9050 1350 50  0001 C CNN
+F 3 "~" H 9050 1350 50  0001 C CNN
+	1    9050 1350
 	0    1    1    0   
 $EndComp
 Text Notes 4450 1350 0    50   ~ 10
 MOTOR OUTPUT
-Text Notes 5425 4025 0    50   ~ 0
+Text Notes 6775 3350 0    50   ~ 0
 Op-amp gain of 30 ⇒\n   ADC input 0 - 3 V\n\nGain = 1 + Rf / Rg ⇒\n  Rf / Rg = 29\n\nRf = 330 kΩ\nRg = 12 kΩ // 220 kΩ
 $Comp
-L mini-mapper:Conn_01x02 J4
+L mini-mapper:Conn_01x02 J1
 U 1 1 5EF91CF7
-P 9050 2325
-F 0 "J4" H 8968 2000 50  0000 C CNN
-F 1 "Conn_01x02" H 8968 2091 50  0000 C CNN
-F 2 "" H 9050 2325 50  0001 C CNN
-F 3 "~" H 9050 2325 50  0001 C CNN
-	1    9050 2325
+P 8600 1300
+F 0 "J1" H 8518 975 50  0000 C CNN
+F 1 "Conn_01x02" H 8518 1066 50  0000 C CNN
+F 2 "" H 8600 1300 50  0001 C CNN
+F 3 "~" H 8600 1300 50  0001 C CNN
+	1    8600 1300
 	-1   0    0    1   
 $EndComp
 $Comp
-L mini-mapper:VM #PWR08
+L mini-mapper:VM #PWR02
 U 1 1 5EF924B9
-P 9500 2075
-F 0 "#PWR08" H 9300 1925 50  0001 C CNN
-F 1 "VM" H 9515 2248 50  0000 C CNN
-F 2 "" H 9500 2075 50  0001 C CNN
-F 3 "" H 9500 2075 50  0001 C CNN
-	1    9500 2075
+P 9050 1050
+F 0 "#PWR02" H 8850 900 50  0001 C CNN
+F 1 "VM" H 9065 1223 50  0000 C CNN
+F 2 "" H 9050 1050 50  0001 C CNN
+F 3 "" H 9050 1050 50  0001 C CNN
+	1    9050 1050
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR09
+L power:GND #PWR05
 U 1 1 5EF92821
-P 9500 2425
-F 0 "#PWR09" H 9500 2175 50  0001 C CNN
-F 1 "GND" H 9505 2252 50  0000 C CNN
-F 2 "" H 9500 2425 50  0001 C CNN
-F 3 "" H 9500 2425 50  0001 C CNN
-	1    9500 2425
+P 9050 1400
+F 0 "#PWR05" H 9050 1150 50  0001 C CNN
+F 1 "GND" H 9055 1227 50  0000 C CNN
+F 2 "" H 9050 1400 50  0001 C CNN
+F 3 "" H 9050 1400 50  0001 C CNN
+	1    9050 1400
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	9500 2425 9500 2375
+	9050 1400 9050 1350
 Wire Wire Line
-	9250 2225 9500 2225
+	8800 1200 9050 1200
 Wire Wire Line
-	9500 2225 9500 2175
-Connection ~ 9500 2175
+	9050 1200 9050 1150
+Connection ~ 9050 1150
 Wire Wire Line
-	9500 2175 9500 2075
+	9050 1150 9050 1050
 Wire Wire Line
 	3025 1050 3650 1050
-Connection ~ 9500 2375
+Connection ~ 9050 1350
 Wire Wire Line
-	9500 2375 9500 2325
+	9050 1350 9050 1300
 Wire Wire Line
 	3650 2275 3650 2725
-Text Notes 8700 1875 0    50   ~ 10
-POWER INPUT
+Text Notes 8425 750  0    50   ~ 10
+MOTOR POWER INPUT (4.5 V)
 Text Notes 1225 1375 0    50   ~ 10
 CONTROL INPUT
 Text Label 2850 2075 0    50   ~ 0
@@ -333,10 +333,10 @@ F 5 "https://www.ti.com/product/TLV9052" H 6225 2325 50  0001 C CNN "Link"
 	1    0    0    -1  
 $EndComp
 $Comp
-L mini-mapper:R R6
+L mini-mapper:R R8
 U 1 1 5EF99706
 P 5550 2850
-F 0 "R6" V 5450 2900 50  0000 R CNN
+F 0 "R8" V 5450 2900 50  0000 R CNN
 F 1 "220K" V 5375 2950 50  0000 R CNN
 F 2 "mini-mapper:R_0805" V 5480 2850 50  0001 C CNN
 F 3 "~" H 5550 2850 50  0001 C CNN
@@ -344,10 +344,10 @@ F 3 "~" H 5550 2850 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L mini-mapper:R R5
+L mini-mapper:R R7
 U 1 1 5EF99DCA
 P 6225 2750
-F 0 "R5" V 6125 2800 50  0000 R CNN
+F 0 "R7" V 6125 2800 50  0000 R CNN
 F 1 "330K" V 6050 2850 50  0000 R CNN
 F 2 "mini-mapper:R_0805" V 6155 2750 50  0001 C CNN
 F 3 "~" H 6225 2750 50  0001 C CNN
@@ -363,49 +363,38 @@ Wire Wire Line
 $Comp
 L mini-mapper:TLV9051 U2
 U 2 1 5EFA26E1
-P 10450 2250
-F 0 "U2" H 10478 2296 50  0000 L CNN
-F 1 "TLV9051" H 10478 2205 50  0000 L CNN
-F 2 "mini-mapper:SOT-23-5" H 10450 2250 50  0001 C CNN
-F 3 "https://www.ti.com/lit/ds/symlink/tlv9052.pdf" H 10450 2250 50  0001 C CNN
-	2    10450 2250
+P 8775 2700
+F 0 "U2" H 8803 2746 50  0000 L CNN
+F 1 "TLV9051" H 8803 2655 50  0000 L CNN
+F 2 "mini-mapper:SOT-23-5" H 8775 2700 50  0001 C CNN
+F 3 "https://www.ti.com/lit/ds/symlink/tlv9052.pdf" H 8775 2700 50  0001 C CNN
+	2    8775 2700
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR010
+L power:GND #PWR012
 U 1 1 5EFA3D5E
-P 10350 2625
-F 0 "#PWR010" H 10350 2375 50  0001 C CNN
-F 1 "GND" H 10355 2452 50  0000 C CNN
-F 2 "" H 10350 2625 50  0001 C CNN
-F 3 "" H 10350 2625 50  0001 C CNN
-	1    10350 2625
-	1    0    0    -1  
-$EndComp
-$Comp
-L mini-mapper:VM #PWR07
-U 1 1 5EFA41B3
-P 10350 1875
-F 0 "#PWR07" H 10150 1725 50  0001 C CNN
-F 1 "VM" H 10365 2048 50  0000 C CNN
-F 2 "" H 10350 1875 50  0001 C CNN
-F 3 "" H 10350 1875 50  0001 C CNN
-	1    10350 1875
+P 8675 3075
+F 0 "#PWR012" H 8675 2825 50  0001 C CNN
+F 1 "GND" H 8680 2902 50  0000 C CNN
+F 2 "" H 8675 3075 50  0001 C CNN
+F 3 "" H 8675 3075 50  0001 C CNN
+	1    8675 3075
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	10350 1875 10350 1950
+	8675 2325 8675 2400
 Wire Wire Line
-	10350 2550 10350 2625
+	8675 3000 8675 3075
 Text Notes 6175 3150 0    50   ~ 0
 Rf
 Text Notes 5500 3150 0    50   ~ 0
 Rg
 $Comp
-L mini-mapper:R R3
+L mini-mapper:R R5
 U 1 1 5EFAA4AA
 P 5550 2650
-F 0 "R3" V 5650 2700 50  0000 R CNN
+F 0 "R5" V 5650 2700 50  0000 R CNN
 F 1 "12K" V 5725 2725 50  0000 R CNN
 F 2 "mini-mapper:R_0805" V 5480 2650 50  0001 C CNN
 F 3 "~" H 5550 2650 50  0001 C CNN
@@ -428,10 +417,10 @@ Wire Wire Line
 Wire Wire Line
 	5325 2850 5400 2850
 $Comp
-L mini-mapper:Conn_01x01 J3
+L mini-mapper:Conn_01x01 J4
 U 1 1 5EFC82DA
 P 7225 2325
-F 0 "J3" H 7305 2367 50  0000 L CNN
+F 0 "J4" H 7305 2367 50  0000 L CNN
 F 1 "Conn_01x01" H 7305 2276 50  0000 L CNN
 F 2 "" H 7225 2325 50  0001 C CNN
 F 3 "~" H 7225 2325 50  0001 C CNN
@@ -446,8 +435,8 @@ Text Label 2050 1825 0    50   ~ 0
 IN2
 Text Label 6725 2325 0    50   ~ 0
 Vsense
-Text Notes 3275 3775 0    50   ~ 0
-Current: 0 ≤ I ≤ 250 mA\nKeep Vsense ≤ 100 mV\n\nRsense = 0.4 Ω ⇒\n   0 ≤ Vsense ≤ 0.1 V\n\n(Pmax = 25 mW)\n
+Text Notes 3275 3700 0    50   ~ 0
+Current: 0 ≤ I ≤ 250 mA\nKeep Vsense ≤ 100 mV\n\nRsense = 0.4 Ω ⇒ 0 ≤ Vsense ≤ 0.1 V\n\n(Pmax = 25 mW)\n
 Text Notes 775  2950 0    50   ~ 0
 Iout(max) = 0.1 Vref / Rsense\n\nWant Iout(max) = 250 mA\nwith VM = 4.5 V\n\nSetting Rsense = 0.4 Ω\n\nVref = 10 x 0.25 x 0.4 = 1 V\n
 Wire Wire Line
@@ -483,10 +472,10 @@ Wire Wire Line
 Wire Wire Line
 	5200 2225 5925 2225
 $Comp
-L mini-mapper:Conn_01x02 J2
+L mini-mapper:Conn_01x02 J3
 U 1 1 5F085051
 P 4450 1825
-F 0 "J2" H 4368 1500 50  0000 C CNN
+F 0 "J3" H 4368 1500 50  0000 C CNN
 F 1 "Conn_01x02" H 4368 1591 50  0000 C CNN
 F 2 "" H 4450 1825 50  0001 C CNN
 F 3 "~" H 4450 1825 50  0001 C CNN
@@ -523,13 +512,13 @@ Wire Wire Line
 Wire Wire Line
 	6600 2325 7025 2325
 Connection ~ 6600 2325
-Text Notes 5425 3350 0    50   Italic 10
+Text Notes 6750 2675 0    50   Italic 10
 Current sense amplifier
 $Comp
-L Device:Net-Tie_2 NT1
+L Device:Net-Tie_2 NT3
 U 1 1 5F094D37
 P 4075 2300
-F 0 "NT1" H 4075 2425 50  0000 C CNN
+F 0 "NT3" H 4075 2425 50  0000 C CNN
 F 1 "Net-Tie_2" H 4150 2350 50  0000 C CNN
 F 2 "" H 4075 2300 50  0001 C CNN
 F 3 "~" H 4075 2300 50  0001 C CNN
@@ -537,10 +526,10 @@ F 3 "~" H 4075 2300 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:Net-Tie_2 NT2
+L Device:Net-Tie_2 NT4
 U 1 1 5F09CC8D
 P 4075 2675
-F 0 "NT2" H 4075 2550 50  0000 C CNN
+F 0 "NT4" H 4075 2550 50  0000 C CNN
 F 1 "Net-Tie_2" H 4150 2625 50  0000 C CNN
 F 2 "" H 4075 2675 50  0001 C CNN
 F 3 "~" H 4075 2675 50  0001 C CNN
@@ -575,8 +564,8 @@ Wire Wire Line
 	5000 2550 5200 2750
 Text Notes 12025 2300 0    100  Italic 20
 QUESTIONS
-Text Notes 12050 2775 0    50   ~ 0
-1. Does the current sense amplifier need input filters?\n\n2. Does the current sense amplifier need compensation?\n\n3. What supply voltage for opamp and comparator?
+Text Notes 12075 2600 0    50   ~ 0
+1. Does the current sense amplifier need input filters?\n\n2. Does the current sense amplifier need compensation?
 Wire Notes Line
 	12000 2100 14375 2100
 Wire Notes Line
@@ -586,10 +575,10 @@ Wire Notes Line
 Wire Notes Line
 	12000 3250 12000 2100
 $Comp
-L mini-mapper:R R?
+L mini-mapper:R R1
 U 1 1 5F0AAD95
 P 13125 1300
-F 0 "R?" V 12918 1300 50  0000 C CNN
+F 0 "R1" V 12918 1300 50  0000 C CNN
 F 1 "1K" V 13009 1300 50  0000 C CNN
 F 2 "mini-mapper:R_0805" V 13055 1300 50  0001 C CNN
 F 3 "~" H 13125 1300 50  0001 C CNN
@@ -597,10 +586,10 @@ F 3 "~" H 13125 1300 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L mini-mapper:R R?
+L mini-mapper:R R2
 U 1 1 5F0AB1CF
 P 13125 1750
-F 0 "R?" V 12918 1750 50  0000 C CNN
+F 0 "R2" V 12918 1750 50  0000 C CNN
 F 1 "1K" V 13009 1750 50  0000 C CNN
 F 2 "mini-mapper:R_0805" V 13055 1750 50  0001 C CNN
 F 3 "~" H 13125 1750 50  0001 C CNN
@@ -608,10 +597,10 @@ F 3 "~" H 13125 1750 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L Device:Net-Tie_2 NT?
+L Device:Net-Tie_2 NT1
 U 1 1 5F0AB9A9
 P 12600 1300
-F 0 "NT?" H 12600 1481 50  0000 C CNN
+F 0 "NT1" H 12600 1481 50  0000 C CNN
 F 1 "Net-Tie_2" H 12600 1390 50  0000 C CNN
 F 2 "" H 12600 1300 50  0001 C CNN
 F 3 "~" H 12600 1300 50  0001 C CNN
@@ -619,10 +608,10 @@ F 3 "~" H 12600 1300 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:Net-Tie_2 NT?
+L Device:Net-Tie_2 NT2
 U 1 1 5F0ABBFC
 P 12625 1750
-F 0 "NT?" H 12625 1931 50  0000 C CNN
+F 0 "NT2" H 12625 1931 50  0000 C CNN
 F 1 "Net-Tie_2" H 12625 1840 50  0000 C CNN
 F 2 "" H 12625 1750 50  0001 C CNN
 F 3 "~" H 12625 1750 50  0001 C CNN
@@ -634,10 +623,10 @@ Wire Wire Line
 Wire Wire Line
 	12700 1300 12975 1300
 $Comp
-L mini-mapper:C C?
+L mini-mapper:C C3
 U 1 1 5F0AF3FA
 P 13550 1525
-F 0 "C?" H 13665 1571 50  0000 L CNN
+F 0 "C3" H 13665 1571 50  0000 L CNN
 F 1 "100p" H 13665 1480 50  0000 L CNN
 F 2 "mini-mapper:C_0805" H 13588 1375 50  0001 C CNN
 F 3 "~" H 13550 1525 50  0001 C CNN
@@ -669,208 +658,340 @@ To\nsense\namplifier
 Text Notes 12025 925  0    50   ~ 0
 Example current sense amplifier input filter\n(from TI SLVA959A)
 Wire Wire Line
-	9500 2325 9250 2325
-Wire Notes Line
-	475  4250 11225 4250
-Wire Notes Line
-	8275 475  8275 4250
+	9050 1300 8800 1300
 Text Notes 625  850  0    150  ~ 30
 MOTOR DRIVER
-Text Notes 8425 850  0    150  ~ 30
-POWER
-Text Notes 575  4625 0    150  ~ 30
+Text Notes 625  4525 0    150  ~ 30
 MOTOR ENCODER
 Wire Wire Line
-	2250 5700 2350 5700
+	1925 5650 2025 5650
 $Comp
-L mini-mapper:R R?
+L mini-mapper:R R11
 U 1 1 5F1304D4
-P 2350 6475
-F 0 "R?" H 2420 6521 50  0000 L CNN
-F 1 "CALC" H 2420 6430 50  0000 L CNN
-F 2 "mini-mapper:R_0805" V 2280 6475 50  0001 C CNN
-F 3 "~" H 2350 6475 50  0001 C CNN
-	1    2350 6475
+P 2025 6425
+F 0 "R11" H 2095 6471 50  0000 L CNN
+F 1 "CALC" H 2095 6380 50  0000 L CNN
+F 2 "mini-mapper:R_0805" V 1955 6425 50  0001 C CNN
+F 3 "~" H 2025 6425 50  0001 C CNN
+	1    2025 6425
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR?
+L power:GND #PWR015
 U 1 1 5F132CD7
-P 2350 6775
-F 0 "#PWR?" H 2350 6525 50  0001 C CNN
-F 1 "GND" H 2355 6602 50  0000 C CNN
-F 2 "" H 2350 6775 50  0001 C CNN
-F 3 "" H 2350 6775 50  0001 C CNN
-	1    2350 6775
+P 2025 6725
+F 0 "#PWR015" H 2025 6475 50  0001 C CNN
+F 1 "GND" H 2030 6552 50  0000 C CNN
+F 2 "" H 2025 6725 50  0001 C CNN
+F 3 "" H 2025 6725 50  0001 C CNN
+	1    2025 6725
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2350 6775 2350 6625
-$Comp
-L mini-mapper:VM #PWR?
-U 1 1 5F139630
-P 1350 5125
-F 0 "#PWR?" H 1150 4975 50  0001 C CNN
-F 1 "VM" H 1365 5298 50  0000 C CNN
-F 2 "" H 1350 5125 50  0001 C CNN
-F 3 "" H 1350 5125 50  0001 C CNN
-	1    1350 5125
-	1    0    0    -1  
-$EndComp
+	2025 6725 2025 6575
 Wire Wire Line
-	1350 5125 1350 5250
+	1025 5075 1025 5200
 Wire Wire Line
-	1350 5700 1450 5700
+	1025 5650 1125 5650
 $Comp
-L mini-mapper:R R?
+L mini-mapper:R R10
 U 1 1 5F13BFDF
-P 1350 6475
-F 0 "R?" H 1420 6521 50  0000 L CNN
-F 1 "CALC" H 1420 6430 50  0000 L CNN
-F 2 "mini-mapper:R_0805" V 1280 6475 50  0001 C CNN
-F 3 "~" H 1350 6475 50  0001 C CNN
-	1    1350 6475
+P 1025 6425
+F 0 "R10" H 1095 6471 50  0000 L CNN
+F 1 "100" H 1095 6380 50  0000 L CNN
+F 2 "mini-mapper:R_0805" V 955 6425 50  0001 C CNN
+F 3 "~" H 1025 6425 50  0001 C CNN
+	1    1025 6425
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1450 6000 1350 6000
+	1125 5950 1025 5950
 Wire Wire Line
-	1350 6000 1350 6325
+	1025 5950 1025 6275
 $Comp
-L power:GND #PWR?
+L power:GND #PWR014
 U 1 1 5F13FC3D
-P 1350 6750
-F 0 "#PWR?" H 1350 6500 50  0001 C CNN
-F 1 "GND" H 1355 6577 50  0000 C CNN
-F 2 "" H 1350 6750 50  0001 C CNN
-F 3 "" H 1350 6750 50  0001 C CNN
-	1    1350 6750
+P 1025 6700
+F 0 "#PWR014" H 1025 6450 50  0001 C CNN
+F 1 "GND" H 1030 6527 50  0000 C CNN
+F 2 "" H 1025 6700 50  0001 C CNN
+F 3 "" H 1025 6700 50  0001 C CNN
+	1    1025 6700
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1350 6750 1350 6625
+	1025 6700 1025 6575
+Wire Wire Line
+	1925 5950 2025 5950
+Wire Wire Line
+	2025 6275 2025 5950
 $Comp
-L Comparator:LM2903 U?
-U 1 1 5F14449C
-P 3425 6100
-F 0 "U?" H 3425 6467 50  0000 C CNN
-F 1 "LM2903" H 3425 6376 50  0000 C CNN
-F 2 "" H 3425 6100 50  0001 C CNN
-F 3 "http://www.ti.com/lit/ds/symlink/lm393.pdf" H 3425 6100 50  0001 C CNN
-	1    3425 6100
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	2250 6000 2350 6000
-Wire Wire Line
-	2350 6325 2350 6000
-Connection ~ 2350 6000
-Wire Wire Line
-	2350 6000 3125 6000
-$Comp
-L mini-mapper:R R?
+L mini-mapper:R R9
 U 1 1 5F14C8A5
-P 2800 5750
-F 0 "R?" H 2870 5796 50  0000 L CNN
-F 1 "CALC" H 2870 5705 50  0000 L CNN
-F 2 "mini-mapper:R_0805" V 2730 5750 50  0001 C CNN
-F 3 "~" H 2800 5750 50  0001 C CNN
-	1    2800 5750
+P 2775 5700
+F 0 "R9" H 2845 5746 50  0000 L CNN
+F 1 "1K" H 2845 5655 50  0000 L CNN
+F 2 "mini-mapper:R_0805" V 2705 5700 50  0001 C CNN
+F 3 "~" H 2775 5700 50  0001 C CNN
+	1    2775 5700
 	1    0    0    -1  
 $EndComp
 $Comp
-L mini-mapper:R R?
+L mini-mapper:R R12
 U 1 1 5F14D17A
-P 2800 6475
-F 0 "R?" H 2870 6521 50  0000 L CNN
-F 1 "CALC" H 2870 6430 50  0000 L CNN
-F 2 "mini-mapper:R_0805" V 2730 6475 50  0001 C CNN
-F 3 "~" H 2800 6475 50  0001 C CNN
-	1    2800 6475
+P 2775 6425
+F 0 "R12" H 2845 6471 50  0000 L CNN
+F 1 "1K" H 2845 6380 50  0000 L CNN
+F 2 "mini-mapper:R_0805" V 2705 6425 50  0001 C CNN
+F 3 "~" H 2775 6425 50  0001 C CNN
+	1    2775 6425
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR?
+L power:GND #PWR016
 U 1 1 5F14D78C
-P 2800 6775
-F 0 "#PWR?" H 2800 6525 50  0001 C CNN
-F 1 "GND" H 2805 6602 50  0000 C CNN
-F 2 "" H 2800 6775 50  0001 C CNN
-F 3 "" H 2800 6775 50  0001 C CNN
-	1    2800 6775
+P 2775 6725
+F 0 "#PWR016" H 2775 6475 50  0001 C CNN
+F 1 "GND" H 2780 6552 50  0000 C CNN
+F 2 "" H 2775 6725 50  0001 C CNN
+F 3 "" H 2775 6725 50  0001 C CNN
+	1    2775 6725
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2800 5900 2800 6200
+	2775 5850 2775 6150
 Wire Wire Line
-	2800 6625 2800 6775
+	2775 6575 2775 6725
+Connection ~ 2775 6150
 Wire Wire Line
-	3125 6200 2800 6200
-Connection ~ 2800 6200
+	2775 6150 2775 6275
 Wire Wire Line
-	2800 6200 2800 6325
+	2775 5550 2775 5200
+Connection ~ 1025 5200
 Wire Wire Line
-	2800 5600 2800 5250
+	1025 5200 1025 5650
 Wire Wire Line
-	2800 5250 2350 5250
-Connection ~ 1350 5250
+	2025 5650 2025 5200
 Wire Wire Line
-	1350 5250 1350 5700
+	2025 5200 1025 5200
 Wire Wire Line
-	2350 5700 2350 5250
-Connection ~ 2350 5250
-Wire Wire Line
-	2350 5250 1350 5250
-Wire Wire Line
-	3725 6100 4175 6100
-Text Notes 3225 6775 0    50   ~ 0
-HYSTERESIS\n\nCOMPARATOR SELECTION\n\nCOMPARATOR POWER
+	4275 6050 4400 6050
 $Comp
-L mini-mapper:Conn_01x01 J?
+L mini-mapper:Conn_01x01 J5
 U 1 1 5F168F33
-P 4375 6100
-F 0 "J?" H 4455 6142 50  0000 L CNN
-F 1 "Conn_01x01" H 4455 6051 50  0000 L CNN
-F 2 "" H 4375 6100 50  0001 C CNN
-F 3 "~" H 4375 6100 50  0001 C CNN
-	1    4375 6100
+P 4925 6050
+F 0 "J5" H 5005 6092 50  0000 L CNN
+F 1 "Conn_01x01" H 5005 6001 50  0000 L CNN
+F 2 "" H 4925 6050 50  0001 C CNN
+F 3 "~" H 4925 6050 50  0001 C CNN
+	1    4925 6050
 	1    0    0    -1  
 $EndComp
-Text Notes 4075 5950 0    50   ~ 0
+Text Notes 4625 5900 0    50   ~ 10
 ENCODER PULSE OUTPUT
 $Comp
-L Comparator:LM2903 U?
-U 3 1 5F169C01
-P 4425 6700
-F 0 "U?" H 4383 6746 50  0000 L CNN
-F 1 "LM2903" H 4383 6655 50  0000 L CNN
-F 2 "" H 4425 6700 50  0001 C CNN
-F 3 "http://www.ti.com/lit/ds/symlink/lm393.pdf" H 4425 6700 50  0001 C CNN
-	3    4425 6700
-	1    0    0    -1  
-$EndComp
-$Comp
-L mini-mapper:TCST1202 U?
+L mini-mapper:TCST1202 U4
 U 1 1 5F1365AB
-P 1850 5900
-F 0 "U?" H 1850 6325 50  0000 C CNN
-F 1 "TCST1202" H 1850 6234 50  0000 C CNN
-F 2 "" H 1850 5900 50  0001 C CNN
-F 3 "" H 1850 5900 50  0001 C CNN
-	1    1850 5900
+P 1525 5850
+F 0 "U4" H 1525 6275 50  0000 C CNN
+F 1 "TCST1202" H 1525 6184 50  0000 C CNN
+F 2 "" H 1525 5850 50  0001 C CNN
+F 3 "" H 1525 5850 50  0001 C CNN
+	1    1525 5850
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:+3V3 #PWR?
+L power:+3V3 #PWR013
 U 1 1 5F13AB1F
-P 4725 4825
-F 0 "#PWR?" H 4725 4675 50  0001 C CNN
-F 1 "+3V3" H 4740 4998 50  0000 C CNN
-F 2 "" H 4725 4825 50  0001 C CNN
-F 3 "" H 4725 4825 50  0001 C CNN
-	1    4725 4825
+P 1025 5075
+F 0 "#PWR013" H 1025 4925 50  0001 C CNN
+F 1 "+3V3" H 1040 5248 50  0000 C CNN
+F 2 "" H 1025 5075 50  0001 C CNN
+F 3 "" H 1025 5075 50  0001 C CNN
+	1    1025 5075
 	1    0    0    -1  
 $EndComp
-Text Notes 4800 4850 0    50   ~ 0
-COPY TO PROJECT LIBRARY!
+Text Notes 6000 5150 0    50   ~ 0
+Vf = 1.25 V (typ.), 1.6 V (max.)\nIf = 20 mA (nominal from datasheet plots)\n\nR10 = 100Ω ⇒ If = 20.5 mA (typ.), 17 mA (min.)
+$Comp
+L power:+3V3 #PWR07
+U 1 1 5F14C9FA
+P 8675 2325
+F 0 "#PWR07" H 8675 2175 50  0001 C CNN
+F 1 "+3V3" H 8690 2498 50  0000 C CNN
+F 2 "" H 8675 2325 50  0001 C CNN
+F 3 "" H 8675 2325 50  0001 C CNN
+	1    8675 2325
+	1    0    0    -1  
+$EndComp
+Text Notes 8425 1950 0    50   ~ 10
+3.3 V POWER FROM NUCLEO BOARD
+Text Notes 8500 3575 0    50   ~ 0
+Motor coil\ncurrent sense\nopamp
+Text Notes 9525 3500 0    50   ~ 0
+Motor encoder\ncomparator
+Wire Wire Line
+	3350 5950 3525 5950
+Wire Wire Line
+	2775 6150 3675 6150
+$Comp
+L mini-mapper:R R13
+U 1 1 5F1773A4
+P 3950 5425
+F 0 "R13" V 3775 5375 50  0000 L CNN
+F 1 "32K" V 3850 5350 50  0000 L CNN
+F 2 "mini-mapper:R_0805" V 3880 5425 50  0001 C CNN
+F 3 "~" H 3950 5425 50  0001 C CNN
+	1    3950 5425
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4100 5425 4400 5425
+Wire Wire Line
+	4400 5425 4400 6050
+Connection ~ 4400 6050
+Wire Wire Line
+	4400 6050 4725 6050
+Wire Wire Line
+	3800 5425 3525 5425
+Wire Wire Line
+	3525 5425 3525 5950
+Connection ~ 3525 5950
+Wire Wire Line
+	3525 5950 3675 5950
+Connection ~ 2025 5950
+Wire Wire Line
+	2025 5200 2775 5200
+Connection ~ 2025 5200
+Wire Wire Line
+	2025 5950 3050 5950
+$Comp
+L mini-mapper:R R14
+U 1 1 5F17001A
+P 3200 5950
+F 0 "R14" V 3025 5900 50  0000 L CNN
+F 1 "1K" V 3100 5875 50  0000 L CNN
+F 2 "mini-mapper:R_0805" V 3130 5950 50  0001 C CNN
+F 3 "~" H 3200 5950 50  0001 C CNN
+	1    3200 5950
+	0    1    1    0   
+$EndComp
+Text Notes 6000 5550 0    50   ~ 0
+I(dark) = 100 nA (max.)\nI(light) = 1 mA (min.), 2 mA (typ.)
+Text Notes 6000 4800 0    50   Italic 10
+Infra-red LED
+Text Notes 6000 5350 0    50   Italic 10
+Phototransistor current
+Text Label 2225 5950 0    50   ~ 0
+Vphoto
+Text Notes 6000 6200 0    50   ~ 0
+To get Vphoto = 3.3 V for I(light) = 1 mA,\nput R11 = 3.3 kΩ\n\n(If I(light) > 1 mA, the phototransistor\njust goes into saturation anyway.)
+Text Notes 6000 5750 0    50   Italic 10
+Phototransistor current conversion
+Text Notes 8325 5325 0    50   Italic 10
+Comparator hysteresis
+Text Notes 8325 5675 0    50   ~ 0
+With comparator outputs 0 and 3.3 V,\nR14 = 1 kΩ, R13 = 32 kΩ gives\n\nV(hyst) = 1K/(1K + 32K) * (3.3 - 0) = 0.1 V
+Text Notes 8325 4800 0    50   Italic 10
+Comparator threshold
+Text Notes 8325 5150 0    50   ~ 0
+R9 and R12 set the comparator threshold\nat Vcc/2 = 1.65 V. This is large enough to\navoid problems with ambient light "dark\ncurrent" from the phototransistor.
+Wire Notes Line
+	475  4025 11225 4025
+Wire Notes Line
+	8175 475  8175 4025
+$Comp
+L mini-mapper:LMV331 U3
+U 1 1 5F1EDF5B
+P 3875 6050
+F 0 "U3" H 3975 6415 50  0000 C CNN
+F 1 "LMV331" H 3975 6324 50  0000 C CNN
+F 2 "" H 3975 6150 50  0001 C CNN
+F 3 "http://www.ti.com/lit/ds/symlink/lmv331.pdf" H 3975 6250 50  0001 C CNN
+	1    3875 6050
+	1    0    0    -1  
+$EndComp
+$Comp
+L mini-mapper:LMV331 U3
+U 2 1 5F1EE91F
+P 9750 2700
+F 0 "U3" H 9828 2746 50  0000 L CNN
+F 1 "LMV331" H 9828 2655 50  0000 L CNN
+F 2 "" H 9850 2800 50  0001 C CNN
+F 3 "http://www.ti.com/lit/ds/symlink/lmv331.pdf" H 9850 2900 50  0001 C CNN
+	2    9750 2700
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+3V3 #PWR09
+U 1 1 5F1F2C41
+P 9750 2300
+F 0 "#PWR09" H 9750 2150 50  0001 C CNN
+F 1 "+3V3" H 9765 2473 50  0000 C CNN
+F 2 "" H 9750 2300 50  0001 C CNN
+F 3 "" H 9750 2300 50  0001 C CNN
+	1    9750 2300
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR011
+U 1 1 5F1F32D3
+P 9750 3075
+F 0 "#PWR011" H 9750 2825 50  0001 C CNN
+F 1 "GND" H 9755 2902 50  0000 C CNN
+F 2 "" H 9750 3075 50  0001 C CNN
+F 3 "" H 9750 3075 50  0001 C CNN
+	1    9750 3075
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9750 2300 9750 2375
+Wire Wire Line
+	9750 3000 9750 3025
+$Comp
+L mini-mapper:C C5
+U 1 1 5F1FB2DE
+P 9250 2700
+F 0 "C5" H 9365 2746 50  0000 L CNN
+F 1 "0.1U" H 9365 2655 50  0000 L CNN
+F 2 "mini-mapper:C_0805" H 9288 2550 50  0001 C CNN
+F 3 "~" H 9250 2700 50  0001 C CNN
+	1    9250 2700
+	1    0    0    -1  
+$EndComp
+$Comp
+L mini-mapper:C C6
+U 1 1 5F1FB700
+P 10250 2700
+F 0 "C6" H 10365 2746 50  0000 L CNN
+F 1 "0.1U" H 10365 2655 50  0000 L CNN
+F 2 "mini-mapper:C_0805" H 10288 2550 50  0001 C CNN
+F 3 "~" H 10250 2700 50  0001 C CNN
+	1    10250 2700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	10250 2375 9750 2375
+Wire Wire Line
+	10250 2375 10250 2550
+Connection ~ 9750 2375
+Wire Wire Line
+	9750 2375 9750 2400
+Wire Wire Line
+	10250 2850 10250 3025
+Wire Wire Line
+	10250 3025 9750 3025
+Connection ~ 9750 3025
+Wire Wire Line
+	9750 3025 9750 3075
+Wire Wire Line
+	9250 2550 9250 2400
+Wire Wire Line
+	9250 2400 8675 2400
+Connection ~ 8675 2400
+Wire Wire Line
+	9250 3000 8675 3000
+Connection ~ 8675 3000
+Wire Wire Line
+	9250 2850 9250 3000
 $EndSCHEMATC

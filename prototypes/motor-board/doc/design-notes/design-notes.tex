@@ -106,9 +106,8 @@ between the PCB and the top chassis plate).
 \paragraph{Motor encoder comparator: ???}
 
 The requirements here are simple, so a jellybean comparator is a good
-choice. Not an LM339 though! Something more modern.
-
-\todo{Choose comparator.}
+choice. Not an LM339 though! Something more modern. I chose a TI
+LMV331, which is a single supply device available in an SOT-23 package.
 
 \paragraph{4.5\,V regulator: ???}
 
@@ -154,10 +153,28 @@ Need a linear regulator to produce 4.5\,V from a 5\,V input.
 \subsection*{Motor encoder}
 
 \begin{itemize}
-  \item{The LED side of this is simple.}
-  \item{On the phototransistor side, ...}
-  \item{}
-  \item{}
+  \item{The LED side of this is simple: take $V_f$ and $I_f$ from the
+    datasheet and find a suitable resistor based on the power rail
+    (3.3\,V, taken from the Nucleo board).}
+  \item{On the phototransistor side, a current sensing resistor is
+    needed. The light current from the phototransistor is quoted as
+    being at least 1\,mA, and typically 2\,mA. A
+    $3.3\,\mathrm{k\Omega}$ resistor will give a sense voltage of
+    3.3\,V for a phototransistor current of 1\,mA. Higher
+    phototransistor currents will just lead to the phototransistor
+    saturating, so the sense voltage will also be close to the
+    positive rail.}
+  \item{The threshold to use for the comparator used to turn the
+    analogue output from the phototransistor into pulses for counting
+    holes in the encoder disk is set at $V_{\mathrm{cc}} / 2$. This is
+    conservative enough to be higher than any likely ``dark current'',
+    which includes the true dark current from the phototransistor plus
+    any additional current due to ambient light falling on the
+    phototransistor.}
+  \item{A bare comparator will produce spurious output transistions in
+    the presence of noise (see simulations), so some hysteresis is
+    included. The resistor values selected give a hysteresis of about
+    0.1\,V.}
 \end{itemize}
 
 \subsection*{Nucleo board interface}
