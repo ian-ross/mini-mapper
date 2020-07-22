@@ -103,7 +103,7 @@ I've done, and it can be mounted without interference with the motor
 body using reasonably sized standard hardware (i.e. 5\,mm standoffs
 between the PCB and the top chassis plate).
 
-\paragraph{Motor encoder comparator: ???}
+\paragraph{Motor encoder comparator: TI LMV331}
 
 The requirements here are simple, so a jellybean comparator is a good
 choice. Not an LM339 though! Something more modern. I chose a TI
@@ -158,12 +158,13 @@ Need a linear regulator to produce 4.5\,V from a 5\,V input.
     (3.3\,V, taken from the Nucleo board).}
   \item{On the phototransistor side, a current sensing resistor is
     needed. The light current from the phototransistor is quoted as
-    being at least 1\,mA, and typically 2\,mA. A
-    $3.3\,\mathrm{k\Omega}$ resistor will give a sense voltage of
-    3.3\,V for a phototransistor current of 1\,mA. Higher
-    phototransistor currents will just lead to the phototransistor
-    saturating, so the sense voltage will also be close to the
-    positive rail.}
+    being at least 1\,mA, and typically 2\,mA, but remember that we'll
+    only be getting about half of that because of the size of the
+    holes in the motor encoder disk. A $5.7\,\mathrm{k\Omega}$
+    resistor will give a sense voltage of 2.85\,V for a phototransistor
+    current of 0.5\,mA. Higher phototransistor currents will just lead
+    to the phototransistor saturating, so the sense voltage will also
+    be close to the positive rail.}
   \item{The threshold to use for the comparator used to turn the
     analogue output from the phototransistor into pulses for counting
     holes in the encoder disk is set at $V_{\mathrm{cc}} / 2$. This is
