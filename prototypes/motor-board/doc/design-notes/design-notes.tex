@@ -109,21 +109,29 @@ The requirements here are simple, so a jellybean comparator is a good
 choice. Not an LM339 though! Something more modern. I chose a TI
 LMV331, which is a single supply device available in an SOT-23 package.
 
-\paragraph{4.5\,V regulator: ???}
+\paragraph{4.5\,V regulator: TI TLV702}
 
-Need a linear regulator to produce 4.5\,V from a 5\,V input.
-
-\todo{Choose 4.5\,V linear regulator.}
+Need a linear regulator to produce 4.5\,V from a 5\,V input: TI's
+TLV702 is cheap, simple, can provide 300\,mA and comes in a 4.5\,V
+version.
 
 \paragraph{Power connectors}
 
-\todo{Measure barrel plug from 5\,V wall wart to select barrel jack.}
+\todo{Measure barrel plug from 5\,V wall wart to select barrel jack.
+  Also check power supply connector polarity!}
+
+\paragraph{Motor connectors}
+
+2-hole 0.1'' header vertical socket (motor leads have individual 0.1''
+pins).
 
 \paragraph{Nucleo board connectors}
 
-0.1'' headers.
+6-hole 0.1'' header vertical socket or header (two digital motor
+control inputs, one analogue motor coil current sense output, one
+digital encoder pulse output, 3.3\,V supply, ground).
 
-\todo{Decide on connector layout: Nucleo, power, motor.}
+\todo{Decide on connector gender based on connector leads I have.}
 
 
 \section*{Schematic capture}
@@ -196,35 +204,60 @@ jumper cables, since the connections we'll want are pretty spread out.
     \textbf{Use} & \textbf{PCB} & \textbf{Nucleo} & \textbf{Conn} & \textbf{Pin} \\
     Power  & \texttt{3V3} & \texttt{+3V3} & CN8 & 7\\
     Ground & \texttt{GND} & \texttt{GND} & CN8 & 11 \\
-    Motor control & \texttt{IN1} & \texttt{PA6} (\texttt{TIM3\_CH1}) & CN7 & 12 \\
-    Motor control & \texttt{IN2} & \texttt{PA7} (\texttt{TIM3\_CH2}) & CN7 & 14 \\
-    Motor current sense & \texttt{Vsense} & \texttt{PA3} (\texttt{ADC1\_IN3}) & CN9 & 1 \\
-    Encoder pulses & \texttt{PULSE} & \texttt{PC3}? & CN9 & 5 \\
+    Motor control & \texttt{IN1} & \texttt{PD14} (\texttt{TIM4\_CH3}) & CN7 & 16 \\
+    Motor control & \texttt{IN2} & \texttt{PD15} (\texttt{TIM4\_CH4}) & CN7 & 18 \\
+    Motor current sense & \texttt{Vsense} & \texttt{PA3} (\texttt{ADC123\_IN3}) & CN9 & 1 \\
+    Encoder pulses & \texttt{PULSE} & \texttt{PG3} & CN8 & 16 \\
   \end{tabular}
 \end{center}
 
-\todo{Label connections with use and Nucleo pin names on schematic and
-  silkscreen.}
+\todo{Label connections with use and Nucleo pin names on silkscreen.}
 
 \subsection*{Power}
 
 Supplies:
 \begin{itemize}
-  \item{Need 4.5\,V (250\,mA max.) for motor, and 3.3\,V for logic
-    (not sure about current requirements there).}
+  \item{Need 4.5\,V (250\,mA max.) for motor, and 3.3\,V for logic.}
   \item{For prototype board, use 3.3\,V supply from Nucleo board, and
     use external 5\,V wall wart supply plus linear regulator for
     4.5\,V supply.}
 \end{itemize}
 
-\todo{Calculate current draw from 3.3\,V supply and compare to 500\,mA
-limit for supply from Nucleo board.}
+\subsubsection{3.3\,V}
+
+For the 3.3\,V supply, the current draw is approximately:
+
+\begin{center}
+  \begin{tabular}{lc}
+    \textbf{Component} & \textbf{Worst case current draw (mA)} \\
+    Motor driver (control inputs) & 0.11 \\
+    TLV9051 opamp & 0.45 \\
+    LMV331 comparator & 0.1 \\
+    TCST1202 photointerrupter & $25 + 2$ \\
+    \textbf{Total} & \textbf{28} \\
+  \end{tabular}
+\end{center}
+
+This 28\,mA total is well within the 500\,mA limit for the 3.3\,V
+supply from the Nucleo board, so we can run the 3.3\,V devices on the
+motor prototype board directly from the 3.3\,V supply from the Nucleo board.
+
+\subsubsection{4.5\,V}
+
+The current draw for the 4.5\,V supply can be up to 250\,mA from the
+motor, plus perhaps 5\,mA for the motor driver. This is too much for
+the 5\,V supply from the Nucleo board to supply reliably, so we need
+to use a separate power source for the 4.5\,V supply.
+
+We will use a 5\,V wall wart power supply with a TI TLV702 LDO
+regulator (which comes in a 4.5\,V version and can supply 300\,mA).
 
 
 \section*{Layout}
 
 \todo{Mechanical board outline: photoencoder placement, mounting
-  holes.}
+  holes. Measure carefully directly from chassis plate: just motor
+  axis, mounting holes and photointerrupter location.}
 
 
 \section*{Assembly}

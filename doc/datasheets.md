@@ -46,3 +46,16 @@ Also, [Motor Solutions Catalog](https://toshiba.semicon-storage.com/info/docget.
 # Op-amps
 
 - [TI TLV9051](https://www.ti.com/lit/ds/symlink/tlv9052.pdf)
+
+# Photointerrupters
+
+ - [Vishay TCST1202](https://www.vishay.com/docs/83764/tcst1103.pdf)
+
+# Comparators
+
+ - [TI LMV331](https://www.ti.com/lit/ds/symlink/lmv331.pdf)
+
+# Linear regulators
+
+ - [TI TLV702](https://www.ti.com/lit/ds/symlink/tlv702.pdf)
+

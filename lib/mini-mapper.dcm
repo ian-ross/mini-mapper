@@ -54,6 +54,12 @@ K DC Motor
 F ~
 $ENDCMP
 #
+$CMP PinSocket_01x06
+D Generic connector, single row, 01x06, script generated (kicad-library-utils/schlib/autogen/connector/)
+K connector
+F ~
+$ENDCMP
+#
 $CMP R
 D Resistor
 K R res resistor
