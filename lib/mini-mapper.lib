@@ -143,12 +143,12 @@ X - 2 0 -300 100 U 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# PinSocket_01x06
+# PinHeader_01x06
 #
-DEF PinSocket_01x06 J 0 40 Y N 1 F N
+DEF PinHeader_01x06 J 0 40 Y N 1 F N
 F0 "J" 0 300 50 H V C CNN
-F1 "PinSocket_01x06" 0 -400 50 H V C CNN
-F2 "mini-mapper:PinSocket_1x06_P2.54mm_Vertical" 0 0 50 H I C CNN
+F1 "PinHeader_01x06" 0 -400 50 H V C CNN
+F2 "mini-mapper:PinHeader_1x06_P2.54mm_Vertical" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
  Connector*:*_1x??_*
@@ -212,7 +212,7 @@ ENDDEF
 DEF TCST1202 U 0 40 Y Y 1 F N
 F0 "U" 0 -250 50 H V C CNN
 F1 "TCST1202" 0 300 50 H V C CNN
-F2 "" 0 0 50 H I C CNN
+F2 "mini-mapper:TCST1202" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 DRAW
 P 2 0 1 0 -250 0 -150 0 N

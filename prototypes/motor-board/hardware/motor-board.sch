@@ -10,7 +10,7 @@ Rev "1"
 Comp ""
 Comment1 "Designed for AISLER 2-Layer Service"
 Comment2 "Part of the Mini-Mapper project"
-Comment3 ""
+Comment3 "Motor driver and encoder prototype board"
 Comment4 ""
 $EndDescr
 $Comp
@@ -83,10 +83,6 @@ F 3 "" H 3450 1025 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	3450 1025 3450 1075
-Wire Wire Line
-	1450 1750 3050 1750
-Wire Wire Line
-	3050 1850 1450 1850
 $Comp
 L mini-mapper:C C2
 U 1 1 5EF81780
@@ -137,8 +133,9 @@ U 1 1 5EF82B68
 P 2325 1275
 F 0 "C1" H 2443 1321 50  0000 L CNN
 F 1 "100U" H 2443 1230 50  0000 L CNN
-F 2 "" H 2363 1125 50  0001 C CNN
-F 3 "~" H 2325 1275 50  0001 C CNN
+F 2 "mini-mapper:CP_Elec_6.3x7.7" H 2363 1125 50  0001 C CNN
+F 3 "https://www.mouser.at/datasheet/2/315/ABA0000C1160-947462.pdf" H 2325 1275 50  0001 C CNN
+F 4 "EEE-HC1C101XP" H 2325 1275 50  0001 C CNN "MPN"
 	1    2325 1275
 	1    0    0    -1  
 $EndComp
@@ -248,7 +245,7 @@ Wire Wire Line
 	3450 2300 3450 2750
 Text Notes 7975 1225 0    50   ~ 10
 MOTOR POWER INPUT (5V to 4.5 V)
-Text Notes 1025 1400 0    50   ~ 10
+Text Notes 900  1450 0    50   ~ 10
 CONTROL INPUT
 Text Label 2650 2100 0    50   ~ 0
 Vref
@@ -301,6 +298,7 @@ F 0 "U3" H 8653 3221 50  0000 L CNN
 F 1 "TLV9051" H 8653 3130 50  0000 L CNN
 F 2 "mini-mapper:SOT-23-5" H 8625 3175 50  0001 C CNN
 F 3 "https://www.ti.com/lit/ds/symlink/tlv9052.pdf" H 8625 3175 50  0001 C CNN
+F 4 "TLV9051IDBVR" H 8625 3175 50  0001 C CNN "MPN"
 	2    8625 3175
 	1    0    0    -1  
 $EndComp
@@ -351,9 +349,9 @@ Wire Wire Line
 	5125 2875 5200 2875
 Text Notes 6575 2175 0    50   ~ 10
 CURRENT SENSE OUTPUT
-Text Label 1450 1750 0    50   ~ 0
+Text Label 1025 1750 0    50   ~ 0
 MOTOR_IN1
-Text Label 1450 1850 0    50   ~ 0
+Text Label 1025 1850 0    50   ~ 0
 MOTOR_IN2
 Text Label 6750 2350 0    50   ~ 0
 MOTOR_SENSE
@@ -399,8 +397,9 @@ U 1 1 5F085051
 P 4250 1850
 F 0 "J2" H 4168 1525 50  0000 C CNN
 F 1 "Conn_01x02" H 4168 1616 50  0000 C CNN
-F 2 "" H 4250 1850 50  0001 C CNN
-F 3 "~" H 4250 1850 50  0001 C CNN
+F 2 "mini-mapper:PinSocket_1x02_P2.54mm_Vertical" H 4250 1850 50  0001 C CNN
+F 3 "https://www.mouser.at/datasheet/2/527/slw-1370256.pdf" H 4250 1850 50  0001 C CNN
+F 4 "SLW-102-01-T-S" H 4250 1850 50  0001 C CNN "MPN"
 	1    4250 1850
 	1    0    0    1   
 $EndComp
@@ -434,39 +433,13 @@ Wire Wire Line
 Connection ~ 6400 2350
 Text Notes 6550 2700 0    50   Italic 10
 Current sense amplifier
-$Comp
-L Device:Net-Tie_2 NT1
-U 1 1 5F094D37
-P 3875 2325
-F 0 "NT1" H 3875 2450 50  0000 C CNN
-F 1 "Net-Tie_2" H 3950 2375 50  0000 C CNN
-F 2 "" H 3875 2325 50  0001 C CNN
-F 3 "~" H 3875 2325 50  0001 C CNN
-	1    3875 2325
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:Net-Tie_2 NT2
-U 1 1 5F09CC8D
-P 3875 2700
-F 0 "NT2" H 3875 2575 50  0000 C CNN
-F 1 "Net-Tie_2" H 3950 2650 50  0000 C CNN
-F 2 "" H 3875 2700 50  0001 C CNN
-F 3 "~" H 3875 2700 50  0001 C CNN
-	1    3875 2700
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	3650 2300 3650 2325
-Wire Wire Line
-	3775 2325 3650 2325
 Connection ~ 3650 2325
 Wire Wire Line
 	3650 2325 3650 2375
 Wire Wire Line
 	3650 2675 3650 2700
-Wire Wire Line
-	3775 2700 3650 2700
 Connection ~ 3650 2700
 Wire Wire Line
 	3650 2700 3650 2750
@@ -607,8 +580,9 @@ U 1 1 5F1365AB
 P 1225 5675
 F 0 "U5" H 1225 6100 50  0000 C CNN
 F 1 "TCST1202" H 1225 6009 50  0000 C CNN
-F 2 "" H 1225 5675 50  0001 C CNN
-F 3 "" H 1225 5675 50  0001 C CNN
+F 2 "mini-mapper:TCST1202" H 1225 5675 50  0001 C CNN
+F 3 "https://www.vishay.com/docs/83764/tcst1103.pdf" H 1225 5675 50  0001 C CNN
+F 4 "TCST1202" H 1225 5675 50  0001 C CNN "MPN"
 	1    1225 5675
 	1    0    0    -1  
 $EndComp
@@ -712,8 +686,9 @@ U 1 1 5F1EDF5B
 P 3575 5875
 F 0 "U4" H 3675 6240 50  0000 C CNN
 F 1 "LMV331" H 3675 6149 50  0000 C CNN
-F 2 "" H 3675 5975 50  0001 C CNN
+F 2 "mini-mapper:SOT-23-5" H 3675 5975 50  0001 C CNN
 F 3 "http://www.ti.com/lit/ds/symlink/lmv331.pdf" H 3675 6075 50  0001 C CNN
+F 4 "LMV331IDBVR" H 3575 5875 50  0001 C CNN "MPN"
 	1    3575 5875
 	1    0    0    -1  
 $EndComp
@@ -723,8 +698,9 @@ U 2 1 5F1EE91F
 P 9575 3175
 F 0 "U4" H 9700 3225 50  0000 L CNN
 F 1 "LMV331" H 9700 3125 50  0000 L CNN
-F 2 "" H 9675 3275 50  0001 C CNN
+F 2 "mini-mapper:SOT-23-5" H 9675 3275 50  0001 C CNN
 F 3 "http://www.ti.com/lit/ds/symlink/lmv331.pdf" H 9675 3375 50  0001 C CNN
+F 4 "LMV331IDBVR" H 9575 3175 50  0001 C CNN "MPN"
 	2    9575 3175
 	1    0    0    -1  
 $EndComp
@@ -787,7 +763,8 @@ P 1900 5625
 F 0 "TP1" H 1958 5743 50  0000 L CNN
 F 1 "TestPoint" H 1958 5652 50  0000 L CNN
 F 2 "mini-mapper:TestPoint_Pad_2.0x2.0mm" H 2100 5625 50  0001 C CNN
-F 3 "~" H 2100 5625 50  0001 C CNN
+F 3 "n/a" H 2100 5625 50  0001 C CNN
+F 4 "n/a" H 1900 5625 50  0001 C CNN "MPN"
 	1    1900 5625
 	1    0    0    -1  
 $EndComp
@@ -801,9 +778,10 @@ L mini-mapper:Barrel_Jack J1
 U 1 1 5F1B8644
 P 8575 1675
 F 0 "J1" H 8632 2000 50  0000 C CNN
-F 1 "Barrel_Jack" H 8632 1909 50  0000 C CNN
-F 2 "" H 8625 1635 50  0001 C CNN
-F 3 "~" H 8625 1635 50  0001 C CNN
+F 1 "PJ-063AH" H 8632 1909 50  0000 C CNN
+F 2 "mini-mapper:BarrelJack_CUI_PJ-063AH_Horizontal" H 8625 1635 50  0001 C CNN
+F 3 "https://www.mouser.at/datasheet/2/670/pj-063ah-1778660.pdf" H 8625 1635 50  0001 C CNN
+F 4 "PJ-063AH" H 8575 1675 50  0001 C CNN "MPN"
 	1    8575 1675
 	1    0    0    -1  
 $EndComp
@@ -835,6 +813,7 @@ F 0 "U1" H 9825 2017 50  0000 C CNN
 F 1 "TLV70245_SOT23-5" H 9825 1926 50  0000 C CNN
 F 2 "mini-mapper:SOT-23-5" H 9825 2000 50  0001 C CIN
 F 3 "http://www.ti.com/lit/ds/symlink/tlv702.pdf" H 9825 1725 50  0001 C CNN
+F 4 "TLV70245DBVR" H 9825 1675 50  0001 C CNN "MPN"
 	1    9825 1675
 	1    0    0    -1  
 $EndComp
@@ -968,17 +947,6 @@ Wire Wire Line
 Text Label 4550 5875 0    50   ~ 0
 ENCODER_PULSE
 $Comp
-L mini-mapper:PinSocket_01x06 J3
-U 1 1 5F1B572A
-P 8700 5425
-F 0 "J3" H 8750 4975 50  0000 L CNN
-F 1 "PinSocket_01x06" H 8750 4875 50  0000 L CNN
-F 2 "mini-mapper:PinSocket_1x06_P2.54mm_Vertical" H 8700 5425 50  0001 C CNN
-F 3 "~" H 8700 5425 50  0001 C CNN
-	1    8700 5425
-	1    0    0    -1  
-$EndComp
-$Comp
 L power:+3V3 #PWR017
 U 1 1 5F1BF659
 P 8400 5125
@@ -1012,34 +980,32 @@ Wire Wire Line
 	8500 5325 7450 5325
 Wire Wire Line
 	8500 5425 7450 5425
-Text Label 7450 5325 0    50   ~ 0
+Text Label 7450 5525 0    50   ~ 0
 MOTOR_IN1
-Text Label 7450 5425 0    50   ~ 0
+Text Label 7450 5625 0    50   ~ 0
 MOTOR_IN2
 Wire Wire Line
 	8500 5525 7450 5525
 Wire Wire Line
 	8500 5625 7450 5625
-Text Label 7450 5525 0    50   ~ 0
+Text Label 7450 5425 0    50   ~ 0
 MOTOR_SENSE
-Text Label 7450 5625 0    50   ~ 0
+Text Label 7450 5325 0    50   ~ 0
 ENCODER_PULSE
 Text Notes 8850 5250 0    50   ~ 0
 +3V3
 Text Notes 8850 5750 0    50   ~ 0
 GND
-Text Notes 8850 5350 0    50   ~ 0
-DIGITAL OUTPUT (PD14, TIM4_CH3)
-Text Notes 8850 5450 0    50   ~ 0
-DIGITAL OUTPUT (PD15, TIM4_CH4)
 Text Notes 8850 5550 0    50   ~ 0
-ANALOG INPUT (PA3, ADC123_IN3)
+DIGITAL OUTPUT (PD14, TIM4_CH3)
 Text Notes 8850 5650 0    50   ~ 0
+DIGITAL OUTPUT (PD15, TIM4_CH4)
+Text Notes 8850 5450 0    50   ~ 0
+ANALOG INPUT (PA3, ADC123_IN3)
+Text Notes 8850 5350 0    50   ~ 0
 DIGITAL INPUT (PG3)
 Text Notes 8850 5125 0    75   ~ 15
 NUCLEO PIN
-Text Notes 12100 1150 0    100  ~ 0
-Does the opamp U3A need compensation?
 Wire Wire Line
 	10300 1575 10625 1575
 $Comp
@@ -1074,22 +1040,38 @@ Wire Wire Line
 Connection ~ 8400 5150
 Wire Wire Line
 	8400 5150 8400 5225
-Text Notes 12100 1550 0    100  ~ 0
-Make sure the barrel jack is the right size and the "right way out"!
-Text Notes 12100 2050 0    100  ~ 0
-Make the Nucleo connection a header or a socket on the motor board?\nThe corresponding connector on the Nucleo board is a socket.
-Text Notes 10275 5275 0    50   ~ 0
+Text Notes 10275 5250 0    50   ~ 0
 CN8  7
-Text Notes 10275 5775 0    50   ~ 0
+Text Notes 10275 5750 0    50   ~ 0
 CN8 11
-Text Notes 10275 5375 0    50   ~ 0
+Text Notes 10275 5550 0    50   ~ 0
 CN7 16
-Text Notes 10275 5475 0    50   ~ 0
+Text Notes 10275 5650 0    50   ~ 0
 CN7 18
-Text Notes 10275 5575 0    50   ~ 0
+Text Notes 10275 5450 0    50   ~ 0
 CN9  1
-Text Notes 10275 5675 0    50   ~ 0
+Text Notes 10275 5350 0    50   ~ 0
 CN8 16
-Text Notes 12125 825  0    100  ~ 20
-OUTSTANDING ISSUES
+$Comp
+L mini-mapper:PinHeader_01x06 J3
+U 1 1 5F1C4768
+P 8700 5425
+F 0 "J3" H 8700 5000 50  0000 L CNN
+F 1 "PinHeader_01x06" H 8700 4900 50  0000 L CNN
+F 2 "mini-mapper:PinHeader_1x06_P2.54mm_Vertical" H 8700 5425 50  0001 C CNN
+F 3 "https://www.mouser.at/datasheet/2/276/0022284060_PCB_HEADERS-228129.pdf" H 8700 5425 50  0001 C CNN
+F 4 "22-28-4060" H 8700 5425 50  0001 C CNN "MPN"
+	1    8700 5425
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3650 2325 3975 2325
+Wire Wire Line
+	3650 2700 3975 2700
+Text Notes 825  1575 0    50   ~ 0
+f(PWM) = 31.25 kHz
+Wire Wire Line
+	1025 1750 3050 1750
+Wire Wire Line
+	1025 1850 3050 1850
 $EndSCHEMATC

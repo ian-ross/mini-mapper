@@ -117,8 +117,9 @@ version.
 
 \paragraph{Power connectors}
 
-\todo{Measure barrel plug from 5\,V wall wart to select barrel jack.
-  Also check power supply connector polarity!}
+Barrel jack from 5\,V power supply is 5.5\,mm OD with a 2\,mm pin. I
+believe the positive connection is to the pin. We want to use the CUI
+PJ-063AH, for which there is a footprint in the KiCad libraries.
 
 \paragraph{Motor connectors}
 
@@ -127,11 +128,12 @@ pins).
 
 \paragraph{Nucleo board connectors}
 
-6-hole 0.1'' header vertical socket or header (two digital motor
-control inputs, one analogue motor coil current sense output, one
-digital encoder pulse output, 3.3\,V supply, ground).
-
-\todo{Decide on connector gender based on connector leads I have.}
+6-hole 0.1'' header vertical header (two digital motor control inputs,
+one analogue motor coil current sense output, one digital encoder
+pulse output, 3.3\,V supply, ground). I have leads with a pin on one
+end and a socket on the other, so putting headers on the motor board
+will allow these leads to connect from there to the sockets on the
+Nucleo board.
 
 
 \section*{Schematic capture}
@@ -268,5 +270,33 @@ regulator (which comes in a 4.5\,V version and can supply 300\,mA).
 to secure PCB.
 
 \paragraph{Power supply connections}
+
+
+\section*{Software}
+
+\subsection*{Motor driver}
+
+\begin{itemize}
+  \item{The Toshiba motor driver has an application note where they
+    seem to suggest using $f_{\mathrm{PWM}} = 30\,\mathrm{kHz}$.}
+  \item{For a 10-bit resolution PWM duty cycle, this gives a clock
+    frequency of $1024 \times 30\,\mathrm{kHz} = 30.72\,\mathrm{MHz}$.}
+  \item{The clock input on Nucleo board is 8\,MHz by default. To use
+    this, the STM32 should be set to run on the HSE clock (High-Speed
+    External) with external bypass (\texttt{RCC\_CR:HSEBYP} = 1,
+    \texttt{RCC\_CR:HSEON} = 1).}
+  \item{The main clock PLL should be set up with
+    \texttt{RCC\_PLLCFGR:PLLSRC} = 1 (HSE), \texttt{RCC\_PLLCFGR:PLLM}
+    = 4 (VCO input: 2\,MHz), \texttt{RCC\_PLLCFGR:PLLN} = 128 (VCO
+    output: 256\,MHz), \texttt{RCC\_PLLCFGR:PLLP} = 4 (PLL output:
+    64\,MHz), and enabled with \texttt{RCC\_CR:PLLON} = 1.}
+  \item{The APB prescalers need to be set to make the low-speed
+    prescaler give a frequency of less than 45\,MHz:
+    \texttt{RCC\_CFGR:PPRE1} = 4 (divide by 2 to give 32\,MHz).}
+  \item{The system clock needs to be set to use the PLL:
+    \texttt{RCC\_CFGR:SW} = 2.}
+  \item{Using a 64\,MHz system clock and a 11-bit resolution PWM duty
+    cycle yields a PWM frequency of 31.25\,kHz.}
+\end{itemize}
 
 \end{document}

@@ -1,23 +1,6 @@
 EESchema-LIBRARY Version 2.4
 #encoding utf-8
 #
-# Device_Net-Tie_2
-#
-DEF Device_Net-Tie_2 NT 0 0 N N 1 F N
-F0 "NT" 0 50 50 H V C CNN
-F1 "Device_Net-Tie_2" 0 -50 50 H V C CNN
-F2 "" 0 0 50 H I C CNN
-F3 "" 0 0 50 H I C CNN
-$FPLIST
- Net*Tie*
-$ENDFPLIST
-DRAW
-P 2 0 1 10 -50 0 50 0 N
-X 1 1 -100 0 100 R 50 50 1 1 P
-X 2 2 100 0 100 L 50 50 1 1 P
-ENDDRAW
-ENDDEF
-#
 # mini-mapper_Barrel_Jack
 #
 DEF mini-mapper_Barrel_Jack J 0 40 Y Y 1 F N
@@ -143,12 +126,12 @@ X - 2 0 -300 100 U 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# mini-mapper_PinSocket_01x06
+# mini-mapper_PinHeader_01x06
 #
-DEF mini-mapper_PinSocket_01x06 J 0 40 Y N 1 F N
+DEF mini-mapper_PinHeader_01x06 J 0 40 Y N 1 F N
 F0 "J" 0 300 50 H V C CNN
-F1 "mini-mapper_PinSocket_01x06" 0 -400 50 H V C CNN
-F2 "mini-mapper:PinSocket_1x06_P2.54mm_Vertical" 0 0 50 H I C CNN
+F1 "mini-mapper_PinHeader_01x06" 0 -400 50 H V C CNN
+F2 "mini-mapper:PinHeader_1x06_P2.54mm_Vertical" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
  Connector*:*_1x??_*
@@ -212,7 +195,7 @@ ENDDEF
 DEF mini-mapper_TCST1202 U 0 40 Y Y 1 F N
 F0 "U" 0 -250 50 H V C CNN
 F1 "mini-mapper_TCST1202" 0 300 50 H V C CNN
-F2 "" 0 0 50 H I C CNN
+F2 "mini-mapper:TCST1202" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 DRAW
 P 2 0 1 0 -250 0 -150 0 N
