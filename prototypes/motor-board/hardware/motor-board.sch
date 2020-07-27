@@ -29,18 +29,18 @@ $EndComp
 $Comp
 L mini-mapper:Motor_DC #M1
 U 1 1 5EF670DE
-P 5000 1725
-F 0 "#M1" H 5147 1721 50  0000 L CNN
-F 1 "Motor_DC" H 5147 1630 50  0000 L CNN
-F 2 "" H 5000 1635 50  0001 C CNN
-F 3 "~" H 5000 1635 50  0001 C CNN
-	1    5000 1725
+P 5350 1725
+F 0 "#M1" H 5497 1721 50  0000 L CNN
+F 1 "Motor_DC" H 5497 1630 50  0000 L CNN
+F 2 "" H 5350 1635 50  0001 C CNN
+F 3 "~" H 5350 1635 50  0001 C CNN
+	1    5350 1725
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5000 1475 5000 1525
+	5350 1475 5350 1525
 Wire Wire Line
-	5000 2075 5000 2025
+	5350 2075 5350 2025
 $Comp
 L power:GND #PWR011
 U 1 1 5EF680BB
@@ -59,7 +59,8 @@ P 3650 2525
 F 0 "R2" H 3720 2571 50  0000 L CNN
 F 1 "400m" H 3720 2480 50  0000 L CNN
 F 2 "mini-mapper:R_0805" V 3580 2525 50  0001 C CNN
-F 3 "~" H 3650 2525 50  0001 C CNN
+F 3 "https://www.mouser.at/datasheet/2/447/PYu-RL_Group_521_RoHS_L_2-1131815.pdf" H 3650 2525 50  0001 C CNN
+F 4 "RL0805FR-070R4L" H 3650 2525 50  0001 C CNN "MPN"
 	1    3650 2525
 	1    0    0    -1  
 $EndComp
@@ -90,7 +91,8 @@ P 2825 1275
 F 0 "C2" H 2940 1321 50  0000 L CNN
 F 1 "0.1U" H 2940 1230 50  0000 L CNN
 F 2 "mini-mapper:C_0805" H 2863 1125 50  0001 C CNN
-F 3 "~" H 2825 1275 50  0001 C CNN
+F 3 "http://datasheet.octopart.com/885012207098-W%C3%BCrth-Elektronik-datasheet-137006532.pdf" H 2825 1275 50  0001 C CNN
+F 4 "885012207098" H 2825 1275 50  0001 C CNN "MPN"
 	1    2825 1275
 	1    0    0    -1  
 $EndComp
@@ -101,7 +103,8 @@ P 2600 2875
 F 0 "C5" H 2715 2921 50  0000 L CNN
 F 1 "0.1U" H 2715 2830 50  0000 L CNN
 F 2 "mini-mapper:C_0805" H 2638 2725 50  0001 C CNN
-F 3 "~" H 2600 2875 50  0001 C CNN
+F 3 "http://datasheet.octopart.com/885012207098-W%C3%BCrth-Elektronik-datasheet-137006532.pdf" H 2600 2875 50  0001 C CNN
+F 4 "885012207098" H 2600 2875 50  0001 C CNN "MPN"
 	1    2600 2875
 	1    0    0    -1  
 $EndComp
@@ -110,9 +113,10 @@ L mini-mapper:R R1
 U 1 1 5EF81CFE
 P 2200 2375
 F 0 "R1" H 2270 2421 50  0000 L CNN
-F 1 "7K" H 2270 2330 50  0000 L CNN
+F 1 "56K" H 2270 2330 50  0000 L CNN
 F 2 "mini-mapper:R_0805" V 2130 2375 50  0001 C CNN
-F 3 "~" H 2200 2375 50  0001 C CNN
+F 3 "http://datasheet.octopart.com/CRGP0805F56K-TE-Connectivity-datasheet-114718804.pdf" H 2200 2375 50  0001 C CNN
+F 4 "CRGP0805F56K" H 2200 2375 50  0001 C CNN "MPN"
 	1    2200 2375
 	1    0    0    -1  
 $EndComp
@@ -121,9 +125,10 @@ L mini-mapper:R R4
 U 1 1 5EF821E0
 P 2200 2775
 F 0 "R4" H 2270 2821 50  0000 L CNN
-F 1 "2K" H 2270 2730 50  0000 L CNN
+F 1 "16K" H 2270 2730 50  0000 L CNN
 F 2 "mini-mapper:R_0805" V 2130 2775 50  0001 C CNN
-F 3 "~" H 2200 2775 50  0001 C CNN
+F 3 "https://www.mouser.at/datasheet/2/427/dcrcwe3-1762152.pdf" H 2200 2775 50  0001 C CNN
+F 4 "CRCW080516K0FKEA" H 2200 2775 50  0001 C CNN "MPN"
 	1    2200 2775
 	1    0    0    -1  
 $EndComp
@@ -269,7 +274,8 @@ P 5350 2875
 F 0 "R6" V 5250 2925 50  0000 R CNN
 F 1 "220K" V 5175 2975 50  0000 R CNN
 F 2 "mini-mapper:R_0805" V 5280 2875 50  0001 C CNN
-F 3 "~" H 5350 2875 50  0001 C CNN
+F 3 "http://datasheet.octopart.com/CRGP0805F220K-TE-Connectivity-datasheet-114718804.pdf" H 5350 2875 50  0001 C CNN
+F 4 "CRGP0805F220K" H 5350 2875 50  0001 C CNN "MPN"
 	1    5350 2875
 	0    -1   -1   0   
 $EndComp
@@ -280,7 +286,8 @@ P 6025 2775
 F 0 "R5" V 5925 2825 50  0000 R CNN
 F 1 "330K" V 5850 2875 50  0000 R CNN
 F 2 "mini-mapper:R_0805" V 5955 2775 50  0001 C CNN
-F 3 "~" H 6025 2775 50  0001 C CNN
+F 3 "https://www.mouser.at/datasheet/2/427/dcrcwe3-1762152.pdf" H 6025 2775 50  0001 C CNN
+F 4 "CRCW0805330KFKEA" H 6025 2775 50  0001 C CNN "MPN"
 	1    6025 2775
 	0    -1   -1   0   
 $EndComp
@@ -328,7 +335,8 @@ P 5350 2675
 F 0 "R3" V 5450 2725 50  0000 R CNN
 F 1 "12K" V 5525 2750 50  0000 R CNN
 F 2 "mini-mapper:R_0805" V 5280 2675 50  0001 C CNN
-F 3 "~" H 5350 2675 50  0001 C CNN
+F 3 "https://www.mouser.at/datasheet/2/427/dcrcwe3-1762152.pdf" H 5350 2675 50  0001 C CNN
+F 4 "CRCW080512K0FKEA" H 5350 2675 50  0001 C CNN "MPN"
 	1    5350 2675
 	0    -1   -1   0   
 $EndComp
@@ -394,42 +402,38 @@ Wire Wire Line
 $Comp
 L mini-mapper:Conn_01x02 J2
 U 1 1 5F085051
-P 4250 1850
-F 0 "J2" H 4168 1525 50  0000 C CNN
-F 1 "Conn_01x02" H 4168 1616 50  0000 C CNN
-F 2 "mini-mapper:PinSocket_1x02_P2.54mm_Vertical" H 4250 1850 50  0001 C CNN
-F 3 "https://www.mouser.at/datasheet/2/527/slw-1370256.pdf" H 4250 1850 50  0001 C CNN
-F 4 "SLW-102-01-T-S" H 4250 1850 50  0001 C CNN "MPN"
-	1    4250 1850
+P 4600 1850
+F 0 "J2" H 4518 1525 50  0000 C CNN
+F 1 "Conn_01x02" H 4518 1616 50  0000 C CNN
+F 2 "mini-mapper:PinSocket_1x02_P2.54mm_Vertical" H 4600 1850 50  0001 C CNN
+F 3 "https://www.mouser.at/datasheet/2/527/slw-1370256.pdf" H 4600 1850 50  0001 C CNN
+F 4 "SLW-102-01-T-S" H 4600 1850 50  0001 C CNN "MPN"
+	1    4600 1850
 	1    0    0    1   
 $EndComp
 $Comp
 L mini-mapper:Conn_01x02 #J1
 U 1 1 5F0853E0
-P 4475 1850
-F 0 "#J1" H 4475 1975 50  0000 C CNN
-F 1 "Conn_01x02" H 4475 2050 50  0000 C CNN
-F 2 "" H 4475 1850 50  0001 C CNN
-F 3 "~" H 4475 1850 50  0001 C CNN
-	1    4475 1850
+P 4825 1850
+F 0 "#J1" H 4825 1975 50  0000 C CNN
+F 1 "Conn_01x02" H 4825 2050 50  0000 C CNN
+F 2 "" H 4825 1850 50  0001 C CNN
+F 3 "~" H 4825 1850 50  0001 C CNN
+	1    4825 1850
 	-1   0    0    1   
 $EndComp
 Wire Wire Line
-	4050 1750 3850 1750
+	5025 1750 5100 1750
 Wire Wire Line
-	3850 1850 4050 1850
+	5100 1750 5100 1475
 Wire Wire Line
-	4675 1750 4750 1750
+	5100 1475 5350 1475
 Wire Wire Line
-	4750 1750 4750 1475
+	5025 1850 5100 1850
 Wire Wire Line
-	4750 1475 5000 1475
+	5100 1850 5100 2075
 Wire Wire Line
-	4675 1850 4750 1850
-Wire Wire Line
-	4750 1850 4750 2075
-Wire Wire Line
-	4750 2075 5000 2075
+	5100 2075 5350 2075
 Connection ~ 6400 2350
 Text Notes 6550 2700 0    50   Italic 10
 Current sense amplifier
@@ -466,9 +470,10 @@ L mini-mapper:R R11
 U 1 1 5F1304D4
 P 1725 6250
 F 0 "R11" H 1795 6296 50  0000 L CNN
-F 1 "5.7K" H 1795 6205 50  0000 L CNN
+F 1 "5.6K" H 1795 6205 50  0000 L CNN
 F 2 "mini-mapper:R_0805" V 1655 6250 50  0001 C CNN
-F 3 "~" H 1725 6250 50  0001 C CNN
+F 3 "https://www.mouser.at/datasheet/2/427/crcwce3-1762584.pdf" H 1725 6250 50  0001 C CNN
+F 4 "CRCW08055K60FKEAC" H 1725 6250 50  0001 C CNN "MPN"
 	1    1725 6250
 	1    0    0    -1  
 $EndComp
@@ -496,7 +501,8 @@ P 725 6250
 F 0 "R10" H 795 6296 50  0000 L CNN
 F 1 "82" H 795 6205 50  0000 L CNN
 F 2 "mini-mapper:R_0805" V 655 6250 50  0001 C CNN
-F 3 "~" H 725 6250 50  0001 C CNN
+F 3 "https://www.mouser.at/datasheet/2/427/dcrcwe3-1762152.pdf" H 725 6250 50  0001 C CNN
+F 4 "CRCW080582R0FKEA" H 725 6250 50  0001 C CNN "MPN"
 	1    725  6250
 	1    0    0    -1  
 $EndComp
@@ -528,7 +534,8 @@ P 2475 5525
 F 0 "R8" H 2545 5571 50  0000 L CNN
 F 1 "1K" H 2545 5480 50  0000 L CNN
 F 2 "mini-mapper:R_0805" V 2405 5525 50  0001 C CNN
-F 3 "~" H 2475 5525 50  0001 C CNN
+F 3 "http://datasheet.octopart.com/CRGP0805F1K0-TE-Connectivity-datasheet-114718804.pdf" H 2475 5525 50  0001 C CNN
+F 4 "CRGP0805F1K0" H 2475 5525 50  0001 C CNN "MPN"
 	1    2475 5525
 	1    0    0    -1  
 $EndComp
@@ -539,7 +546,8 @@ P 2475 6250
 F 0 "R12" H 2545 6296 50  0000 L CNN
 F 1 "1K" H 2545 6205 50  0000 L CNN
 F 2 "mini-mapper:R_0805" V 2405 6250 50  0001 C CNN
-F 3 "~" H 2475 6250 50  0001 C CNN
+F 3 "http://datasheet.octopart.com/CRGP0805F1K0-TE-Connectivity-datasheet-114718804.pdf" H 2475 6250 50  0001 C CNN
+F 4 "CRGP0805F1K0" H 2475 6250 50  0001 C CNN "MPN"
 	1    2475 6250
 	1    0    0    -1  
 $EndComp
@@ -625,9 +633,10 @@ L mini-mapper:R R7
 U 1 1 5F1773A4
 P 3650 5250
 F 0 "R7" V 3475 5200 50  0000 L CNN
-F 1 "32K" V 3550 5200 50  0000 L CNN
+F 1 "240K" V 3550 5150 50  0000 L CNN
 F 2 "mini-mapper:R_0805" V 3580 5250 50  0001 C CNN
-F 3 "~" H 3650 5250 50  0001 C CNN
+F 3 "https://www.mouser.at/datasheet/2/427/dcrcwe3-1762152.pdf" H 3650 5250 50  0001 C CNN
+F 4 "CRCW0805240KFKEA" H 3650 5250 50  0001 C CNN "MPN"
 	1    3650 5250
 	0    1    1    0   
 $EndComp
@@ -654,9 +663,10 @@ L mini-mapper:R R9
 U 1 1 5F17001A
 P 2900 5775
 F 0 "R9" V 2725 5725 50  0000 L CNN
-F 1 "1K" V 2800 5725 50  0000 L CNN
+F 1 "7.5K" V 2800 5675 50  0000 L CNN
 F 2 "mini-mapper:R_0805" V 2830 5775 50  0001 C CNN
-F 3 "~" H 2900 5775 50  0001 C CNN
+F 3 "https://www.mouser.at/datasheet/2/427/dcrcwe3-1762152.pdf" H 2900 5775 50  0001 C CNN
+F 4 "CRCW08057K50FKEA" H 2900 5775 50  0001 C CNN "MPN"
 	1    2900 5775
 	0    1    1    0   
 $EndComp
@@ -669,13 +679,13 @@ Phototransistor current
 Text Label 2075 5775 0    50   ~ 0
 Vphoto
 Text Notes 3050 7600 0    50   ~ 0
-To get Vphoto high enough for I(light) = 0.5 mA,\nput R11 = 5.7 kΩ (gives Vphoto = 2.85 V)\n\n(If I(light) is much larger, the phototransistor\ngoes into saturation.)
+To get Vphoto high enough for I(light) = 0.5 mA,\nput R11 = 5.6 kΩ (gives Vphoto = 2.8 V)\n\n(If I(light) is much larger, the phototransistor\ngoes into saturation.)
 Text Notes 3050 7150 0    50   Italic 10
 Phototransistor current conversion
 Text Notes 4425 5050 0    50   Italic 10
 Comparator hysteresis
 Text Notes 4425 5400 0    50   ~ 0
-With comparator outputs 0 and 3.3 V,\nR9 = 1 kΩ, R7 = 32 kΩ gives\n\nV(hyst) = 1K/(1K + 32K) * (3.3 - 0) = 0.1 V
+With comparator outputs 0 and 3.3 V,\nR9 = 7.5 kΩ, R7 = 240 kΩ gives\n\nV(hyst) = 7.5K/(7.5K + 240K) * (3.3 - 0) = 0.1 V
 Text Notes 4425 4500 0    50   Italic 10
 Comparator threshold
 Text Notes 4425 4850 0    50   ~ 0
@@ -733,7 +743,8 @@ P 8100 3175
 F 0 "C6" H 8215 3221 50  0000 L CNN
 F 1 "0.1U" H 8215 3130 50  0000 L CNN
 F 2 "mini-mapper:C_0805" H 8138 3025 50  0001 C CNN
-F 3 "~" H 8100 3175 50  0001 C CNN
+F 3 "http://datasheet.octopart.com/885012207098-W%C3%BCrth-Elektronik-datasheet-137006532.pdf" H 8100 3175 50  0001 C CNN
+F 4 "885012207098" H 8100 3175 50  0001 C CNN "MPN"
 	1    8100 3175
 	1    0    0    -1  
 $EndComp
@@ -744,7 +755,8 @@ P 9150 3200
 F 0 "C7" H 9265 3246 50  0000 L CNN
 F 1 "0.1U" H 9265 3155 50  0000 L CNN
 F 2 "mini-mapper:C_0805" H 9188 3050 50  0001 C CNN
-F 3 "~" H 9150 3200 50  0001 C CNN
+F 3 "http://datasheet.octopart.com/885012207098-W%C3%BCrth-Elektronik-datasheet-137006532.pdf" H 9150 3200 50  0001 C CNN
+F 4 "885012207098" H 9150 3200 50  0001 C CNN "MPN"
 	1    9150 3200
 	1    0    0    -1  
 $EndComp
@@ -861,7 +873,8 @@ P 9275 1825
 F 0 "C3" H 9390 1871 50  0000 L CNN
 F 1 "1U" H 9390 1780 50  0000 L CNN
 F 2 "mini-mapper:C_0805" H 9313 1675 50  0001 C CNN
-F 3 "~" H 9275 1825 50  0001 C CNN
+F 3 "http://datasheet.octopart.com/885012107015-W%C3%BCrth-Elektronik-datasheet-82513951.pdf" H 9275 1825 50  0001 C CNN
+F 4 "885012107015" H 9275 1825 50  0001 C CNN "MPN"
 	1    9275 1825
 	1    0    0    -1  
 $EndComp
@@ -892,7 +905,8 @@ P 10300 1825
 F 0 "C4" H 10415 1871 50  0000 L CNN
 F 1 "1U" H 10415 1780 50  0000 L CNN
 F 2 "mini-mapper:C_0805" H 10338 1675 50  0001 C CNN
-F 3 "~" H 10300 1825 50  0001 C CNN
+F 3 "http://datasheet.octopart.com/885012107015-W%C3%BCrth-Elektronik-datasheet-82513951.pdf" H 10300 1825 50  0001 C CNN
+F 4 "885012107015" H 10300 1825 50  0001 C CNN "MPN"
 	1    10300 1825
 	1    0    0    -1  
 $EndComp
@@ -980,15 +994,15 @@ Wire Wire Line
 	8500 5325 7450 5325
 Wire Wire Line
 	8500 5425 7450 5425
-Text Label 7450 5525 0    50   ~ 0
+Text Label 7450 5425 0    50   ~ 0
 MOTOR_IN1
-Text Label 7450 5625 0    50   ~ 0
+Text Label 7450 5525 0    50   ~ 0
 MOTOR_IN2
 Wire Wire Line
 	8500 5525 7450 5525
 Wire Wire Line
 	8500 5625 7450 5625
-Text Label 7450 5425 0    50   ~ 0
+Text Label 7450 5625 0    50   ~ 0
 MOTOR_SENSE
 Text Label 7450 5325 0    50   ~ 0
 ENCODER_PULSE
@@ -996,11 +1010,11 @@ Text Notes 8850 5250 0    50   ~ 0
 +3V3
 Text Notes 8850 5750 0    50   ~ 0
 GND
-Text Notes 8850 5550 0    50   ~ 0
-DIGITAL OUTPUT (PD14, TIM4_CH3)
-Text Notes 8850 5650 0    50   ~ 0
-DIGITAL OUTPUT (PD15, TIM4_CH4)
 Text Notes 8850 5450 0    50   ~ 0
+DIGITAL OUTPUT (PD14, TIM4_CH3)
+Text Notes 8850 5550 0    50   ~ 0
+DIGITAL OUTPUT (PD15, TIM4_CH4)
+Text Notes 8850 5650 0    50   ~ 0
 ANALOG INPUT (PA3, ADC123_IN3)
 Text Notes 8850 5350 0    50   ~ 0
 DIGITAL INPUT (PG3)
@@ -1044,11 +1058,11 @@ Text Notes 10275 5250 0    50   ~ 0
 CN8  7
 Text Notes 10275 5750 0    50   ~ 0
 CN8 11
-Text Notes 10275 5550 0    50   ~ 0
-CN7 16
-Text Notes 10275 5650 0    50   ~ 0
-CN7 18
 Text Notes 10275 5450 0    50   ~ 0
+CN7 16
+Text Notes 10275 5550 0    50   ~ 0
+CN7 18
+Text Notes 10275 5650 0    50   ~ 0
 CN9  1
 Text Notes 10275 5350 0    50   ~ 0
 CN8 16
@@ -1074,4 +1088,62 @@ Wire Wire Line
 	1025 1750 3050 1750
 Wire Wire Line
 	1025 1850 3050 1850
+$Comp
+L mini-mapper:MountingHole H1
+U 1 1 5F1F1C10
+P 10225 2875
+F 0 "H1" H 10325 2921 50  0000 L CNN
+F 1 "MountingHole" H 10325 2830 50  0000 L CNN
+F 2 "mini-mapper:MountingHole_2.7mm_M2.5" H 10225 2875 50  0001 C CNN
+F 3 "n/a" H 10225 2875 50  0001 C CNN
+F 4 "n/a" H 10225 2875 50  0001 C CNN "MPN"
+	1    10225 2875
+	1    0    0    -1  
+$EndComp
+$Comp
+L mini-mapper:MountingHole H2
+U 1 1 5F1F20F2
+P 10225 3075
+F 0 "H2" H 10325 3121 50  0000 L CNN
+F 1 "MountingHole" H 10325 3030 50  0000 L CNN
+F 2 "mini-mapper:MountingHole_2.7mm_M2.5" H 10225 3075 50  0001 C CNN
+F 3 "n/a" H 10225 3075 50  0001 C CNN
+F 4 "n/a" H 10225 3075 50  0001 C CNN "MPN"
+	1    10225 3075
+	1    0    0    -1  
+$EndComp
+$Comp
+L mini-mapper:MountingHole H3
+U 1 1 5F1F24C2
+P 10225 3275
+F 0 "H3" H 10325 3321 50  0000 L CNN
+F 1 "MountingHole" H 10325 3230 50  0000 L CNN
+F 2 "mini-mapper:MountingHole_2.7mm_M2.5" H 10225 3275 50  0001 C CNN
+F 3 "n/a" H 10225 3275 50  0001 C CNN
+F 4 "n/a" H 10225 3275 50  0001 C CNN "MPN"
+	1    10225 3275
+	1    0    0    -1  
+$EndComp
+$Comp
+L mini-mapper:MountingHole H4
+U 1 1 5F1F297E
+P 10225 3475
+F 0 "H4" H 10325 3521 50  0000 L CNN
+F 1 "MountingHole" H 10325 3430 50  0000 L CNN
+F 2 "mini-mapper:MountingHole_2.7mm_M2.5" H 10225 3475 50  0001 C CNN
+F 3 "n/a" H 10225 3475 50  0001 C CNN
+F 4 "n/a" H 10225 3475 50  0001 C CNN "MPN"
+	1    10225 3475
+	1    0    0    -1  
+$EndComp
+Text Label 3975 1850 0    50   ~ 0
+MOTOR1
+Wire Wire Line
+	3850 1750 4400 1750
+Wire Wire Line
+	3850 1850 4400 1850
+Text Label 3975 1750 0    50   ~ 0
+MOTOR2
+Text Label 8900 1575 0    50   ~ 0
+VIN
 $EndSCHEMATC
