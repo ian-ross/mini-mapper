@@ -4,13 +4,13 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
-Title ""
+Title "Motor driver and encoder prototype board"
 Date ""
 Rev "1"
 Comp ""
 Comment1 "Designed for AISLER 2-Layer Service"
 Comment2 "Part of the Mini-Mapper project"
-Comment3 "Motor driver and encoder prototype board"
+Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
@@ -212,11 +212,9 @@ Wire Wire Line
 	2200 2575 2200 2625
 Wire Wire Line
 	2200 2575 2600 2575
-Wire Wire Line
-	2600 2100 2600 2575
 Connection ~ 2600 2575
 Wire Wire Line
-	2600 2100 3050 2100
+	2600 2000 3050 2000
 Wire Wire Line
 	2200 3050 2600 3050
 Wire Wire Line
@@ -232,12 +230,12 @@ Connection ~ 2825 1075
 $Comp
 L power:PWR_FLAG #FLG02
 U 1 1 5EF90FCA
-P 8800 2025
-F 0 "#FLG02" H 8800 2100 50  0001 C CNN
-F 1 "PWR_FLAG" V 8800 2153 50  0000 L CNN
-F 2 "" H 8800 2025 50  0001 C CNN
-F 3 "~" H 8800 2025 50  0001 C CNN
-	1    8800 2025
+P 8700 2025
+F 0 "#FLG02" H 8700 2100 50  0001 C CNN
+F 1 "PWR_FLAG" V 8700 2153 50  0000 L CNN
+F 2 "" H 8700 2025 50  0001 C CNN
+F 3 "~" H 8700 2025 50  0001 C CNN
+	1    8700 2025
 	0    -1   -1   0   
 $EndComp
 Text Notes 4250 1375 0    50   ~ 10
@@ -247,12 +245,12 @@ Op-amp gain of 30 ⇒\n   ADC input 0 - 3 V\n\nGain = 1 + Rf / Rg ⇒\n  Rf / Rg
 Wire Wire Line
 	2825 1075 3450 1075
 Wire Wire Line
-	3450 2300 3450 2750
+	3450 2300 3450 2425
 Text Notes 7975 1225 0    50   ~ 10
 MOTOR POWER INPUT (5V to 4.5 V)
 Text Notes 900  1450 0    50   ~ 10
 CONTROL INPUT
-Text Label 2650 2100 0    50   ~ 0
+Text Label 2675 2000 0    50   ~ 0
 Vref
 $Comp
 L mini-mapper:TLV9051 U3
@@ -580,7 +578,7 @@ Wire Wire Line
 	1725 5025 725  5025
 Wire Wire Line
 	3975 5875 4100 5875
-Text Notes 4425 5725 0    50   ~ 10
+Text Notes 5025 5750 0    50   ~ 10
 ENCODER PULSE OUTPUT
 $Comp
 L mini-mapper:TCST1202 U5
@@ -644,7 +642,6 @@ Wire Wire Line
 	3800 5250 4100 5250
 Wire Wire Line
 	4100 5250 4100 5875
-Connection ~ 4100 5875
 Wire Wire Line
 	3500 5250 3225 5250
 Wire Wire Line
@@ -676,19 +673,17 @@ Text Notes 675  7050 0    50   Italic 10
 Infra-red LED
 Text Notes 3050 6425 0    50   Italic 10
 Phototransistor current
-Text Label 2075 5775 0    50   ~ 0
-Vphoto
 Text Notes 3050 7600 0    50   ~ 0
 To get Vphoto high enough for I(light) = 0.5 mA,\nput R11 = 5.6 kΩ (gives Vphoto = 2.8 V)\n\n(If I(light) is much larger, the phototransistor\ngoes into saturation.)
 Text Notes 3050 7150 0    50   Italic 10
 Phototransistor current conversion
-Text Notes 4425 5050 0    50   Italic 10
+Text Notes 4750 5050 0    50   Italic 10
 Comparator hysteresis
-Text Notes 4425 5400 0    50   ~ 0
+Text Notes 4750 5400 0    50   ~ 0
 With comparator outputs 0 and 3.3 V,\nR9 = 7.5 kΩ, R7 = 240 kΩ gives\n\nV(hyst) = 7.5K/(7.5K + 240K) * (3.3 - 0) = 0.1 V
-Text Notes 4425 4500 0    50   Italic 10
+Text Notes 4750 4500 0    50   Italic 10
 Comparator threshold
-Text Notes 4425 4850 0    50   ~ 0
+Text Notes 4750 4850 0    50   ~ 0
 R8 and R12 set the comparator threshold\nat Vcc/2 = 1.65 V. This is large enough to\navoid problems with ambient light "dark\ncurrent" from the phototransistor.
 $Comp
 L mini-mapper:LMV331 U4
@@ -771,30 +766,28 @@ Wire Wire Line
 $Comp
 L mini-mapper:TestPoint TP1
 U 1 1 5F1806B0
-P 1900 5625
-F 0 "TP1" H 1958 5743 50  0000 L CNN
-F 1 "TestPoint" H 1958 5652 50  0000 L CNN
-F 2 "mini-mapper:TestPoint_Pad_2.0x2.0mm" H 2100 5625 50  0001 C CNN
-F 3 "n/a" H 2100 5625 50  0001 C CNN
-F 4 "n/a" H 1900 5625 50  0001 C CNN "MPN"
-	1    1900 5625
+P 1900 5525
+F 0 "TP1" H 1825 5825 50  0000 L CNN
+F 1 "Vphoto" H 1775 5750 50  0000 L CNN
+F 2 "mini-mapper:TestPoint_Pad_2.0x2.0mm" H 2100 5525 50  0001 C CNN
+F 3 "n/a" H 2100 5525 50  0001 C CNN
+F 4 "n/a" H 1900 5525 50  0001 C CNN "MPN"
+	1    1900 5525
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	1900 5625 1900 5775
 Connection ~ 1900 5775
 Wire Wire Line
 	1900 5775 2750 5775
 $Comp
 L mini-mapper:Barrel_Jack J1
 U 1 1 5F1B8644
-P 8575 1675
-F 0 "J1" H 8632 2000 50  0000 C CNN
-F 1 "PJ-063AH" H 8632 1909 50  0000 C CNN
-F 2 "mini-mapper:BarrelJack_CUI_PJ-063AH_Horizontal" H 8625 1635 50  0001 C CNN
-F 3 "https://www.mouser.at/datasheet/2/670/pj-063ah-1778660.pdf" H 8625 1635 50  0001 C CNN
-F 4 "PJ-063AH" H 8575 1675 50  0001 C CNN "MPN"
-	1    8575 1675
+P 8475 1675
+F 0 "J1" H 8532 2000 50  0000 C CNN
+F 1 "PJ-063AH" H 8532 1909 50  0000 C CNN
+F 2 "mini-mapper:BarrelJack_CUI_PJ-063AH_Horizontal" H 8525 1635 50  0001 C CNN
+F 3 "https://www.mouser.at/datasheet/2/670/pj-063ah-1778660.pdf" H 8525 1635 50  0001 C CNN
+F 4 "PJ-063AH" H 8475 1675 50  0001 C CNN "MPN"
+	1    8475 1675
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -820,135 +813,135 @@ POWER
 $Comp
 L mini-mapper:TLV70245_SOT23-5 U1
 U 1 1 5F2054D4
-P 9825 1675
-F 0 "U1" H 9825 2017 50  0000 C CNN
-F 1 "TLV70245_SOT23-5" H 9825 1926 50  0000 C CNN
-F 2 "mini-mapper:SOT-23-5" H 9825 2000 50  0001 C CIN
-F 3 "http://www.ti.com/lit/ds/symlink/tlv702.pdf" H 9825 1725 50  0001 C CNN
-F 4 "TLV70245DBVR" H 9825 1675 50  0001 C CNN "MPN"
-	1    9825 1675
+P 9725 1675
+F 0 "U1" H 9725 2017 50  0000 C CNN
+F 1 "TLV70245_SOT23-5" H 9725 1926 50  0000 C CNN
+F 2 "mini-mapper:SOT-23-5" H 9725 2000 50  0001 C CIN
+F 3 "http://www.ti.com/lit/ds/symlink/tlv702.pdf" H 9725 1725 50  0001 C CNN
+F 4 "TLV70245DBVR" H 9725 1675 50  0001 C CNN "MPN"
+	1    9725 1675
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:GND #PWR05
 U 1 1 5F2070D8
-P 9825 2050
-F 0 "#PWR05" H 9825 1800 50  0001 C CNN
-F 1 "GND" H 9830 1877 50  0000 C CNN
-F 2 "" H 9825 2050 50  0001 C CNN
-F 3 "" H 9825 2050 50  0001 C CNN
-	1    9825 2050
+P 9725 2050
+F 0 "#PWR05" H 9725 1800 50  0001 C CNN
+F 1 "GND" H 9730 1877 50  0000 C CNN
+F 2 "" H 9725 2050 50  0001 C CNN
+F 3 "" H 9725 2050 50  0001 C CNN
+	1    9725 2050
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	9825 2050 9825 1975
+	9725 2050 9725 1975
 $Comp
 L power:GND #PWR06
 U 1 1 5F20FAF2
-P 8975 2075
-F 0 "#PWR06" H 8975 1825 50  0001 C CNN
-F 1 "GND" H 8980 1902 50  0000 C CNN
-F 2 "" H 8975 2075 50  0001 C CNN
-F 3 "" H 8975 2075 50  0001 C CNN
-	1    8975 2075
+P 8875 2075
+F 0 "#PWR06" H 8875 1825 50  0001 C CNN
+F 1 "GND" H 8880 1902 50  0000 C CNN
+F 2 "" H 8875 2075 50  0001 C CNN
+F 3 "" H 8875 2075 50  0001 C CNN
+	1    8875 2075
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	8875 1775 8975 1775
+	8775 1775 8875 1775
 Wire Wire Line
-	8975 1775 8975 2025
+	8875 1775 8875 2025
 Wire Wire Line
-	9525 1675 9475 1675
+	9425 1675 9375 1675
 Wire Wire Line
-	9475 1675 9475 1575
-Connection ~ 9475 1575
+	9375 1675 9375 1575
+Connection ~ 9375 1575
 Wire Wire Line
-	9475 1575 9525 1575
+	9375 1575 9425 1575
 Wire Wire Line
-	8875 1575 9075 1575
+	8775 1575 8975 1575
 $Comp
 L mini-mapper:C C3
 U 1 1 5F223AE5
-P 9275 1825
-F 0 "C3" H 9390 1871 50  0000 L CNN
-F 1 "1U" H 9390 1780 50  0000 L CNN
-F 2 "mini-mapper:C_0805" H 9313 1675 50  0001 C CNN
-F 3 "http://datasheet.octopart.com/885012107015-W%C3%BCrth-Elektronik-datasheet-82513951.pdf" H 9275 1825 50  0001 C CNN
-F 4 "885012107015" H 9275 1825 50  0001 C CNN "MPN"
-	1    9275 1825
+P 9175 1825
+F 0 "C3" H 9290 1871 50  0000 L CNN
+F 1 "1U" H 9290 1780 50  0000 L CNN
+F 2 "mini-mapper:C_0805" H 9213 1675 50  0001 C CNN
+F 3 "http://datasheet.octopart.com/885012107015-W%C3%BCrth-Elektronik-datasheet-82513951.pdf" H 9175 1825 50  0001 C CNN
+F 4 "885012107015" H 9175 1825 50  0001 C CNN "MPN"
+	1    9175 1825
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	9275 1675 9275 1575
-Connection ~ 9275 1575
+	9175 1675 9175 1575
+Connection ~ 9175 1575
 Wire Wire Line
-	9275 1575 9475 1575
+	9175 1575 9375 1575
 $Comp
 L power:GND #PWR07
 U 1 1 5F228958
-P 9275 2075
-F 0 "#PWR07" H 9275 1825 50  0001 C CNN
-F 1 "GND" H 9280 1902 50  0000 C CNN
-F 2 "" H 9275 2075 50  0001 C CNN
-F 3 "" H 9275 2075 50  0001 C CNN
-	1    9275 2075
+P 9175 2075
+F 0 "#PWR07" H 9175 1825 50  0001 C CNN
+F 1 "GND" H 9180 1902 50  0000 C CNN
+F 2 "" H 9175 2075 50  0001 C CNN
+F 3 "" H 9175 2075 50  0001 C CNN
+	1    9175 2075
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	9275 2075 9275 1975
+	9175 2075 9175 1975
 Wire Wire Line
-	10125 1575 10300 1575
+	10025 1575 10200 1575
 $Comp
 L mini-mapper:C C4
 U 1 1 5F233EC6
-P 10300 1825
-F 0 "C4" H 10415 1871 50  0000 L CNN
-F 1 "1U" H 10415 1780 50  0000 L CNN
-F 2 "mini-mapper:C_0805" H 10338 1675 50  0001 C CNN
-F 3 "http://datasheet.octopart.com/885012107015-W%C3%BCrth-Elektronik-datasheet-82513951.pdf" H 10300 1825 50  0001 C CNN
-F 4 "885012107015" H 10300 1825 50  0001 C CNN "MPN"
-	1    10300 1825
+P 10200 1825
+F 0 "C4" H 10315 1871 50  0000 L CNN
+F 1 "1U" H 10315 1780 50  0000 L CNN
+F 2 "mini-mapper:C_0805" H 10238 1675 50  0001 C CNN
+F 3 "http://datasheet.octopart.com/885012107015-W%C3%BCrth-Elektronik-datasheet-82513951.pdf" H 10200 1825 50  0001 C CNN
+F 4 "885012107015" H 10200 1825 50  0001 C CNN "MPN"
+	1    10200 1825
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:GND #PWR08
 U 1 1 5F233ECD
-P 10300 2075
-F 0 "#PWR08" H 10300 1825 50  0001 C CNN
-F 1 "GND" H 10305 1902 50  0000 C CNN
-F 2 "" H 10300 2075 50  0001 C CNN
-F 3 "" H 10300 2075 50  0001 C CNN
-	1    10300 2075
+P 10200 2075
+F 0 "#PWR08" H 10200 1825 50  0001 C CNN
+F 1 "GND" H 10205 1902 50  0000 C CNN
+F 2 "" H 10200 2075 50  0001 C CNN
+F 3 "" H 10200 2075 50  0001 C CNN
+	1    10200 2075
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	10300 2075 10300 1975
+	10200 2075 10200 1975
 Wire Wire Line
-	10300 1675 10300 1575
-Connection ~ 10300 1575
+	10200 1675 10200 1575
+Connection ~ 10200 1575
 $Comp
 L mini-mapper:VM #PWR04
 U 1 1 5F23CFD7
-P 10625 1500
-F 0 "#PWR04" H 10425 1350 50  0001 C CNN
-F 1 "VM" H 10640 1673 50  0000 C CNN
-F 2 "" H 10625 1500 50  0001 C CNN
-F 3 "" H 10625 1500 50  0001 C CNN
-	1    10625 1500
+P 10525 1500
+F 0 "#PWR04" H 10325 1350 50  0001 C CNN
+F 1 "VM" H 10540 1673 50  0000 C CNN
+F 2 "" H 10525 1500 50  0001 C CNN
+F 3 "" H 10525 1500 50  0001 C CNN
+	1    10525 1500
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	10625 1500 10625 1575
+	10525 1500 10525 1575
 Wire Notes Line
 	475  4200 11225 4200
 Wire Notes Line
 	7825 4200 7825 475 
 Wire Wire Line
-	8800 2025 8975 2025
-Connection ~ 8975 2025
+	8700 2025 8875 2025
+Connection ~ 8875 2025
 Wire Wire Line
-	8975 2025 8975 2075
-Text Notes 8250 1550 3    50   ~ 0
+	8875 2025 8875 2075
+Text Notes 8150 1550 3    50   ~ 0
 5V input
 Wire Notes Line
 	6975 6550 6975 4200
@@ -956,10 +949,8 @@ Text Notes 7075 4500 0    150  ~ 30
 NUCLEO CONNECTIONS
 Wire Wire Line
 	6400 2350 7275 2350
-Wire Wire Line
-	4100 5875 5175 5875
-Text Label 4550 5875 0    50   ~ 0
-ENCODER_PULSE
+Text Label 5400 5875 0    50   ~ 0
+PULSE
 $Comp
 L power:+3V3 #PWR017
 U 1 1 5F1BF659
@@ -1005,7 +996,7 @@ Wire Wire Line
 Text Label 7450 5625 0    50   ~ 0
 MOTOR_SENSE
 Text Label 7450 5325 0    50   ~ 0
-ENCODER_PULSE
+PULSE
 Text Notes 8850 5250 0    50   ~ 0
 +3V3
 Text Notes 8850 5750 0    50   ~ 0
@@ -1021,23 +1012,23 @@ DIGITAL INPUT (PG3)
 Text Notes 8850 5125 0    75   ~ 15
 NUCLEO PIN
 Wire Wire Line
-	10300 1575 10625 1575
+	10200 1575 10525 1575
 $Comp
 L power:PWR_FLAG #FLG0101
 U 1 1 5F1FD846
-P 9075 1500
-F 0 "#FLG0101" H 9075 1575 50  0001 C CNN
-F 1 "PWR_FLAG" H 8900 1650 50  0000 L CNN
-F 2 "" H 9075 1500 50  0001 C CNN
-F 3 "~" H 9075 1500 50  0001 C CNN
-	1    9075 1500
+P 8975 1500
+F 0 "#FLG0101" H 8975 1575 50  0001 C CNN
+F 1 "PWR_FLAG" H 8800 1650 50  0000 L CNN
+F 2 "" H 8975 1500 50  0001 C CNN
+F 3 "~" H 8975 1500 50  0001 C CNN
+	1    8975 1500
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	9075 1500 9075 1575
-Connection ~ 9075 1575
+	8975 1500 8975 1575
+Connection ~ 8975 1575
 Wire Wire Line
-	9075 1575 9275 1575
+	8975 1575 9175 1575
 $Comp
 L power:PWR_FLAG #FLG0102
 U 1 1 5F202748
@@ -1144,6 +1135,117 @@ Wire Wire Line
 	3850 1850 4400 1850
 Text Label 3975 1750 0    50   ~ 0
 MOTOR2
-Text Label 8900 1575 0    50   ~ 0
+Text Label 8800 1575 0    50   ~ 0
 VIN
+Wire Wire Line
+	4100 5875 4425 5875
+Connection ~ 4100 5875
+$Comp
+L mini-mapper:R R13
+U 1 1 5F20ECD7
+P 4425 5575
+F 0 "R13" H 4200 5525 50  0000 L CNN
+F 1 "1K" H 4250 5600 50  0000 L CNN
+F 2 "mini-mapper:R_0805" V 4355 5575 50  0001 C CNN
+F 3 "https://www.mouser.at/datasheet/2/427/dcrcwe3-1762152.pdf" H 4425 5575 50  0001 C CNN
+F 4 "CRCW0805240KFKEA" H 4425 5575 50  0001 C CNN "MPN"
+	1    4425 5575
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	4425 5725 4425 5875
+$Comp
+L power:+3V3 #PWR022
+U 1 1 5F213FEC
+P 4425 5225
+F 0 "#PWR022" H 4425 5075 50  0001 C CNN
+F 1 "+3V3" H 4440 5398 50  0000 C CNN
+F 2 "" H 4425 5225 50  0001 C CNN
+F 3 "" H 4425 5225 50  0001 C CNN
+	1    4425 5225
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4425 5225 4425 5425
+Wire Wire Line
+	4425 5875 5625 5875
+Connection ~ 4425 5875
+Wire Wire Line
+	2600 2000 2600 2575
+Wire Wire Line
+	3250 2300 3250 2425
+Wire Wire Line
+	3250 2425 3450 2425
+Connection ~ 3450 2425
+Wire Wire Line
+	3450 2425 3450 2750
+$Comp
+L mini-mapper:TestPoint TP2
+U 1 1 5F23C838
+P 2125 5525
+F 0 "TP2" H 2050 5825 50  0000 L CNN
+F 1 "GND" H 2050 5750 50  0000 L CNN
+F 2 "mini-mapper:TestPoint_Pad_2.0x2.0mm" H 2325 5525 50  0001 C CNN
+F 3 "n/a" H 2325 5525 50  0001 C CNN
+F 4 "n/a" H 2125 5525 50  0001 C CNN "MPN"
+	1    2125 5525
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR023
+U 1 1 5F23D1EE
+P 2125 5525
+F 0 "#PWR023" H 2125 5275 50  0001 C CNN
+F 1 "GND" H 2130 5352 50  0000 C CNN
+F 2 "" H 2125 5525 50  0001 C CNN
+F 3 "" H 2125 5525 50  0001 C CNN
+	1    2125 5525
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1900 5525 1900 5775
+$Comp
+L mini-mapper:TestPoint TP3
+U 1 1 5F252623
+P 10725 1375
+F 0 "TP3" H 10650 1675 50  0000 L CNN
+F 1 "VM" H 10675 1600 50  0000 L CNN
+F 2 "mini-mapper:TestPoint_Pad_2.0x2.0mm" H 10925 1375 50  0001 C CNN
+F 3 "n/a" H 10925 1375 50  0001 C CNN
+F 4 "n/a" H 10725 1375 50  0001 C CNN "MPN"
+	1    10725 1375
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	10725 1375 10725 1575
+Wire Wire Line
+	10725 1575 10525 1575
+Connection ~ 10525 1575
+$Comp
+L mini-mapper:TestPoint TP4
+U 1 1 5F2593AA
+P 10900 1375
+F 0 "TP4" H 10825 1675 50  0000 L CNN
+F 1 "GND" H 10825 1600 50  0000 L CNN
+F 2 "mini-mapper:TestPoint_Pad_2.0x2.0mm" H 11100 1375 50  0001 C CNN
+F 3 "n/a" H 11100 1375 50  0001 C CNN
+F 4 "n/a" H 10900 1375 50  0001 C CNN "MPN"
+	1    10900 1375
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR024
+U 1 1 5F2593B0
+P 10900 1375
+F 0 "#PWR024" H 10900 1125 50  0001 C CNN
+F 1 "GND" H 10905 1202 50  0000 C CNN
+F 2 "" H 10900 1375 50  0001 C CNN
+F 3 "" H 10900 1375 50  0001 C CNN
+	1    10900 1375
+	1    0    0    -1  
+$EndComp
+Text Notes 575  3725 0    50   ~ 0
+4.5 V x 250 mA = 1.125 W\n\nDriver power rating: 2.85 W (without heatsink)
+Text Notes 575  3400 0    50   Italic 10
+Driver power dissipation
 $EndSCHEMATC
