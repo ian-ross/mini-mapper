@@ -27,16 +27,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.1061539"
-     inkscape:cx="396.85039"
+     inkscape:cx="254.91716"
      inkscape:cy="561.25984"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1914"
-     inkscape:window-height="1050"
+     inkscape:window-width="1920"
+     inkscape:window-height="1031"
      inkscape:window-x="0"
-     inkscape:window-y="24"
-     inkscape:window-maximized="0" />
+     inkscape:window-y="25"
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -45,7 +45,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -190,12 +190,31 @@
        transform="rotate(168.75,105,148.5)"
        id="use966"
        style="stroke-width:0.13229167;stroke-miterlimit:4;stroke-dasharray:none" />
-    <circle
-       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.13229167;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       id="path968"
-       cx="105"
-       cy="148.5"
-       r="13.04449" />
+    <g
+       id="g4569"
+       transform="translate(136.07543,30.740187)">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.18542142;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         y="104.85252"
+         x="-43.982723"
+         height="25.814579"
+         width="25.814579"
+         id="rect35-6" />
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.17828983;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         y="105.34895"
+         x="-43.48629"
+         height="24.821711"
+         width="24.821711"
+         id="rect35" />
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.17115824;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         y="105.84539"
+         x="-42.989853"
+         height="23.828842"
+         width="23.828842"
+         id="rect35-3" />
+    </g>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.13229167;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
        d="M 96.20501,148.5 H 113.79499"
