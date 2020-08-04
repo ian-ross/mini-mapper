@@ -31,3 +31,8 @@ misc-doc
 *.log
 *.aux
 *.raw
+
+.clangd
+build/
+compile_commands.json
+version.h

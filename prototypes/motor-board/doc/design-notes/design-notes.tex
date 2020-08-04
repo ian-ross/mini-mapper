@@ -36,7 +36,7 @@ encoder setup, and to develop motor early control algorithms
 (particularly constant-speed PID control and soft start).
 
 
-\section*{Requirements}
+\section{Requirements}
 
 \begin{itemize}
   \item{Power single Dagu DG01D gearmotor (4.5\,V, 250\,mA max.);}
@@ -48,7 +48,7 @@ encoder setup, and to develop motor early control algorithms
 \end{itemize}
 
 
-\section*{Mechanical design}
+\section{Mechanical design}
 
 \begin{itemize}
   \item{Final PCB to be mounted on top chassis plate of robot: do this
@@ -76,7 +76,7 @@ encoder setup, and to develop motor early control algorithms
 \end{itemize}
 
 
-\section*{Component choices}
+\section{Component choices}
 
 \paragraph{Motor driver: Toshiba TB67H450FNG}
 
@@ -136,9 +136,9 @@ will allow these leads to connect from there to the sockets on the
 Nucleo board.
 
 
-\section*{Schematic capture}
+\section{Schematic capture}
 
-\subsection*{Motor driver}
+\subsection{Motor driver}
 
 \begin{itemize}
   \item{Power decoupling: following schematic in application note.}
@@ -160,7 +160,7 @@ Nucleo board.
     confusing).}
 \end{itemize}
 
-\subsection*{Motor encoder}
+\subsection{Motor encoder}
 
 \begin{itemize}
   \item{The LED side of this is simple: take $V_f$ and $I_f$ from the
@@ -188,7 +188,7 @@ Nucleo board.
     0.1\,V.}
 \end{itemize}
 
-\subsection*{Nucleo board interface}
+\subsection{Nucleo board interface}
 
 Connections:
 \begin{itemize}
@@ -215,7 +215,7 @@ jumper cables, since the connections we'll want are pretty spread out.
 
 \todo{Label connections with use and Nucleo pin names on silkscreen.}
 
-\subsection*{Power}
+\subsection{Power}
 
 Supplies:
 \begin{itemize}
@@ -255,14 +255,14 @@ We will use a 5\,V wall wart power supply with a TI TLV702 LDO
 regulator (which comes in a 4.5\,V version and can supply 300\,mA).
 
 
-\section*{Layout}
+\section{Layout}
 
 \todo{Mechanical board outline: photoencoder placement, mounting
   holes. Measure carefully directly from chassis plate: just motor
   axis, mounting holes and photointerrupter location.}
 
 
-\section*{Assembly}
+\section{Assembly}
 
 \paragraph{Mounting hardware}
 
@@ -271,32 +271,5 @@ to secure PCB.
 
 \paragraph{Power supply connections}
 
-
-\section*{Software}
-
-\subsection*{Motor driver}
-
-\begin{itemize}
-  \item{The Toshiba motor driver has an application note where they
-    seem to suggest using $f_{\mathrm{PWM}} = 30\,\mathrm{kHz}$.}
-  \item{For a 10-bit resolution PWM duty cycle, this gives a clock
-    frequency of $1024 \times 30\,\mathrm{kHz} = 30.72\,\mathrm{MHz}$.}
-  \item{The clock input on Nucleo board is 8\,MHz by default. To use
-    this, the STM32 should be set to run on the HSE clock (High-Speed
-    External) with external bypass (\texttt{RCC\_CR:HSEBYP} = 1,
-    \texttt{RCC\_CR:HSEON} = 1).}
-  \item{The main clock PLL should be set up with
-    \texttt{RCC\_PLLCFGR:PLLSRC} = 1 (HSE), \texttt{RCC\_PLLCFGR:PLLM}
-    = 4 (VCO input: 2\,MHz), \texttt{RCC\_PLLCFGR:PLLN} = 128 (VCO
-    output: 256\,MHz), \texttt{RCC\_PLLCFGR:PLLP} = 4 (PLL output:
-    64\,MHz), and enabled with \texttt{RCC\_CR:PLLON} = 1.}
-  \item{The APB prescalers need to be set to make the low-speed
-    prescaler give a frequency of less than 45\,MHz:
-    \texttt{RCC\_CFGR:PPRE1} = 4 (divide by 2 to give 32\,MHz).}
-  \item{The system clock needs to be set to use the PLL:
-    \texttt{RCC\_CFGR:SW} = 2.}
-  \item{Using a 64\,MHz system clock and a 11-bit resolution PWM duty
-    cycle yields a PWM frequency of 31.25\,kHz.}
-\end{itemize}
 
 \end{document}
