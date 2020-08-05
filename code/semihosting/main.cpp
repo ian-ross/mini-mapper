@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "bsp-nucleo.h"
 
 static void enable_caches(void);
@@ -85,7 +86,11 @@ int main(void)
   Pin LED1(LED1_PORT, LED1_PIN);
   LED1.Output(GPIO_SPEED_VERY_HIGH, GPIO_TYPE_PUSH_PULL, GPIO_PUPD_NONE);
 
+  int count = 0;
   while (1) {
+    if (count++ % 20 == 0) {
+      printf("COUNT: %d\n", count / 20);
+    }
     LED1.Toggle();
     delay_ms(100);
   }
