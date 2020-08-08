@@ -1,5 +1,4 @@
 #include "bsp-nucleo.h"
-#include "stm32f767xx.h"
 
 volatile uint32_t systick_count = 0;
 
