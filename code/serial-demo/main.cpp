@@ -1,16 +1,17 @@
 // TODO:
 //
 // - Transmit buffering + DMA
-// - Receive interrupt
-// - Receive buffering
 // - Line-based receive callback
 // - Error handling
+// - Good C++ API (singleton)
 
 #include <stdint.h>
 
 #include "bsp-nucleo.h"
 
 #include "pin.h"
+#include "stm32f767xx.h"
+#include "stm32f7xx.h"
 
 static void enable_caches(void);
 static void configure_clock(void);
@@ -18,8 +19,10 @@ static void configure_clock(void);
 static void serial_init();
 static void serial_out(char c);
 static void serial_print(const char *str);
-static void serial_print(int i);
+//static void serial_print(int i);
 template <typename T> static void serial_println(T val);
+static void serial_newln(void);
+static void serial_rx(void);
 
 
 // SysTick is set to run at 1 kHz.
@@ -54,12 +57,8 @@ int main(void)
   // Initialise serial port communications with ST-Link.
   serial_init();
 
-  int count = 0;
+  serial_print("> ");
   while (1) {
-    if (count++ % 20 == 0) {
-      serial_print("COUNT: ");
-      serial_println(count / 20);
-    }
     LED1.Toggle();
     delay_ms(100);
   }
@@ -136,6 +135,11 @@ template <typename T> static void serial_println(T val) {
   serial_out('\n');
 }
 
+static void serial_newln(void) {
+  serial_out('\r');
+  serial_out('\n');
+}
+
 static void serial_print(const char *str) {
   while (*str) {
     serial_out(*str);
@@ -143,18 +147,74 @@ static void serial_print(const char *str) {
   }
 }
 
-const int MAX_DIGITS = 16;
+// const int MAX_DIGITS = 16;
 
-static void serial_print(int i) {
-  char buff[MAX_DIGITS + 1];
-  buff[MAX_DIGITS] = '\0';
-  int idx = MAX_DIGITS;
-  do {
-    buff[--idx] = '0' + i % 10;
-    i /= 10;
-  } while (i > 0);
-  while (buff[idx])
-    serial_out(buff[idx++]);
+// static void serial_print(int i) {
+//   char buff[MAX_DIGITS + 1];
+//   buff[MAX_DIGITS] = '\0';
+//   int idx = MAX_DIGITS;
+//   do {
+//     buff[--idx] = '0' + i % 10;
+//     i /= 10;
+//   } while (i > 0);
+//   while (buff[idx])
+//     serial_out(buff[idx++]);
+// }
+
+extern "C" void USART3_IRQHandler(void) {
+  serial_rx();
+}
+
+const int RX_BUFSIZE = 80;
+
+static char rx_buff[RX_BUFSIZE];
+static int rx_pos = 0;
+
+static void serial_rx(void) {
+  // Overrun: clear buffer, return error.
+  if (USART3->ISR & USART_ISR_ORE) {
+    SET_BIT(USART3->ICR, USART_ICR_ORECF);
+    rx_pos = 0;
+    serial_println("!ORE");
+  }
+
+  // Byte received.
+  if (USART3->ISR & USART_ISR_RXNE) {
+    char c = USART3->RDR;
+
+    // Buffer overflow: clear buffer, return error.
+    if (rx_pos >= RX_BUFSIZE) {
+      rx_pos = 0;
+      serial_println("!RXOFLOW");
+      return;
+    }
+
+    switch (c) {
+    case '\r':
+      // Enter handling.
+      rx_buff[rx_pos++] = '\0';
+      serial_newln();
+      serial_print("RX: ");
+      serial_println(rx_buff);
+      rx_pos = 0;
+      serial_print("> ");
+      break;
+
+    case '\b':
+      // Backspace handling. This works with Minicom, don't know if it
+      // will work with other terminal programs.
+      if (rx_pos > 0) {
+        --rx_pos;
+        serial_print("\b \b");
+      }
+      break;
+
+    default:
+      // Normal case: add character to buffer and echo.
+      rx_buff[rx_pos++] = c;
+      serial_out(c);
+    }
+  }
 }
 
 static void serial_init() {
@@ -201,14 +261,17 @@ static void serial_init() {
   Pin TX(GPIOD, 8);
   Pin RX(GPIOD, 9);
 
-  // Pin configuration:
-  //  - Set PD8 to output, PD9 to input
-  //  - Set PD8 output type (PP, pull-up)
+  // Pin configuration: set PD8 to output (PP, pull-up), PD9 to input,
+  // set both to AF7.
   TX.Output(GPIO_SPEED_VERY_HIGH, GPIO_TYPE_PUSH_PULL, GPIO_PUPD_PULL_UP);
   RX.Input(GPIO_SPEED_VERY_HIGH);
-  //  - Set PD8 and PD9 to AF7
   TX.Alternate(7);
   RX.Alternate(7);
 
-  // TODO: INTERRUPTS AND/OR DMA
+  // Receive interrupt setup: enable USART3 interrupts in NVIC and
+  // enable RX interrupt (also handles overrun errors).
+  NVIC_EnableIRQ(USART3_IRQn);
+  SET_BIT(USART3->CR1, USART_CR1_RXNEIE);
+
+  // Transmit DMA setup.
 }
