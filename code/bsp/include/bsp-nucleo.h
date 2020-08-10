@@ -1,8 +1,7 @@
 #ifndef _BSP_NUCLEO_
 #define _BSP_NUCLEO_
 
-#include "stm32f767xx.h"
-#include "stm32f7xx.h"
+#include "bsp.h"
 
 // LED1: green
 #define LED1_PORT GPIOB

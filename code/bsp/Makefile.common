@@ -4,14 +4,26 @@ GCC_INSTALL_ROOT ?= /opt/gcc-arm-none-eabi/bin/
 GCC_PREFIX ?= arm-none-eabi
 BUILD ?= build/debug
 BSP=../bsp
+LIB=../lib
 
+
+# PROJECT INCLUDE DIRECTORIES
+
+INCS += \
+  $(LIB)/include \
+  $(BSP)/include \
 
 # CMSIS INCLUDE DIRECTORIES
 
 INCS += \
-  $(BSP)/include \
   $(BSP)/CMSIS/Core/include \
   $(BSP)/CMSIS/Device/ST/STM32F7xx/include
+
+# PROJECT LIBRARY FILES
+
+LIBSRCS += \
+	$(LIB)/src/pin.cpp
+LIBRARY=$(BUILD)/libmm.a
 
 
 # CMSIS STARTUP FILES
@@ -56,8 +68,9 @@ ASMFLAGS += $(COMMON_FLAGS) -g3
 
 # Linker flags
 LDFLAGS += -T$(LINKER_SCRIPT)
+LDFLAGS += -L$(BUILD)
 LDFLAGS += -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard
-LDFLAGS += -specs=nano.specs -lc -lm -lnosys -flto
+LDFLAGS += -specs=nano.specs -lmm -lc -lm -lnosys -flto
 LDFLAGS += -Wl,--gc-sections
 
 
@@ -90,6 +103,11 @@ OBJS1 = $(patsubst %.s,%.o,$(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(SRCS))))
 OBJS2 = $(patsubst ../../%,%,$(OBJS1))
 OBJS = $(addprefix $(BUILD)/$(TARGET)/,$(OBJS2))
 
+# Per-target object files derived from source paths.
+LIBOBJS1 = $(patsubst %.s,%.o,$(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(LIBSRCS))))
+LIBOBJS2 = $(patsubst ../../%,%,$(LIBOBJS1))
+LIBOBJS = $(addprefix $(BUILD)/$(TARGET)/,$(LIBOBJS2))
+
 # Per-target dependency files derived from source paths.
 DEPS1 = $(patsubst %.s,%.d,$(patsubst %.cpp,%.d,$(patsubst %.c,%.d,$(SRCS))))
 DEPS = $(addprefix $(BUILD)/$(TARGET)/,$(DEPS1))
@@ -97,7 +115,7 @@ DEPS = $(addprefix $(BUILD)/$(TARGET)/,$(DEPS1))
 
 # Link rule.
 
-$(BUILD)/$(TARGET).out: $(OBJS)
+$(BUILD)/$(TARGET).out: $(OBJS) $(LIBRARY)
 	$(info Linking target: $@)
 	@echo $^ $(LIB_FILES) > $(@:.out=.in)
 	@$(CC) $(LDFLAGS) @$(@:.out=.in) -Wl,-Map=$(@:.out=.map) -o $@
@@ -142,6 +160,12 @@ $(BUILD)/$(TARGET)/%.o: %.s
 	$(info Preparing: $(notdir $@))
 	@$(OBJCOPY) -O ihex $< $@
 
+
+# Support library.
+
+.PRECIOUS: $(LIBOBJS)
+
+$(LIBRARY): $(LIBRARY)($(LIBOBJS))
 
 
 # Utility rules.

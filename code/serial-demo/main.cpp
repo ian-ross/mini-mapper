@@ -1,7 +1,16 @@
-#include <stdio.h>
+// TODO:
+//
+// - Transmit buffering + DMA
+// - Receive interrupt
+// - Receive buffering
+// - Line-based receive callback
+// - Error handling
+
+#include <stdint.h>
+
 #include "bsp-nucleo.h"
-#include "stm32f767xx.h"
-#include "stm32f7xx.h"
+
+#include "pin.h"
 
 static void enable_caches(void);
 static void configure_clock(void);
@@ -12,68 +21,6 @@ static void serial_print(const char *str);
 static void serial_print(int i);
 template <typename T> static void serial_println(T val);
 
-enum GPIOSpeed {
-  GPIO_SPEED_LOW = 0,
-  GPIO_SPEED_MEDIUM = 1,
-  GPIO_SPEED_HIGH = 2,
-  GPIO_SPEED_VERY_HIGH = 3
-};
-
-enum GPIOOutputType {
-  GPIO_TYPE_PUSH_PULL = 0,
-  GPIO_TYPE_OPEN_DRAIN = 1
-};
-
-enum GPIOPUPD {
-  GPIO_PUPD_NONE = 0,
-  GPIO_PUPD_PULL_UP = 1,
-  GPIO_PUPD_PULL_DOWN = 2
-};
-
-class Pin {
-  private:
-  GPIO_TypeDef *port;
-  uint16_t pin;
-
-  public:
-  Pin(GPIO_TypeDef *port, uint16_t pin) : port(port), pin(pin) {
-    // Enable GPIO clock: AHB1ENR bits are one per port, starting from
-    // zero, and the port addresses are every 0x0400 starting at the
-    // base address.
-    uint32_t mask = 1 << (((uint32_t)port - AHB1PERIPH_BASE) / 0x0400UL);
-    RCC->AHB1ENR |= mask;
-  }
-
-  const GPIO_TypeDef *Port() { return port; }
-  const uint16_t PinMask() { return 1 << pin; }
-
-  void Output(GPIOSpeed speed, GPIOOutputType type, GPIOPUPD pupd);
-  void Input(GPIOSpeed speed);
-  void Alternate(uint8_t af);
-
-  void Set() { port->ODR |= PinMask(); }
-  void Reset() { port->ODR &= ~PinMask(); }
-  void Toggle() { port->ODR ^= PinMask(); }
-};
-
-void Pin::Output(GPIOSpeed speed, GPIOOutputType type, GPIOPUPD pupd) {
-  MODIFY_REG(port->OSPEEDR, 0x03 << (2 * pin), (int)speed << (2 * pin));
-  MODIFY_REG(port->OTYPER, 0x01 << pin, (int)type << pin);
-  MODIFY_REG(port->PUPDR, 0x03 << (2 * pin), (int)pupd << (2 * pin));
-  MODIFY_REG(port->MODER, 0x03 << (2 * pin), 0x01 << (2 * pin));
-}
-
-void Pin::Input(GPIOSpeed speed) {
-  MODIFY_REG(port->OSPEEDR, 0x03 << (2 * pin), (int)speed << (2 * pin));
-  MODIFY_REG(port->MODER, 0x03 << (2 * pin), 0x00 << (2 * pin));
-}
-
-void Pin::Alternate(uint8_t af) {
-  MODIFY_REG(port->MODER, 0x03 << (2 * pin), 0x02 << (2 * pin));
-  MODIFY_REG(port->AFR[pin / 8], 0x0F << 4 * (pin % 8), af << 4 * (pin % 8));
-  int wait = 0;
-  while (wait < 10) { ++wait; }
-}
 
 // SysTick is set to run at 1 kHz.
 

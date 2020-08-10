@@ -36,3 +36,4 @@ misc-doc
 build/
 compile_commands.json
 version.h
+*.a
