@@ -7,8 +7,7 @@
 
 #include <stdint.h>
 
-#include "bsp-nucleo.h"
-
+#include "bsp/nucleo.h"
 #include "pin.h"
 #include "stm32f767xx.h"
 #include "stm32f7xx.h"
@@ -17,13 +16,15 @@ static void enable_caches(void);
 static void configure_clock(void);
 
 static void serial_init();
-static void serial_out(char c);
+static void serial_rx(void);
+static void serial_tx(char c);
+
 static void serial_print(const char *str);
 //static void serial_print(int i);
 template <typename T> static void serial_println(T val);
-static void serial_newln(void);
-static void serial_rx(void);
-
+static volatile bool serial_flush_needed = false;
+static void serial_flush(void);
+static void serial_do_flush(void);
 
 // SysTick is set to run at 1 kHz.
 
@@ -36,7 +37,13 @@ extern "C" void SysTick_Handler(void) {
 void delay_ms(uint32_t ms)
 {
   systick_count = 0;
-  while (systick_count < ms) { __asm("nop"); }
+  while (systick_count < ms) {
+    __WFI();
+    if (serial_flush_needed) {
+      serial_flush_needed = false;
+      serial_do_flush();
+    }
+  }
 }
 
 int main(void)
@@ -58,6 +65,7 @@ int main(void)
   serial_init();
 
   serial_print("> ");
+  serial_do_flush();
   while (1) {
     LED1.Toggle();
     delay_ms(100);
@@ -124,25 +132,15 @@ static void configure_clock(void) {
   SystemCoreClockUpdate();
 }
 
-static void serial_out(char c) {
-  while (!(USART3->ISR & USART_ISR_TXE)) { __asm("nop"); }
-  USART3->TDR = c;
-}
-
 template <typename T> static void serial_println(T val) {
   serial_print(val);
-  serial_out('\r');
-  serial_out('\n');
-}
-
-static void serial_newln(void) {
-  serial_out('\r');
-  serial_out('\n');
+  serial_tx('\r');
+  serial_tx('\n');
 }
 
 static void serial_print(const char *str) {
   while (*str) {
-    serial_out(*str);
+    serial_tx(*str);
     ++str;
   }
 }
@@ -161,21 +159,119 @@ static void serial_print(const char *str) {
 //     serial_out(buff[idx++]);
 // }
 
+const int RX_BUFSIZE = 80;
+static char rx_buff[RX_BUFSIZE];
+static int rx_pos = 0;
+
+const int TX_BUFSIZE = 128;
+static char tx_buff1[TX_BUFSIZE], tx_buff2[TX_BUFSIZE];
+static char *tx_buffs[] = { tx_buff1, tx_buff2 };
+static int tx_buff_idx = 0;
+static char *tx_buff = tx_buffs[0];
+static int tx_size = 0;
+static volatile bool tx_sending = false;
+static bool tx_error = false;
+
+// USART3 is connected to the ST-Link on the STM32F767ZI Nucleo board.
+// USART3 is on DMA1, stream 3, channel 4.
+DMA_Stream_TypeDef *serial_dma = DMA1_Stream3;
+
 extern "C" void USART3_IRQHandler(void) {
   serial_rx();
 }
 
-const int RX_BUFSIZE = 80;
+extern "C" void DMA1_Stream3_IRQHandler(void) {
+  // Permit another flush.
+  tx_sending = false;
 
-static char rx_buff[RX_BUFSIZE];
-static int rx_pos = 0;
+  // Errors.
+  if (DMA1->LISR & DMA_LISR_TEIF3) {
+    tx_error = true;
+    SET_BIT(DMA1->LIFCR, DMA_LIFCR_CTEIF3);
+  }
+  if (DMA1->LISR & DMA_LISR_DMEIF3) {
+    tx_error = true;
+    SET_BIT(DMA1->LIFCR, DMA_LIFCR_CDMEIF3);
+  }
+
+  // Transfer complete.
+  if (DMA1->LISR & DMA_LISR_TCIF3) {
+    SET_BIT(DMA1->LIFCR, DMA_LIFCR_CTCIF3);
+  }
+}
+
+static void serial_flush(void) {
+  serial_flush_needed = true;
+}
+
+static void serial_do_flush(void) {
+  DMA_TypeDef *dma1 = DMA1;
+  (void)dma1;
+
+  if (tx_size == 0) return;
+  while (tx_sending) { __WFI(); }
+
+  tx_sending = true;
+
+  // Set DMA request to send tx_send_count bytes starting at tx_buff +
+  // tx_read_pos. (Following procedure in Section 8.3.18 of reference
+  // manual.)
+
+  // 1. If the stream is enabled, disable it by resetting the EN bit
+  //    in the DMA_SxCR register, then read this bit in order to
+  //    confirm that there is no ongoing stream operation.
+  CLEAR_BIT(serial_dma->CR, DMA_SxCR_EN);
+  while (READ_BIT(serial_dma->CR, DMA_SxCR_EN)) { __asm("nop"); }
+
+  // 3. Set the memory address in the DMA_SxMA0R register.
+  serial_dma->M0AR = (uint32_t)tx_buff;
+
+  // 4. Configure the total number of data items to be transferred in
+  //    the DMA_SxNDTR register.
+  serial_dma->NDTR = tx_size;
+
+  // Clear all interrupt pending flags.
+  SET_BIT(DMA1->LIFCR, DMA_LIFCR_CTCIF3);
+  SET_BIT(DMA1->LIFCR, DMA_LIFCR_CHTIF3);
+  SET_BIT(DMA1->LIFCR, DMA_LIFCR_CTEIF3);
+  SET_BIT(DMA1->LIFCR, DMA_LIFCR_CDMEIF3);
+
+  // Ensure all relevant interrupts are enabled.
+  SET_BIT(serial_dma->CR, DMA_SxCR_TCIE);
+
+  // 10. Activate the stream by setting the EN bit in the DMA_SxCR register.
+  SET_BIT(serial_dma->CR, DMA_SxCR_EN);
+
+  // Swap DMA buffers for writing.
+  tx_buff_idx = 1 - tx_buff_idx;
+  tx_buff = tx_buffs[tx_buff_idx];
+  tx_size = 0;
+}
+
+static void serial_tx(char c) {
+  // If we would overflow the TX buffer here, flush the current buffer
+  // to DMA and switch to the other.
+  if (tx_size >= TX_BUFSIZE) serial_flush();
+
+  // Buffer character.
+  tx_buff[tx_size++] = c;
+}
+
+static void serial_error(const char *msg) {
+  serial_println("");
+  serial_print("!");
+  serial_println(msg);
+  serial_print("> ");
+  serial_flush();
+}
 
 static void serial_rx(void) {
   // Overrun: clear buffer, return error.
   if (USART3->ISR & USART_ISR_ORE) {
     SET_BIT(USART3->ICR, USART_ICR_ORECF);
     rx_pos = 0;
-    serial_println("!ORE");
+    serial_error("ORE");
+    return;
   }
 
   // Byte received.
@@ -185,19 +281,20 @@ static void serial_rx(void) {
     // Buffer overflow: clear buffer, return error.
     if (rx_pos >= RX_BUFSIZE) {
       rx_pos = 0;
-      serial_println("!RXOFLOW");
+      serial_error("RXOFLOW");
       return;
     }
 
     switch (c) {
     case '\r':
       // Enter handling.
-      rx_buff[rx_pos++] = '\0';
-      serial_newln();
+      rx_buff[rx_pos] = '\0';
+      rx_pos = 0;
+      serial_println("");
       serial_print("RX: ");
       serial_println(rx_buff);
-      rx_pos = 0;
       serial_print("> ");
+      serial_flush();
       break;
 
     case '\b':
@@ -206,13 +303,15 @@ static void serial_rx(void) {
       if (rx_pos > 0) {
         --rx_pos;
         serial_print("\b \b");
+        serial_flush();
       }
       break;
 
     default:
       // Normal case: add character to buffer and echo.
       rx_buff[rx_pos++] = c;
-      serial_out(c);
+      serial_tx(c);
+      serial_flush();
     }
   }
 }
@@ -273,5 +372,70 @@ static void serial_init() {
   NVIC_EnableIRQ(USART3_IRQn);
   SET_BIT(USART3->CR1, USART_CR1_RXNEIE);
 
-  // Transmit DMA setup.
+  // Transmit DMA setup. (Following procedure in Section 8.3.18 of
+  // reference manual.)
+
+  // Enable DMA transmitter for UART.
+  SET_BIT(USART3->CR3, USART_CR3_DMAT);
+
+  // Enable clock for DMA1.
+  SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_DMA1EN);
+
+  // 2. Set the peripheral port register address in the DMA_SxPAR
+  //    register.
+  serial_dma->PAR = (uint32_t)&USART3->TDR;
+
+  // 5. Select the DMA channel (request) using CHSEL[3:0] in the
+  //    DMA_SxCR register.
+
+  MODIFY_REG(serial_dma->CR, DMA_SxCR_CHSEL_Msk, 0x04 << DMA_SxCR_CHSEL_Pos);
+
+  // DMA is flow controller.
+  CLEAR_BIT(serial_dma->CR, DMA_SxCR_PFCTRL);
+
+  // 7. Configure the stream priority using the PL[1:0] bits in the
+  //    DMA_SxCR register.
+
+  // Medium priority.
+  MODIFY_REG(serial_dma->CR, DMA_SxCR_PL_Msk, 0x02 << DMA_SxCR_PL_Pos);
+
+  // 8. Configure the FIFO usage (enable or disable, threshold in
+  //    transmission and reception).
+  CLEAR_BIT(serial_dma->FCR, DMA_SxFCR_DMDIS);            // No FIFO: direct mode.
+
+  // 9. Configure the data transfer direction, peripheral and memory
+  //    incremented/fixed mode, single or burst transactions,
+  //    peripheral and memory data widths, circular mode,
+  //    double-buffer mode and interrupts after half and/or full
+  //    transfer, and/or errors in the DMA_SxCR register.
+
+  // Memory-to-peripheral.
+  MODIFY_REG(serial_dma->CR, DMA_SxCR_DIR_Msk, 0x01 << DMA_SxCR_DIR_Pos);
+
+  // Increment memory, no increment peripheral.
+  SET_BIT(serial_dma->CR, DMA_SxCR_MINC);
+  CLEAR_BIT(serial_dma->CR, DMA_SxCR_PINC);
+
+  // No burst at either end.
+  MODIFY_REG(serial_dma->CR, DMA_SxCR_MBURST_Msk, 0x00 << DMA_SxCR_MBURST_Pos);
+  MODIFY_REG(serial_dma->CR, DMA_SxCR_PBURST_Msk, 0x00 << DMA_SxCR_PBURST_Pos);
+
+  // Byte size at both ends.
+  MODIFY_REG(serial_dma->CR, DMA_SxCR_MSIZE_Msk, 0x00 << DMA_SxCR_MSIZE_Pos);
+  MODIFY_REG(serial_dma->CR, DMA_SxCR_PSIZE_Msk, 0x00 << DMA_SxCR_PSIZE_Pos);
+
+  // No circular mode, no double buffering.
+  CLEAR_BIT(serial_dma->CR, DMA_SxCR_CIRC);
+  CLEAR_BIT(serial_dma->CR, DMA_SxCR_DBM);
+
+  // Transfer complete interrupt, no half-transfer interrupt, transfer
+  // error interrupt and direct mode error interrupt.
+  SET_BIT(serial_dma->CR, DMA_SxCR_TCIE);
+  CLEAR_BIT(serial_dma->CR, DMA_SxCR_HTIE);
+  SET_BIT(serial_dma->CR, DMA_SxCR_TEIE);
+  SET_BIT(serial_dma->CR, DMA_SxCR_DMEIE);
+
+  // Transmit DMA interrupt setup: enable DMA interrupts for DMA
+  // channel attached to USART3.
+  NVIC_EnableIRQ(DMA1_Stream3_IRQn);
 }
