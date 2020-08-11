@@ -12,12 +12,12 @@ LIB=../lib
 INCS += \
   $(LIB)/include \
   $(BSP)/include \
+  $(BSP)/include/cmsis
 
 # CMSIS INCLUDE DIRECTORIES
 
 INCS += \
-  $(BSP)/CMSIS/Core/include \
-  $(BSP)/CMSIS/Device/ST/STM32F7xx/include
+  $(BSP)/cmsis/include
 
 # PROJECT LIBRARY FILES
 

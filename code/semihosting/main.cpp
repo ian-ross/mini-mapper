@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "bsp-nucleo.h"
+#include "bsp/nucleo.h"
 
 static void enable_caches(void);
 static void configure_clock(void);

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "bsp.h"
+#include "bsp/generic.h"
 
 
 enum GPIOSpeed {
