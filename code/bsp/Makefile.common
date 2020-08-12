@@ -10,19 +10,20 @@ LIB=../lib
 # PROJECT INCLUDE DIRECTORIES
 
 INCS += \
-  $(LIB)/include \
-  $(BSP)/include \
-  $(BSP)/include/cmsis
+  $(LIB)
 
 # CMSIS INCLUDE DIRECTORIES
 
 INCS += \
-  $(BSP)/cmsis/include
+  $(BSP) \
+  $(BSP)/cmsis
 
 # PROJECT LIBRARY FILES
 
 LIBSRCS += \
-	$(LIB)/src/pin.cpp
+	$(LIB)/pin.cpp \
+	$(LIB)/setup.cpp \
+	$(LIB)/term.cpp
 LIBRARY=$(BUILD)/libmm.a
 
 
@@ -48,7 +49,7 @@ endif
 
 # Flags shared between tools.
 COMMON_FLAGS = -DSTM32F767xx -DHSE_VALUE=8000000
-COMMON_FLAGS += -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard
+COMMON_FLAGS += -mcpu=cortex-m7 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 COMMON_FLAGS += -Wall -Werror
 
 # Flags shared between C and C++.
@@ -69,10 +70,10 @@ ASMFLAGS += $(COMMON_FLAGS) -g3
 # Linker flags
 LDFLAGS += -T$(LINKER_SCRIPT)
 LDFLAGS += -L$(BUILD)
-LDFLAGS += -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard
-LDFLAGS += -specs=nano.specs -lmm -lc -lm -lnosys -flto
+LDFLAGS += -mcpu=cortex-m7 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard
+LDFLAGS += -specs=nano.specs -flto
 LDFLAGS += -Wl,--gc-sections
-
+LDLIBS=-lmm -lc -lm -lnosys -lsupc++
 
 # TOOLS
 
@@ -118,7 +119,7 @@ DEPS = $(addprefix $(BUILD)/$(TARGET)/,$(DEPS1))
 $(BUILD)/$(TARGET).out: $(OBJS) $(LIBRARY)
 	$(info Linking target: $@)
 	@echo $^ $(LIB_FILES) > $(@:.out=.in)
-	@$(CC) $(LDFLAGS) @$(@:.out=.in) -Wl,-Map=$(@:.out=.map) -o $@
+	$(CC) $(LDFLAGS) @$(@:.out=.in) -Wl,-Map=$(@:.out=.map) -o $@ $(LDLIBS)
 	@$(SIZE) $@
 
 
