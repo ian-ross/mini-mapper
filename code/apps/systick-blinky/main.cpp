@@ -21,7 +21,7 @@
 
 inline void wfe(void) { __WFE(); }
 
-Events::Manager<wfe> ev;
+Events::Manager ev(wfe);
 
 
 // Post an event on each SysTick. This is the pattern I'll follow for
@@ -41,7 +41,7 @@ extern "C" void SysTick_Handler(void) {
 // from event manager.
 
 class TickerToggler : public Events::Consumer {
-  public:
+public:
 
   // Which pin are we toggling? How many SysTick ticks between
   // toggles?
@@ -59,11 +59,12 @@ class TickerToggler : public Events::Consumer {
       pin.Toggle();
     }
 
-    // Mark that we consumed the event.
-    return true;
+    // Mark that we didn't consume the event, so other event consumers
+    // can use it too.
+    return false;
   }
 
-  private:
+private:
 
   Pin &pin;
   int toggle_ticks;

@@ -8,22 +8,20 @@
 #include "doctest/trompeloeil.hpp"
 
 class MockEventWaiter {
-  public:
+public:
+
   MockEventWaiter() {}
   void add_event(Events::Tag tag, uint32_t param = 0);
   static void wait_for_event(void);
 
-  private:
+private:
+
   static std::vector<Events::Event> pending;
 };
 
 class MockEventConsumer : public trompeloeil::mock_interface<Events::Consumer> {
-  public:
-  // bool dispatched = false;
-  // bool dispatch(const Events::Event &e) override {
-  //   dispatched = true;
-  //   return true;
-  // }
+public:
+
   IMPLEMENT_MOCK1(dispatch);
 };
 

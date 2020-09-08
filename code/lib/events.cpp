@@ -1,5 +1,65 @@
 #include "events.hpp"
 
+namespace Events {
+
+Manager::Manager(EventWaiter w) : waiter{w} {
+  queue.fill(Event{NO_EVENT, 0});
+  consumers.fill(nullptr);
+}
+
+void Manager::operator+=(Consumer &c) {
+  // TODO: ERROR CHECKING?
+  consumers[nconsumers++] = &c;
+  c.ev = this;
+}
+
+void Manager::post(Tag tag, uint32_t param) {
+  if (nevents >= QUEUE_SIZE) {
+    // TODO: ERROR CHECKING
+  }
+  queue[qpos].tag = tag;
+  queue[qpos].param = param;
+  qpos = (qpos + 1) % QUEUE_SIZE;
+  nevents++;
+}
+
+  // Process queued events one by one, trying to dispatch to each
+// consumer in turn. A consumer can "claim" the event by returning
+// `true` from its `dispatch` method.
+//
+// TODO: THIS COULD BE MADE MORE EFFICIENT, BUT IT'S GOOD ENOUGH FOR
+// NOW.
+
+void Manager::drain(void) {
+  while (nevents > 0) {
+    for (int i = 0; i < QUEUE_SIZE; ++i) {
+      if (queue[i].tag != NO_EVENT) {
+        for (auto consumer: consumers) {
+          if (consumer && consumer->dispatch(queue[i])) {
+            break;
+          }
+        }
+        queue[i].tag = NO_EVENT;
+        nevents--;
+      }
+    }
+  }
+}
+
+
+// Event loop: drain the event queue, wait for more events, repeat
+// forever.
+
+void Manager::loop(void) {
+  while (true) {
+    drain();
+    wait();
+  }
+}
+
+
+}
+
 //----------------------------------------------------------------------
 //
 //  TESTS
@@ -22,7 +82,7 @@ TEST_CASE("event manager") {
   using trompeloeil::_;
 
   MockEventWaiter waiter;
-  Events::Manager<MockEventWaiter::wait_for_event> ev;
+  Events::Manager ev(MockEventWaiter::wait_for_event);
   MockEventConsumer consumer;
   ev += consumer;
 

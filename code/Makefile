@@ -7,6 +7,9 @@ all: builddir build/testexe
 # top-level directory containing the mk, hw and lib directories.
 BASE=$(shell pwd)
 
+# Optimise for debug for Linux test builds.
+OPT=-g -Og
+
 # Linux and common build definitions.
 include $(BASE)/mk/linux.mk
 include $(BASE)/mk/common.mk
