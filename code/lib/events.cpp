@@ -1,12 +1,11 @@
 #include "events.hpp"
-#include "events_mock.hpp"
-
-
 
 //----------------------------------------------------------------------
 //
 //  TESTS
 //
+
+#ifdef TEST
 
 #include "doctest.h"
 #include "doctest/trompeloeil.hpp"
@@ -44,3 +43,5 @@ TEST_CASE("event manager") {
     CHECK(ev.pending_count() == 0);
   }
 }
+
+#endif

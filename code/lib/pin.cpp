@@ -1,7 +1,20 @@
 #include "pin.hpp"
 
+static void EnableClock(GPIO_TypeDef *port) {
+  // Enable GPIO clock: AHB1ENR bits are one per port, starting from
+  // zero, and the port addresses are every 0x0400 starting at the
+  // base address.
+  //
+  // ** Note that this relies on these things being laid out in memory
+  // ** the same way for Linux-side tests as on the STM32!!! See
+  // ** test/mocks/stm32f767xx_peripherals.c for the details of how
+  // ** this is done.
+  uint32_t mask = 1 << (((uintptr_t)port - (uintptr_t)AHB1PERIPH_BASE) / 0x0400UL);
+  RCC->AHB1ENR |= mask;
+}
+
 void Pin::Output(GPIOSpeed speed, GPIOOutputType type, GPIOPUPD pupd) const {
-  EnableClock();
+  EnableClock(port);
   MODIFY_REG(port->OSPEEDR, 0x03 << (2 * pin), (int)speed << (2 * pin));
   MODIFY_REG(port->OTYPER, 0x01 << pin, (int)type << pin);
   MODIFY_REG(port->PUPDR, 0x03 << (2 * pin), (int)pupd << (2 * pin));
@@ -9,17 +22,15 @@ void Pin::Output(GPIOSpeed speed, GPIOOutputType type, GPIOPUPD pupd) const {
 }
 
 void Pin::Input(GPIOSpeed speed) const {
-  EnableClock();
+  EnableClock(port);
   MODIFY_REG(port->OSPEEDR, 0x03 << (2 * pin), (int)speed << (2 * pin));
   MODIFY_REG(port->MODER, 0x03 << (2 * pin), 0x00 << (2 * pin));
 }
 
 void Pin::Alternate(GPIOAF af) const {
-  EnableClock();
+  EnableClock(port);
   MODIFY_REG(port->MODER, 0x03 << (2 * pin), 0x02 << (2 * pin));
   MODIFY_REG(port->AFR[pin / 8], 0x0F << 4 * (pin % 8), af << 4 * (pin % 8));
-  int wait = 0;
-  while (wait < 10) { ++wait; }
 }
 
 
@@ -27,6 +38,8 @@ void Pin::Alternate(GPIOAF af) const {
 //
 //  TESTS
 //
+
+#ifdef TEST
 
 #include "doctest.h"
 
@@ -74,3 +87,5 @@ TEST_CASE("GPIOs work") {
     CHECK((READ_BIT(GPIOA->ODR, 1 << 6) >> 6) == 0x00);
   }
 }
+
+#endif

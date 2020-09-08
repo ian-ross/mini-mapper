@@ -53,36 +53,40 @@ enum GPIOAF {
 // have a `const Pin` defined for each pin on the STM32F7xx).
 
 class Pin {
-  private:
-  GPIO_TypeDef *port;
-  uint16_t pin;
+public:
 
-  public:
   Pin(GPIO_TypeDef *port, uint16_t pin) : port(port), pin(pin) { }
-
-  void EnableClock() const {
-    // Enable GPIO clock: AHB1ENR bits are one per port, starting from
-    // zero, and the port addresses are every 0x0400 starting at the
-    // base address.
-    uint32_t mask = 1 << (((uintptr_t)port - (uintptr_t)AHB1PERIPH_BASE) / 0x0400UL);
-    RCC->AHB1ENR |= mask;
-  }
 
   const GPIO_TypeDef *Port() const { return port; }
   const uint16_t PinMask() const { return 1 << pin; }
 
+  // Set pin as GPIO output.
   void Output(GPIOSpeed speed, GPIOOutputType type, GPIOPUPD pupd) const;
+
+  // Set pin as GPIO input.
   void Input(GPIOSpeed speed) const;
+
+  // Set pin to alternate function.
   void Alternate(GPIOAF af) const;
 
+  // Outputs: set, reset, toggle.
   void Set() const { port->ODR |= PinMask(); }
   void Reset() const { port->ODR &= ~PinMask(); }
   void Toggle() const { port->ODR ^= PinMask(); }
+
+  // Inputs: read.
+  // TBD
+
+private:
+
+  GPIO_TypeDef *port;
+  uint16_t pin;
 };
 
 
-// The LQFP-144 STM32F767 has ports A-G, each with 16 pins and port H
-// with 2 pins.
+// The LQFP-144 STM32F767xx has ports A-G, each with 16 pins and port
+// H with 2 pins. Define all these as `const` so that the compiler can
+// elide them if they're not used.
 
 const Pin PA0(GPIOA, 0);
 const Pin PA1(GPIOA, 1);

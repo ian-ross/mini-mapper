@@ -1,45 +1,38 @@
-include mk/linux.mk
-include mk/common.mk
+# Top-level makefile for Linux-side test builds.
 
-LIBSRCS = $(wildcard lib/*.cpp)
+all: builddir build/testexe
+
+
+# BASE gives a reference directory for relative paths pointing to the
+# top-level directory containing the mk, hw and lib directories.
+BASE=$(shell pwd)
+
+# Linux and common build definitions.
+include $(BASE)/mk/linux.mk
+include $(BASE)/mk/common.mk
+
+# Test infrastructure sources: doctest main program, Linux-side fake
+# STM32F767xx peripheral CMSIS definitions, test mocks.
 TESTSRCS = \
   test/test_main.cpp \
   test/mocks/core_cm7_peripherals.c \
   test/mocks/stm32f767xx_peripherals.c \
   $(wildcard test/mocks/*_mock.cpp)
 
-LIBOBJS = $(addprefix build/,$(patsubst %.cpp,%.o,$(LIBSRCS)))
-TESTOBJS = $(addprefix build/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(TESTSRCS))))
+# Test object files: convert extensions, convert paths to point into
+# build directory.
+TESTOBJS1 = $(patsubst %.cpp,%.o,$(TESTSRCS))
+TESTOBJS2 = $(patsubst %.c,%.o,$(TESTOBJS1))
+TESTOBJS = $(addprefix build/,$(TESTOBJS2))
 
-
-all: builddir build/libmm.a build/testexe
-
-.PRECIOUS: $(LIBOBJS)
-
-build/libmm.a: build/libmm.a($(LIBOBJS))
-
+# Don't use libmm.a library here because doctest tests are defined by
+# test object initialisers, which won't get pulled in if they're only
+# defined in a library. Instead list the TESTOBJS explicitly.
 build/testexe: $(TESTOBJS) $(LIBOBJS)
-	$(info Linking: $@)
+	$(info ==> Linking: $@)
 	@$(CXX) -std=c++17 -o $@ $^ $(LDFLAGS)
 
+# Run doctest test program: output to console.
 .PHONY: test
 test: build/testexe
 	@build/testexe
-
-.PHONY: builddir
-builddir:
-	@$(MK) -p build
-
-.PHONY: clean
-clean:
-	@$(RM) -fr build compile_commands.json
-
-build/%.o: %.cpp
-	$(info Compiling file: $<)
-	@$(MK) -p $(dir $@)
-	@$(CXX) -std=c++17 -MP -MMD -c -o $@ $< $(CXXFLAGS) $(INC_PATHS)
-
-build/%.o: %.c
-	$(info Compiling file: $<)
-	@$(MK) -p $(dir $@)
-	@$(CC) -MP -MMD -c -o $@ $< $(CFLAGS) $(INC_PATHS)

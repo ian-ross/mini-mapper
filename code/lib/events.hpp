@@ -3,12 +3,14 @@
 
 #include <stdint.h>
 #include <array>
-#include <iostream>
 
 namespace Events {
 
+// All known event types.
+
 enum Tag {
   NO_EVENT = 0,
+  SYSTICK,
   USART_RX_CHAR,
   USART_RX_OVERRUN,
   USART_TX_DMA_DONE,
@@ -18,41 +20,77 @@ enum Tag {
   TERMINAL_CANNOT_FLUSH,
 };
 
+
+// Events have a tag and an optional parameter, which we keep as a
+// uint32_t for simplicity.
+
 struct Event {
   Tag tag;
   uint32_t param;
 };
 
+
+// A function that we can call to wait for events to come in. On the
+// STM32, this is basically an inline WFE instruction, while for
+// Linux-side testing, we have a function that can inject "fake"
+// hardware events.
+
 using EventWaiter = auto (*)(void) -> void;
 
-// EventWaiter RealWaiter = __WFE;
+
+// An event consumer: basically just an interface wrapping an event
+// dispatch function.
 
 class Consumer {
   public:
   virtual bool dispatch(const Event &e) = 0;
 };
 
+
+// An event manager: this has a fixed size event queue, a fixed size
+// set of event consumers and some way of waiting for new hardware
+// events to come in.
+
 template<EventWaiter W, int QUEUE_SIZE = 8, int MAX_CONSUMERS = 8>
 class Manager {
-  public:
+public:
 
   Manager();
+
+  // Add an event consumer.
   void operator+=(Consumer &c);
-  int consumer_count(void) const { return nconsumers; }
+
+  // Post a new event to the event queue.
   void post(Tag tag, uint32_t param = 0);
+
+  // Consumer and pending event counts.
+  int consumer_count(void) const { return nconsumers; }
   int pending_count(void) const { return nevents; }
+
+  // Dispatch all pending events.
   void drain(void);
+
+  // Wait for hardware events.
   void wait(void) { W(); }
+
+  // Repeatedly drain the event queue and wait for new events.
   void loop(void);
 
-  private:
+private:
 
+  // Use std::array for event queue and consumers list to have a fixed
+  // sized array that looks like an STL vector.
   std::array<Event, QUEUE_SIZE> queue;
-  int qpos = 0;
-  int nevents = 0;
   std::array<Consumer *, MAX_CONSUMERS> consumers;
+
+  // Current sizes of event queue and consumers list.
+  int nevents = 0;
   int nconsumers = 0;
+
+  // Next insert position for event queue.
+  int qpos = 0;
 };
+
 
 template<EventWaiter W, int QUEUE_SIZE, int MAX_CONSUMERS>
 Manager<W, QUEUE_SIZE, MAX_CONSUMERS>::Manager() {
@@ -60,21 +98,32 @@ Manager<W, QUEUE_SIZE, MAX_CONSUMERS>::Manager() {
   consumers.fill(nullptr);
 }
 
+
 template<EventWaiter W, int QUEUE_SIZE, int MAX_CONSUMERS>
 void Manager<W, QUEUE_SIZE, MAX_CONSUMERS>::operator+=(Consumer &c) {
+  // TODO: ERROR CHECKING?
   consumers[nconsumers++] = &c;
 }
+
 
 template<EventWaiter W, int QUEUE_SIZE, int MAX_CONSUMERS>
 void Manager<W, QUEUE_SIZE, MAX_CONSUMERS>::post(Tag tag, uint32_t param) {
   if (nevents >= QUEUE_SIZE) {
-    // ERROR!
+    // TODO: ERROR CHECKING
   }
   queue[qpos].tag = tag;
   queue[qpos].param = param;
   qpos = (qpos + 1) % QUEUE_SIZE;
   nevents++;
 }
+
+
+// Process queued events one by one, trying to dispatch to each
+// consumer in turn. A consumer can "claim" the event by returning
+// `true` from its `dispatch` method.
+//
+// TODO: THIS COULD BE MADE MORE EFFICIENT, BUT IT'S GOOD ENOUGH FOR
+// NOW.
 
 template<EventWaiter WAIT, int QUEUE_SIZE, int MAX_CONSUMERS>
 void Manager<WAIT, QUEUE_SIZE, MAX_CONSUMERS>::drain(void) {
@@ -92,6 +141,9 @@ void Manager<WAIT, QUEUE_SIZE, MAX_CONSUMERS>::drain(void) {
     }
   }
 }
+
+// Event loop: drain the event queue, wait for more events, repeat
+// forever.
 
 template<EventWaiter WAIT, int QUEUE_SIZE, int MAX_CONSUMERS>
 void Manager<WAIT, QUEUE_SIZE, MAX_CONSUMERS>::loop(void) {

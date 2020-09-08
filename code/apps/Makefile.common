@@ -1,0 +1,22 @@
+# Common build rules for application cross-compilation builds.
+
+# BASE gives a reference directory for relative paths pointing to the
+# top-level directory containing the mk, hw and lib directories.
+BASE=../..
+
+# Optimise for size on STM32 platform.
+OPT=-Os
+
+# Common STM32 hardware setup sources: cache and clock configuration
+# and startup code.
+SRCS += \
+  $(BASE)/hw/setup.cpp \
+  $(BASE)/hw/system_stm32f7xx.c \
+  $(BASE)/hw/startup_stm32f767xx.s
+
+# Build library and binary targets.
+all: builddir build/libmm.a build/$(TARGET).bin build/$(TARGET).hex
+
+# Delegate to common rules.
+include $(BASE)/mk/cross.mk
+include $(BASE)/mk/common.mk

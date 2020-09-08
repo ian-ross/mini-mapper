@@ -5,3 +5,4 @@ clang
 -Ihw
 -Ilib
 -DSTM32F767xx
+-DTEST

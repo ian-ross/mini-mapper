@@ -1,21 +1,34 @@
+# Build definitions for application cross-compilation builds.
+
+# Toolchain definitions.
+GCC_PREFIX=arm-none-eabi
+CC      := $(GCC_PREFIX)-gcc
+CXX     := $(GCC_PREFIX)-c++
+AS      := $(GCC_PREFIX)-as
+AR      := $(GCC_PREFIX)-ar
+LD      := $(GCC_PREFIX)-ld
+NM      := $(GCC_PREFIX)-nm
+OBJDUMP := $(GCC_PREFIX)-objdump
+OBJCOPY := $(GCC_PREFIX)-objcopy
+SIZE    := $(GCC_PREFIX)-size
+STRIP   := $(GCC_PREFIX)-strip
+
+# Common ARM platform compilation flags.
 COMMON_FLAGS += -mcpu=cortex-m7
 COMMON_FLAGS += -mthumb -mabi=aapcs
 COMMON_FLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 
+# Include path for STM32 and ARM Cortex-M7 CMSIS definitions.
+INCS += $(BASE)/hw/peripherals
+
+# Linker script for STM32F767ZIx on Nucleo board.
 LINKER_SCRIPT = STM32F767ZITx_FLASH.ld
 
-GCC_PREFIX=arm-none-eabi
+# Link flags: pick up library from build directory, linker script from
+# hw directory, minimal library support.
+LDFLAGS += -Lbuild -L$(BASE)/hw -T$(LINKER_SCRIPT)
+LDFLAGS += -specs=nosys.specs
+LDFLAGS += -Wl,--gc-sections
 
-CC      := $(GCC_PREFIX)-gcc
-CXX     := $(GNU_PREFIX)-c++
-AS      := $(GNU_PREFIX)-as
-AR      := $(GNU_PREFIX)-ar
-LD      := $(GNU_PREFIX)-ld
-NM      := $(GNU_PREFIX)-nm
-OBJDUMP := $(GNU_PREFIX)-objdump
-OBJCOPY := $(GNU_PREFIX)-objcopy
-SIZE    := $(GNU_PREFIX)-size
-STRIP   := $(GNU_PREFIX)-strip
-
-LDFLAGS += --specs=nosys.specs
-LDFLAGS += -Lhw -T$(LINKER_SCRIPT)
+# Link libraries: application library plus minimal C++ support.
+LDLIBS=-lmm -lc -lm -lnosys -lsupc++

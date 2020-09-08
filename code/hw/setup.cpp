@@ -63,18 +63,3 @@ void configure_clock(void) {
   // Update CMSIS system core clock.
   SystemCoreClockUpdate();
 }
-
-// SysTick is set to run at 1 kHz.
-volatile uint32_t systick_count = 0;
-
-extern "C" void SysTick_Handler(void) { ++systick_count; }
-
-// Delay with idle function.
-void delay_ms(uint32_t ms, IdleFn idle)
-{
-  systick_count = 0;
-  while (systick_count < ms) {
-    __WFI();
-    idle();
-  }
-}
