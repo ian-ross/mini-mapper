@@ -1,0 +1,7 @@
+clang
+%c -std=c11
+%cpp -std=c++17
+-Itest/include
+-Ihw
+-Ilib
+-DSTM32F767xx

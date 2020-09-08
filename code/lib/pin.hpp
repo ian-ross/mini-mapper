@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "bsp/generic.h"
+#include "bsp-generic.h"
 
 
 // GPIO pin speed settings.
@@ -33,6 +33,19 @@ enum GPIOPUPD {
 };
 
 
+// GPIO alternate functions.
+
+enum GPIOAF {
+  GPIO_AF_1 = 1,
+  GPIO_AF_2,
+  GPIO_AF_3,
+  GPIO_AF_4,
+  GPIO_AF_5,
+  GPIO_AF_6,
+  GPIO_AF_7,
+};
+
+
 // Abstraction of a GPIO pin. This just carries the I/O port and pin
 // number around together and provides convenience methods for setting
 // up pin configurations. All methods are defined as `const` because
@@ -51,7 +64,7 @@ class Pin {
     // Enable GPIO clock: AHB1ENR bits are one per port, starting from
     // zero, and the port addresses are every 0x0400 starting at the
     // base address.
-    uint32_t mask = 1 << (((uint32_t)port - AHB1PERIPH_BASE) / 0x0400UL);
+    uint32_t mask = 1 << (((uintptr_t)port - (uintptr_t)AHB1PERIPH_BASE) / 0x0400UL);
     RCC->AHB1ENR |= mask;
   }
 
@@ -60,7 +73,7 @@ class Pin {
 
   void Output(GPIOSpeed speed, GPIOOutputType type, GPIOPUPD pupd) const;
   void Input(GPIOSpeed speed) const;
-  void Alternate(uint8_t af) const;
+  void Alternate(GPIOAF af) const;
 
   void Set() const { port->ODR |= PinMask(); }
   void Reset() const { port->ODR &= ~PinMask(); }
