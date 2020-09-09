@@ -34,10 +34,15 @@ void Manager::drain(void) {
   while (nevents > 0) {
     for (int i = 0; i < QUEUE_SIZE; ++i) {
       if (queue[i].tag != NO_EVENT) {
+        bool consumed = false;
         for (auto consumer: consumers) {
           if (consumer && consumer->dispatch(queue[i])) {
+            consumed = true;
             break;
           }
+        }
+        if (!consumed) {
+          // TODO: ERROR -- EVENT NOT CONSUMED
         }
         queue[i].tag = NO_EVENT;
         nevents--;

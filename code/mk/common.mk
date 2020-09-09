@@ -22,7 +22,7 @@ COMMON_CFLAGS = \
 
 # Add common flags and include paths to tool-specific flags.
 CFLAGS += $(OPT) $(COMMON_FLAGS) $(COMMON_CFLAGS) $(INC_FLAGS)
-CXXFLAGS += $(OPT) $(COMMON_FLAGS) $(COMMON_CFLAGS) $(INC_FLAGS)
+CXXFLAGS += $(OPT) $(COMMON_FLAGS) $(COMMON_CFLAGS) $(INC_FLAGS) -fno-exceptions -fno-rtti
 LDFLAGS += $(COMMON_FLAGS)
 
 # Library sources: all C++.

@@ -4,8 +4,10 @@
 # top-level directory containing the mk, hw and lib directories.
 BASE=../..
 
-# Optimise for size on STM32 platform.
-OPT=-Os
+# Optimise for size on STM32 platform and use link-time optimisation.
+OPT=-Os -flto
+LDFLAGS += -flto
+#OPT=-g -Og
 
 # Common STM32 hardware setup sources: cache and clock configuration
 # and startup code.

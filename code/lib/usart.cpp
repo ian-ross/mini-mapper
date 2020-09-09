@@ -332,15 +332,11 @@ static IRQn_Type dma_irqn(int idma, int istream) {
 //  TESTS
 //
 
-//#ifdef TEST
+#ifdef TEST
 
 #include "doctest.h"
 #include "doctest/trompeloeil.hpp"
 #include "events_mock.hpp"
-
-// TEST LIST
-//
-// - SysTick triggers DMA TX
 
 TEST_CASE("USART") {
   using trompeloeil::_;
@@ -384,4 +380,4 @@ TEST_CASE("USART") {
   }
 }
 
-//#endif
+#endif
