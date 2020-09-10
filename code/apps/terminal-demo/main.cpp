@@ -1,4 +1,4 @@
-// Simple SysTick-driven USART demonstration.
+// Simple terminal demonstrator.
 
 // Hardware includes: Nucleo board BSP and setup functions.
 #include "bsp-nucleo.h"
@@ -8,6 +8,7 @@
 #include "events.hpp"
 #include "pin.hpp"
 #include "usart.hpp"
+#include "terminal.hpp"
 
 
 inline void wfe(void) { __WFE(); }
@@ -16,18 +17,21 @@ Events::Manager ev(wfe);
 
 USART usart3(3, PD8, GPIO_AF_7, PD9, GPIO_AF_7, DMAChannel { 1, 3, 4 });
 
+Terminal terminal(usart3);
+
 extern "C" void USART3_IRQHandler(void) { usart3.rx_irq(); }
 extern "C" void DMA1_Stream3_IRQHandler(void) { usart3.tx_dma_irq(); }
 extern "C" void SysTick_Handler(void) { ev.post(Events::SYSTICK); }
 
 
-// Write a message to USART every second (measured by SysTick), and
-// write additional messages echoing characters received on USART.
+// Write a message to terminal every second (measured by SysTick), and
+// write additional messages echoing input lines collected by the
+// terminal.
 
-class TickerWriter : public Events::Consumer {
+class TerminalDemo : public Events::Consumer {
 public:
 
-  TickerWriter() : Events::Consumer("TickerWriter") { }
+  TerminalDemo() : Events::Consumer("TerminalDemo") { }
 
   // Event dispatch...
   bool dispatch(const Events::Event &e) {
@@ -39,8 +43,8 @@ public:
       }
       return false;
 
-    case Events::USART_RX_CHAR:
-      write_rx_message(e.param);
+    case Events::TERMINAL_LINE_RECEIVED:
+      process_line((TerminalRXBuffer)e.param);
       return true;
 
     default:
@@ -51,45 +55,34 @@ public:
 private:
 
   void write_tick_message(int c);
-  void write_rx_message(char c);
+  void process_line(TerminalRXBuffer buff);
 
   int tick_counter = 0;
   int count = 0;
 };
 
-const int MAX_DIGITS = 16;
-char buff[MAX_DIGITS + 1];
-
-void TickerWriter::write_tick_message(int c) {
-  for (auto ch: "TICK: ") usart3.tx(ch);
-  buff[MAX_DIGITS] = '\0';
-  int idx = MAX_DIGITS;
-  do {
-    buff[--idx] = '0' + c % 10;
-    c /= 10;
-  } while (c > 0);
-  while (buff[idx])
-    usart3.tx(buff[idx++]);
-  for (auto ch: "\r\n") usart3.tx(ch);
-  usart3.flush();
+void TerminalDemo::write_tick_message(int c) {
+  terminal.print("TICK: ");
+  terminal.println(c);
 }
 
-void TickerWriter::write_rx_message(char c) {
-  for (auto ch: "RX: '") usart3.tx(ch);
-  usart3.tx(c);
-  for (auto ch: "'\r\n") usart3.tx(ch);
-  usart3.flush();
+void TerminalDemo::process_line(TerminalRXBuffer buff) {
+  terminal.print("RX: ");
+  terminal.println(terminal.buffer(buff));
+  mgr->post(Events::TERMINAL_LINE_PROCESSED);
 }
 
-TickerWriter ticker;
+TerminalDemo terminal_demo;
 
 int main(void)
 {
   enable_caches();
   configure_clock();
   SysTick_Config(SystemCoreClock / 1000);
+  terminal.set_interactive(true);
 
-  ev += ticker;
   ev += usart3;
+  ev += terminal;
+  ev += terminal_demo;
   ev.loop();
 }

@@ -45,7 +45,8 @@ public:
 
   // Which pin are we toggling? How many SysTick ticks between
   // toggles?
-  TickerToggler(Pin &p, int t) : pin{p}, toggle_ticks{t} { }
+  TickerToggler(Pin &p, int t) :
+    Events::Consumer("TickerToggler"), pin{p}, toggle_ticks{t} { }
 
   // Event dispatch...
   bool dispatch(const Events::Event &e) {

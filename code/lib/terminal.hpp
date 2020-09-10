@@ -38,7 +38,7 @@
 //  - No distinction is made between unsolicited output and response
 //    output.
 
-enum TERMINAL_RX_BUFFER {
+enum TerminalRXBuffer {
   TERMINAL_BUFFER_0 = 0,
   TERMINAL_BUFFER_1
 };
@@ -55,7 +55,7 @@ public:
   void set_interactive(bool inter);
 
   // Buffer access.
-  const char *buffer(TERMINAL_RX_BUFFER i) { return rx_buffs[i]; }
+  const char *buffer(TerminalRXBuffer i) { return rx_buffs[i].data(); }
 
   // I/O functions.
   void print(const char *str);
@@ -86,12 +86,11 @@ private:
   // non-active buffer is "loaned out" for processing of a complete
   // input line.
   static const int RX_BUFSIZE = 80;
-  char rx_buff1[RX_BUFSIZE], rx_buff2[RX_BUFSIZE];
-  char *rx_buffs[2] = {rx_buff1, rx_buff2};
+  std::array<char, RX_BUFSIZE> rx_buffs[2];
   int rx_pos = 0;
   bool rx_other_buffer_on_loan = false;
-  char *rx_buff = rx_buffs[0];
-  TERMINAL_RX_BUFFER rx_buff_idx = TERMINAL_BUFFER_0;
+  std::array<char, RX_BUFSIZE> *rx_buff = &rx_buffs[0];
+  TerminalRXBuffer rx_buff_idx = TERMINAL_BUFFER_0;
 
   char tx_buff[USART_TX_BUFSIZE];
   int tx_size = 0;
@@ -110,6 +109,7 @@ template<typename USART>
 template<typename T> void Terminal<USART>::println(T val) {
   print(val);
   tx('\r');
+  tx('\n');
   flush();
 }
 
@@ -138,6 +138,7 @@ void Terminal<USART>::print(int i) {
 template<typename USART>
 void Terminal<USART>::error(const char *msg) {
   tx('\r');
+  tx('\n');
   print("!");
   println(msg);
 }
@@ -182,19 +183,22 @@ void Terminal<USART>::process_rx_char(char ch) {
     // End of line signalled just by carriage return...
     if (interactive) {
       usart.tx('\r');
+      usart.tx('\n');
       usart.flush();
     }
 
     // Terminate line and post "line received" event with indicator of
     // which buffer the line is in.
-    rx_buff[rx_pos] = '\0';
+    (*rx_buff)[rx_pos] = '\0';
     mgr->post(Events::TERMINAL_LINE_RECEIVED, rx_buff_idx);
 
     // Switch RX buffers and mark that the other buffer is in use for
     // line processing.
     rx_buff_idx = rx_buff_idx == TERMINAL_BUFFER_0 ?
       TERMINAL_BUFFER_1 : TERMINAL_BUFFER_0;
-    rx_buff = rx_buffs[rx_buff_idx];
+    rx_buff = &rx_buffs[rx_buff_idx];
+    rx_buff->fill('\0');
+    rx_pos = 0;
     rx_other_buffer_on_loan = true;
     state = PROCESSING;
 
@@ -211,7 +215,7 @@ void Terminal<USART>::process_rx_char(char ch) {
     // The size limit here is to leave space for the string
     // terminating null at the end of line.
     if (rx_pos < RX_BUFSIZE - 1) {
-      rx_buff[rx_pos++] = ch;
+      (*rx_buff)[rx_pos++] = ch;
       // In interactive mode, echo the received character.
       if (interactive) {
         usart.tx(ch);
@@ -227,14 +231,18 @@ void Terminal<USART>::process_rx_char(char ch) {
 }
 
 template <typename USART> void Terminal<USART>::erase_input(void) {
-  for (int i = 0; i < rx_pos + 2; ++i) usart.tx('\b');
+  for (int i = 0; i < rx_pos + 2; ++i) {
+    usart.tx('\b');
+    usart.tx(' ');
+    usart.tx('\b');
+  }
   usart.flush();
 }
 
 template <typename USART> void Terminal<USART>::redraw_input(void) {
   usart.tx('>');
   usart.tx(' ');
-  for (int i = 0; i < rx_pos; ++i) usart.tx(rx_buff[i]);
+  for (int i = 0; i < rx_pos; ++i) usart.tx((*rx_buff)[i]);
   usart.flush();
 }
 

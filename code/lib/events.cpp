@@ -1,11 +1,8 @@
 #include "events.hpp"
 #ifdef TEST
 #include <iostream>
-
-#define DEBUG if (debug)
-#else
-#define DEBUG if (0)
 #endif
+
 
 namespace Events {
 
@@ -21,10 +18,12 @@ void Manager::operator+=(Consumer &c) {
 }
 
 void Manager::post(Tag tag, uint32_t param) {
-  DEBUG {
+#ifdef TEST
+  if (debug) {
     std::cout << "Events::Manager::post tag=" << tag << "  param=" << param
               << std::endl;
   }
+#endif
 
   if (nevents >= QUEUE_SIZE) {
     // TODO: ERROR CHECKING
@@ -43,21 +42,27 @@ void Manager::post(Tag tag, uint32_t param) {
 // NOW.
 
 void Manager::drain(void) {
-  DEBUG {
+#ifdef TEST
+  if (debug) {
     std::cout << "Events::Manager::drain  nevents=" << nevents << std::endl;
   }
+#endif
   while (nevents > 0) {
     for (int i = 0; i < QUEUE_SIZE; ++i) {
       if (queue[i].tag != NO_EVENT) {
-        DEBUG {
+#ifdef TEST
+        if (debug) {
           std::cout << "  i=" << i << " tag=" << queue[i].tag << std::endl;
         }
+#endif
         bool consumed = false;
         for (int j = 0; !consumed && j < nconsumers; ++j) {
           if (consumers[j]) {
-            DEBUG {
+#ifdef TEST
+            if (debug) {
               std::cout << "  Try " << consumers[j]->name() << std::endl;
             }
+#endif
             if (consumers[j]->dispatch(queue[i])) {
               consumed = true;
             }

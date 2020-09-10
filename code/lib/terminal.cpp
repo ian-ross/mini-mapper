@@ -64,7 +64,7 @@ TEST_CASE("Terminal") {
     REQUIRE_CALL(usart, flush());
     terminal.print("val=");
     terminal.println(64);
-    REQUIRE(check == "val=64\r");
+    REQUIRE(check == "val=64\r\n");
   }
 
   SUBCASE("non-interactive printing (error)") {
@@ -72,7 +72,7 @@ TEST_CASE("Terminal") {
     ALLOW_CALL(usart, tx(_)).LR_SIDE_EFFECT(check += _1);
     REQUIRE_CALL(usart, flush());
     terminal.error("UROR");
-    REQUIRE(check == "\r!UROR\r");
+    REQUIRE(check == "\r\n!UROR\r\n");
   }
 
   SUBCASE("initial prompt in interactive mode") {
@@ -126,7 +126,7 @@ TEST_CASE("Terminal") {
     CHECK(strcmp(terminal.buffer(TERMINAL_BUFFER_0), "test") == 0);
 
     // Input should be echoed (and prompt displayed).
-    CHECK(check == "> test\r");
+    CHECK(check == "> test\r\n");
   }
 
   SUBCASE("backspace handled (interactive)") {
@@ -150,7 +150,7 @@ TEST_CASE("Terminal") {
     CHECK(strcmp(terminal.buffer(TERMINAL_BUFFER_0), "test") == 0);
 
     // Input should be echoed including backspace (and prompt displayed).
-    CHECK(check == "> tex\b \bst\r");
+    CHECK(check == "> tex\b \bst\r\n");
   }
 
   SUBCASE("response output and prompt (interactive)") {
@@ -173,7 +173,7 @@ TEST_CASE("Terminal") {
     CHECK(ev.pending_count() == 0);
 
     // Echoed input, command response and prompts.
-    CHECK(check == "> cmd\rOK\r> ");
+    CHECK(check == "> cmd\r\nOK\r\n> ");
   }
 
   SUBCASE("unsolicited output, input line erase and redraw (interactive)") {
@@ -202,7 +202,7 @@ TEST_CASE("Terminal") {
 
     // Echoed input, unsolicited output with line erase and redraw,
     // command response and prompts.
-    CHECK(check == "> cm\b\b\b\bunsolicited\r> cmd\rOK\r> ");
+    CHECK(check == "> cm\b \b\b \b\b \b\b \bunsolicited\r\n> cmd\r\nOK\r\n> ");
   }
 }
 
