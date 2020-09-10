@@ -17,6 +17,7 @@ enum Tag {
   USART_TX_ERROR,
   USART_TX_OVERFLOW,
   TERMINAL_LINE_RECEIVED,
+  TERMINAL_LINE_PROCESSED,
   TERMINAL_RX_OVERFLOW,
   TERMINAL_CANNOT_FLUSH,
 };
@@ -28,6 +29,8 @@ enum Tag {
 struct Event {
   Tag tag;
   uint32_t param;
+
+  bool operator==(const Event &other) { return tag == other.tag && param == other.param; }
 };
 
 
@@ -50,6 +53,8 @@ const int MAX_CONSUMERS = 8;
 
 class Manager {
 public:
+
+  bool debug = false;
 
   Manager(EventWaiter w);
 
@@ -97,14 +102,16 @@ private:
 class Consumer {
 public:
 
-  friend class Manager;
+  Consumer(const char *n) : n{n} {}
+  const char *name(void) const { return n; }
 
-  Manager &mgr(void) { return *ev; }
+  friend class Manager;
   virtual bool dispatch(const Event &e) = 0;
 
-private:
+protected:
 
-  Manager *ev;
+  Manager *mgr;
+  const char *n;
 };
 
 }

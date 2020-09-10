@@ -1,4 +1,11 @@
 #include "events.hpp"
+#ifdef TEST
+#include <iostream>
+
+#define DEBUG if (debug)
+#else
+#define DEBUG if (0)
+#endif
 
 namespace Events {
 
@@ -10,10 +17,15 @@ Manager::Manager(EventWaiter w) : waiter{w} {
 void Manager::operator+=(Consumer &c) {
   // TODO: ERROR CHECKING?
   consumers[nconsumers++] = &c;
-  c.ev = this;
+  c.mgr = this;
 }
 
 void Manager::post(Tag tag, uint32_t param) {
+  DEBUG {
+    std::cout << "Events::Manager::post tag=" << tag << "  param=" << param
+              << std::endl;
+  }
+
   if (nevents >= QUEUE_SIZE) {
     // TODO: ERROR CHECKING
   }
@@ -31,14 +43,24 @@ void Manager::post(Tag tag, uint32_t param) {
 // NOW.
 
 void Manager::drain(void) {
+  DEBUG {
+    std::cout << "Events::Manager::drain  nevents=" << nevents << std::endl;
+  }
   while (nevents > 0) {
     for (int i = 0; i < QUEUE_SIZE; ++i) {
       if (queue[i].tag != NO_EVENT) {
+        DEBUG {
+          std::cout << "  i=" << i << " tag=" << queue[i].tag << std::endl;
+        }
         bool consumed = false;
-        for (auto consumer: consumers) {
-          if (consumer && consumer->dispatch(queue[i])) {
-            consumed = true;
-            break;
+        for (int j = 0; !consumed && j < nconsumers; ++j) {
+          if (consumers[j]) {
+            DEBUG {
+              std::cout << "  Try " << consumers[j]->name() << std::endl;
+            }
+            if (consumers[j]->dispatch(queue[i])) {
+              consumed = true;
+            }
           }
         }
         if (!consumed) {
@@ -83,7 +105,7 @@ namespace trompeloeil {
   }
 }
 
-TEST_CASE("event manager") {
+TEST_CASE("Event management") {
   using trompeloeil::_;
 
   MockEventWaiter waiter;

@@ -43,7 +43,7 @@ void Pin::Alternate(GPIOAF af) const {
 
 #include "doctest.h"
 
-TEST_CASE("GPIOs work") {
+TEST_CASE("GPIO abstraction") {
   init_peripheral_clocks();
   init_mock_gpios();
 

@@ -13,6 +13,7 @@ USART::USART(uint8_t iusart,
              const Pin &tx, GPIOAF tx_af,
              const Pin &rx, GPIOAF rx_af,
              const DMAChannel &dma_chan) :
+  Events::Consumer("USART"),
   usart(usart_base(iusart)), dma(usart_dma_stream(iusart))
 {
   volatile uint32_t &apbenr_reg = RCC->APB1ENR;
@@ -146,9 +147,9 @@ USART::USART(uint8_t iusart,
 
 void USART::tx(char c) {
   // Buffer overflow: clear buffer, post error.
-  if (tx_size >= TX_BUFSIZE) {
+  if (tx_size >= USART_TX_BUFSIZE) {
     tx_size = 0;
-    mgr().post(Events::USART_TX_OVERFLOW);
+    mgr->post(Events::USART_TX_OVERFLOW);
     return;
   }
 
@@ -221,14 +222,14 @@ void USART::rx_irq(void) {
   // Overrun: clear buffer, return error.
   if (usart->ISR & USART_ISR_ORE) {
     SET_BIT(usart->ICR, USART_ICR_ORECF);
-    mgr().post(Events::USART_RX_OVERRUN);
+    mgr->post(Events::USART_RX_OVERRUN);
     return;
   }
 
   // Byte received.
   if (usart->ISR & USART_ISR_RXNE) {
     char c = usart->RDR;
-    mgr().post(Events::USART_RX_CHAR, c);
+    mgr->post(Events::USART_RX_CHAR, c);
   }
 }
 
@@ -255,7 +256,7 @@ void USART::tx_dma_irq(void) {
   }
 
   if (tx_error) {
-    mgr().post(Events::USART_TX_ERROR);
+    mgr->post(Events::USART_TX_ERROR);
   }
 }
 

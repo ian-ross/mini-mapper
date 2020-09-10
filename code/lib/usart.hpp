@@ -6,6 +6,8 @@
 #include "events.hpp"
 #include "dma.hpp"
 
+static const int USART_TX_BUFSIZE = 128;
+
 class USART : public Events::Consumer {
 public:
 
@@ -35,9 +37,7 @@ private:
   USART_TypeDef *usart;
   DMA_Stream_TypeDef *dma;
 
-  static const int TX_BUFSIZE = 128;
-
-  char tx_buff1[TX_BUFSIZE], tx_buff2[TX_BUFSIZE];
+  char tx_buff1[USART_TX_BUFSIZE], tx_buff2[USART_TX_BUFSIZE];
   char *tx_buffs[2] = {tx_buff1, tx_buff2};
   int tx_buff_idx = 0;
   char *tx_buff = tx_buffs[0];

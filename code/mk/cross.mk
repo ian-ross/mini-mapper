@@ -1,7 +1,7 @@
 # Build definitions for application cross-compilation builds.
 
 # Toolchain definitions.
-GCC_PREFIX=arm-none-eabi
+GCC_PREFIX := arm-none-eabi
 CC      := $(GCC_PREFIX)-gcc
 CXX     := $(GCC_PREFIX)-c++
 AS      := $(GCC_PREFIX)-as
@@ -24,6 +24,9 @@ INCS += $(BASE)/hw/peripherals
 # Linker script for STM32F767ZIx on Nucleo board.
 LINKER_SCRIPT = STM32F767ZITx_FLASH.ld
 
+# No exceptions or RTTI on STM32 platform.
+CXXFLAGS += -fno-exceptions -fno-rtti
+
 # Link flags: pick up library from build directory, linker script from
 # hw directory, minimal library support.
 LDFLAGS += -Lbuild -L$(BASE)/hw -T$(LINKER_SCRIPT)
@@ -31,4 +34,4 @@ LDFLAGS += -specs=nosys.specs
 LDFLAGS += -Wl,--gc-sections
 
 # Link libraries: application library plus minimal C++ support.
-LDLIBS=-lmm -lc -lm -lnosys -lsupc++
+LDLIBS = -lmm -lc -lm -lnosys -lsupc++

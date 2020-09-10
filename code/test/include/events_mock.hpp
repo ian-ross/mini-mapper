@@ -22,6 +22,8 @@ private:
 class MockEventConsumer : public trompeloeil::mock_interface<Events::Consumer> {
 public:
 
+  MockEventConsumer() : trompeloeil::mock_interface<Events::Consumer>("(MOCK)") {}
+
   IMPLEMENT_MOCK1(dispatch);
 };
 

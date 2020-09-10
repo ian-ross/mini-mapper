@@ -22,7 +22,7 @@ COMMON_CFLAGS = \
 
 # Add common flags and include paths to tool-specific flags.
 CFLAGS += $(OPT) $(COMMON_FLAGS) $(COMMON_CFLAGS) $(INC_FLAGS)
-CXXFLAGS += $(OPT) $(COMMON_FLAGS) $(COMMON_CFLAGS) $(INC_FLAGS) -fno-exceptions -fno-rtti
+CXXFLAGS += $(OPT) $(COMMON_FLAGS) $(COMMON_CFLAGS) $(INC_FLAGS)
 LDFLAGS += $(COMMON_FLAGS)
 
 # Library sources: all C++.
@@ -99,3 +99,10 @@ build/$(TARGET).out: $(OBJS) build/libmm.a
 %.hex: %.out
 	$(info ==> Preparing: $(notdir $@))
 	@$(OBJCOPY) -O ihex $< $@
+
+
+# Generated dependencies.
+ALLOBJS = $(OBJS) $(TESTOBJS) $(LIBOBJS)
+DEPS = $(patsubst %.o,%.d,$(ALLOBJS))
+
+-include $(DEPS)
