@@ -1,6 +1,7 @@
 SUBDIRS = \
   systick-blinky \
   systick-usart-counter \
+  shell-blinky \
   terminal-demo
 
 all:
