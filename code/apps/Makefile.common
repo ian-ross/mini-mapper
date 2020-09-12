@@ -17,7 +17,7 @@ SRCS += \
   $(BASE)/hw/startup_stm32f767xx.s
 
 # Build library and binary targets.
-all: builddir build/libmm.a build/$(TARGET).bin build/$(TARGET).hex
+all: builddir shared-lib build/libmm.a build/$(TARGET).bin build/$(TARGET).hex
 
 # Delegate to common rules.
 include $(BASE)/mk/cross.mk

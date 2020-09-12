@@ -43,8 +43,23 @@ enum TerminalRXBuffer {
   TERMINAL_BUFFER_1
 };
 
+class TerminalInterface {
+public:
+  TerminalInterface() { }
+  virtual void set_interactive(bool inter) = 0;
+  virtual char *buffer(TerminalRXBuffer i) = 0;
+  virtual void print(const char *str) = 0;
+  virtual void print(int i) = 0;
+  virtual void println(const char *str) = 0;
+  virtual void println(int i) = 0;
+  virtual void flush(void) = 0;
+  virtual void error(const char *msg) = 0;
+};
+
+static const int TERMINAL_RX_BUFSIZE = 80;
+
 template<typename USART>
-class Terminal : public Events::Consumer {
+class Terminal : public TerminalInterface, public Events::Consumer {
 public:
 
   enum State { INITIAL, INPUT, PROCESSING };
@@ -52,17 +67,18 @@ public:
   Terminal(USART &usart): Events::Consumer("Terminal"), usart(usart) { }
 
   // Control.
-  void set_interactive(bool inter);
+  void set_interactive(bool inter) override;
 
   // Buffer access.
-  const char *buffer(TerminalRXBuffer i) { return rx_buffs[i].data(); }
+  char *buffer(TerminalRXBuffer i) override { return rx_buffs[i].data(); }
 
   // I/O functions.
-  void print(const char *str);
-  void print(int i);
-  template <typename T> void println(T val);
-  void flush(void);
-  void error(const char *msg);
+  void print(const char *str) override;
+  void print(int i) override;
+  void println(const char *str) override;
+  void println(int i) override;
+  void flush(void) override;
+  void error(const char *msg) override;
 
   bool dispatch(const Events::Event &e) override;
 
@@ -85,11 +101,10 @@ private:
   // RX buffer handling: two input buffers, one active at a time. The
   // non-active buffer is "loaned out" for processing of a complete
   // input line.
-  static const int RX_BUFSIZE = 80;
-  std::array<char, RX_BUFSIZE> rx_buffs[2];
+  std::array<char, TERMINAL_RX_BUFSIZE> rx_buffs[2];
   int rx_pos = 0;
   bool rx_other_buffer_on_loan = false;
-  std::array<char, RX_BUFSIZE> *rx_buff = &rx_buffs[0];
+  std::array<char, TERMINAL_RX_BUFSIZE> *rx_buff = &rx_buffs[0];
   TerminalRXBuffer rx_buff_idx = TERMINAL_BUFFER_0;
 
   char tx_buff[USART_TX_BUFSIZE];
@@ -106,8 +121,16 @@ template <typename USART> void Terminal<USART>::tx(char ch) {
 }
 
 template<typename USART>
-template<typename T> void Terminal<USART>::println(T val) {
-  print(val);
+void Terminal<USART>::println(const char *str) {
+  print(str);
+  tx('\r');
+  tx('\n');
+  flush();
+}
+
+template<typename USART>
+void Terminal<USART>::println(int i) {
+  print(i);
   tx('\r');
   tx('\n');
   flush();
@@ -214,7 +237,7 @@ void Terminal<USART>::process_rx_char(char ch) {
   default:
     // The size limit here is to leave space for the string
     // terminating null at the end of line.
-    if (rx_pos < RX_BUFSIZE - 1) {
+    if (rx_pos < TERMINAL_RX_BUFSIZE - 1) {
       (*rx_buff)[rx_pos++] = ch;
       // In interactive mode, echo the received character.
       if (interactive) {

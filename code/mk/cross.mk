@@ -35,3 +35,8 @@ LDFLAGS += -Wl,--gc-sections
 
 # Link libraries: application library plus minimal C++ support.
 LDLIBS = -lmm -lc -lm -lnosys -lsupc++
+
+.PHONY: shared-lib
+shared-lib:
+	$(MK) -p ../../lib-build
+	ln -s ../../lib-build build/lib

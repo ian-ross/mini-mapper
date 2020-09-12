@@ -55,7 +55,7 @@ builddir:
 
 .PHONY: clean
 clean:
-	@$(RM) -fr build compile_commands.json
+	@$(RM) -fr build/lib/* build compile_commands.json
 
 
 # Standard compilation rules.
