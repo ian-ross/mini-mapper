@@ -353,8 +353,8 @@ TEST_CASE("USART") {
     USART3->RDR = 'x';
     SET_BIT(USART3->ISR, USART_ISR_RXNE);
     usart.rx_irq();
-    REQUIRE_CALL(consumer, dispatch(_)).
-      RETURN(_1.tag == Events::USART_RX_CHAR && _1.param == 'x');
+    REQUIRE_CALL(consumer, dispatch(_))
+      .RETURN(_1.tag == Events::USART_RX_CHAR && _1.param == 'x');
     ev.drain();
     CHECK(ev.pending_count() == 0);
   }
@@ -362,8 +362,8 @@ TEST_CASE("USART") {
   SUBCASE("RX overrun enqueues correct event") {
     SET_BIT(USART3->ISR, USART_ISR_ORE);
     usart.rx_irq();
-    REQUIRE_CALL(consumer, dispatch(_)).
-      RETURN(_1.tag == Events::USART_RX_OVERRUN);
+    REQUIRE_CALL(consumer, dispatch(_))
+      .RETURN(_1.tag == Events::USART_RX_OVERRUN);
     ev.drain();
     CHECK(ev.pending_count() == 0);
   }

@@ -1,12 +1,27 @@
 #ifndef _H_EVENTS_
 #define _H_EVENTS_
 
+// The event management interface maintains a simple fixed size queue
+// of events to be dispatched. These events are dispatched to "event
+// consumers" from a naive event loop.
+//
+// The philosophy here is that events are *processed* cooperatively by
+// event consumers driven from the event loop, while events are posted
+// to the event queue either by the consumers (to pass information to
+// other consumers) or by interrupt handlers that service hardware
+// resources. In this setup, an interrupt handler does the minimum
+// amount of work required to service the hardware it's associated
+// with, then calls Events::Manager::post to put an event in the queue
+// containing information that allows an event consumer to perform
+// "bottom half" processing.
+
 #include <stdint.h>
 #include <array>
 
 namespace Events {
 
-// All known event types.
+// All known event types: for the moment this is a fixed set for
+// simplicity.
 
 enum Tag {
   NO_EVENT = 0,
@@ -30,7 +45,9 @@ struct Event {
   Tag tag;
   uint32_t param;
 
-  bool operator==(const Event &other) { return tag == other.tag && param == other.param; }
+  bool operator==(const Event &other) {
+    return tag == other.tag && param == other.param;
+  }
 };
 
 
@@ -54,8 +71,8 @@ const int MAX_CONSUMERS = 8;
 class Manager {
 public:
 
-  bool debug = false;
-
+  // An event manager needs to be initialised with a function to wait
+  // for new events.
   Manager(EventWaiter w);
 
   // Add an event consumer.
@@ -97,7 +114,9 @@ private:
 
 
 // An event consumer: basically just an interface wrapping an event
-// dispatch function.
+// dispatch function (but one that has access to the event manager
+// it's associated with, since a common pattern is for a consumer to
+// post more events from within its dispatch method).
 
 class Consumer {
 public:

@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+// Simple wrapper around information defining an STM32 DMA channel.
+
 struct DMAChannel {
   const uint8_t dma;
   const uint8_t stream;

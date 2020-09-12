@@ -85,8 +85,8 @@ TEST_CASE("Terminal") {
 
   SUBCASE("line event generated correctly (non-interactive)") {
     ALLOW_CALL(usart, dispatch(_)).RETURN(false);
-    REQUIRE_CALL(consumer, dispatch(Events::Event{Events::TERMINAL_LINE_RECEIVED,0})).
-      RETURN(true);
+    REQUIRE_CALL(consumer, dispatch(Events::Event{Events::TERMINAL_LINE_RECEIVED,0}))
+      .RETURN(true);
     for (auto ch : "test\r") {
       if (ch != '\0') ev.post(Events::USART_RX_CHAR, ch);
       ev.drain();
@@ -97,8 +97,8 @@ TEST_CASE("Terminal") {
 
   SUBCASE("RX buffer overflow detected correctly (non-interactive)") {
     ALLOW_CALL(usart, dispatch(_)).RETURN(false);
-    REQUIRE_CALL(consumer, dispatch(Events::Event{Events::TERMINAL_RX_OVERFLOW,0})).
-      RETURN(true);
+    REQUIRE_CALL(consumer, dispatch(Events::Event{Events::TERMINAL_RX_OVERFLOW,0}))
+      .RETURN(true);
     for (int i = 0; i < 81; ++i) {
       ev.post(Events::USART_RX_CHAR, 'x');
       ev.drain();
@@ -112,8 +112,8 @@ TEST_CASE("Terminal") {
     ALLOW_CALL(usart, flush());
     REQUIRE_CALL(consumer,
                  dispatch(Events::Event{Events::TERMINAL_LINE_RECEIVED,
-                                        TERMINAL_BUFFER_0})).
-      RETURN(true);
+                                        TERMINAL_BUFFER_0}))
+      .RETURN(true);
 
     terminal.set_interactive(true);
     for (auto ch : "test\r") {
@@ -136,8 +136,8 @@ TEST_CASE("Terminal") {
     ALLOW_CALL(usart, flush());
     REQUIRE_CALL(consumer,
                  dispatch(Events::Event{Events::TERMINAL_LINE_RECEIVED,
-                                        TERMINAL_BUFFER_0})).
-      RETURN(true);
+                                        TERMINAL_BUFFER_0}))
+      .RETURN(true);
 
     terminal.set_interactive(true);
     for (auto ch : "tex\bst\r") {
@@ -160,10 +160,10 @@ TEST_CASE("Terminal") {
     ALLOW_CALL(usart, flush());
     REQUIRE_CALL(consumer,
                  dispatch(Events::Event{Events::TERMINAL_LINE_RECEIVED,
-                                        TERMINAL_BUFFER_0})).
-      LR_SIDE_EFFECT(terminal.println("OK")).
-      LR_SIDE_EFFECT(ev.post(Events::TERMINAL_LINE_PROCESSED)).
-      RETURN(true);
+                                        TERMINAL_BUFFER_0}))
+      .LR_SIDE_EFFECT(terminal.println("OK"))
+      .LR_SIDE_EFFECT(ev.post(Events::TERMINAL_LINE_PROCESSED))
+      .RETURN(true);
 
     terminal.set_interactive(true);
     for (auto ch : "cmd\r") {
@@ -183,10 +183,10 @@ TEST_CASE("Terminal") {
     ALLOW_CALL(usart, flush());
     REQUIRE_CALL(consumer,
                  dispatch(Events::Event{Events::TERMINAL_LINE_RECEIVED,
-                                        TERMINAL_BUFFER_0})).
-      LR_SIDE_EFFECT(terminal.println("OK")).
-      LR_SIDE_EFFECT(ev.post(Events::TERMINAL_LINE_PROCESSED)).
-      RETURN(true);
+                                        TERMINAL_BUFFER_0}))
+      .LR_SIDE_EFFECT(terminal.println("OK"))
+      .LR_SIDE_EFFECT(ev.post(Events::TERMINAL_LINE_PROCESSED))
+      .RETURN(true);
 
     terminal.set_interactive(true);
     ev.post(Events::USART_RX_CHAR, 'c');

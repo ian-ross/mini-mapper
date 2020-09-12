@@ -1,32 +1,35 @@
+#include "errors.hpp"
 #include "events.hpp"
-#ifdef TEST
-#include <iostream>
-#endif
 
 
 namespace Events {
+
+// An event manager maintains a queue of events and a set of event
+// consumers. The constructor here initialises both of these to all
+// placeholder values.
 
 Manager::Manager(EventWaiter w) : waiter{w} {
   queue.fill(Event{NO_EVENT, 0});
   consumers.fill(nullptr);
 }
 
+
+// Add a consumer.
+
 void Manager::operator+=(Consumer &c) {
-  // TODO: ERROR CHECKING?
+  if (nconsumers >= MAX_CONSUMERS) {
+    fatal("too many event consumers");
+  }
   consumers[nconsumers++] = &c;
   c.mgr = this;
 }
 
-void Manager::post(Tag tag, uint32_t param) {
-#ifdef TEST
-  if (debug) {
-    std::cout << "Events::Manager::post tag=" << tag << "  param=" << param
-              << std::endl;
-  }
-#endif
 
+// Post a new event to the queue, which we treat as a circular buffer.
+
+void Manager::post(Tag tag, uint32_t param) {
   if (nevents >= QUEUE_SIZE) {
-    // TODO: ERROR CHECKING
+    fatal("too many pending events");
   }
   queue[qpos].tag = tag;
   queue[qpos].param = param;
@@ -34,7 +37,8 @@ void Manager::post(Tag tag, uint32_t param) {
   nevents++;
 }
 
-  // Process queued events one by one, trying to dispatch to each
+
+// Process queued events one by one, trying to dispatch to each
 // consumer in turn. A consumer can "claim" the event by returning
 // `true` from its `dispatch` method.
 //
@@ -42,38 +46,31 @@ void Manager::post(Tag tag, uint32_t param) {
 // NOW.
 
 void Manager::drain(void) {
-#ifdef TEST
-  if (debug) {
-    std::cout << "Events::Manager::drain  nevents=" << nevents << std::endl;
-  }
-#endif
-  while (nevents > 0) {
-    for (int i = 0; i < QUEUE_SIZE; ++i) {
-      if (queue[i].tag != NO_EVENT) {
-#ifdef TEST
-        if (debug) {
-          std::cout << "  i=" << i << " tag=" << queue[i].tag << std::endl;
-        }
-#endif
-        bool consumed = false;
-        for (int j = 0; !consumed && j < nconsumers; ++j) {
-          if (consumers[j]) {
-#ifdef TEST
-            if (debug) {
-              std::cout << "  Try " << consumers[j]->name() << std::endl;
-            }
-#endif
-            if (consumers[j]->dispatch(queue[i])) {
-              consumed = true;
-            }
+  for (int i = qpos; nevents > 0; i = (i + 1) % QUEUE_SIZE) {
+    if (queue[i].tag != NO_EVENT) {
+      bool consumed = false;
+
+      // Try the consumers in turn to see who wants to process this
+      // event...
+      for (int j = 0; !consumed && j < nconsumers; ++j) {
+        if (consumers[j]) {
+          if (consumers[j]->dispatch(queue[i])) {
+            consumed = true;
           }
         }
-        if (!consumed) {
-          // TODO: ERROR -- EVENT NOT CONSUMED
-        }
-        queue[i].tag = NO_EVENT;
-        nevents--;
       }
+
+      // Make sure that all events that are posted get consumed
+      // (except for SysTick, which can be used by multiple
+      // consumers).
+      if (!consumed && queue[i].tag != SYSTICK) {
+        int tag = queue[i].tag;
+        fatal("event not consumed", &tag);
+      }
+
+      // Empty the slot in the event queue.
+      queue[i].tag = NO_EVENT;
+      nevents--;
     }
   }
 }
@@ -88,7 +85,6 @@ void Manager::loop(void) {
     wait();
   }
 }
-
 
 }
 
@@ -129,8 +125,8 @@ TEST_CASE("Event management") {
 
   SUBCASE("events are delivered") {
     ev.post(Events::USART_RX_CHAR, 'c');
-    REQUIRE_CALL(consumer, dispatch(_)).
-      RETURN(_1.tag == Events::USART_RX_CHAR);
+    REQUIRE_CALL(consumer, dispatch(_))
+      .RETURN(_1.tag == Events::USART_RX_CHAR);
     ev.drain();
     CHECK(ev.pending_count() == 0);
   }

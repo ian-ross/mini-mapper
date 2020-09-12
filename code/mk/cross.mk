@@ -38,5 +38,9 @@ LDLIBS = -lmm -lc -lm -lnosys -lsupc++
 
 .PHONY: shared-lib
 shared-lib:
-	$(MK) -p ../../lib-build
-	ln -s ../../lib-build build/lib
+	if [[ ! -e ../../lib-build ]] ; then $(MK) -p ../../lib-build ; fi
+	if [[ ! -e build/lib ]] ; then ln -s ../../lib-build build/lib ; fi
+
+.PHONY: flash
+flash:
+	openocd -f $(BASE)/apps/openocd.cfg -c "program build/$(TARGET).out verify reset exit"

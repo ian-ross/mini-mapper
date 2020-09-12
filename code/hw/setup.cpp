@@ -63,3 +63,7 @@ void configure_clock(void) {
   // Update CMSIS system core clock.
   SystemCoreClockUpdate();
 }
+
+void fatal(const char *msg, int *param) {
+  while (true) { __asm("nop"); }
+}

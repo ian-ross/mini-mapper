@@ -38,10 +38,17 @@
 //  - No distinction is made between unsolicited output and response
 //    output.
 
+// Enumeration used for identifying which terminal RX buffer contains
+// the latest line to be processed.
+
 enum TerminalRXBuffer {
   TERMINAL_BUFFER_0 = 0,
   TERMINAL_BUFFER_1
 };
+
+
+// Interface representing terminal functionality. Used to allow for
+// easy mocking for testing.
 
 class TerminalInterface {
 public:
@@ -56,17 +63,26 @@ public:
   virtual void error(const char *msg) = 0;
 };
 
+
+// The receive buffer size is set to a "normal" line length.
+
 static const int TERMINAL_RX_BUFSIZE = 80;
+
+
 
 template<typename USART>
 class Terminal : public TerminalInterface, public Events::Consumer {
 public:
 
+  // The state of the Terminal indicates whether we have an input line
+  // (and prompt) displayed in interactive mode (in that case, we need
+  // to erase and redraw the input line to output lines of unsolicited
+  // output).
   enum State { INITIAL, INPUT, PROCESSING };
 
   Terminal(USART &usart): Events::Consumer("Terminal"), usart(usart) { }
 
-  // Control.
+  // Control of interactive mode.
   void set_interactive(bool inter) override;
 
   // Buffer access.
@@ -80,6 +96,7 @@ public:
   void flush(void) override;
   void error(const char *msg) override;
 
+  // Event handling.
   bool dispatch(const Events::Event &e) override;
 
 private:
@@ -103,13 +120,17 @@ private:
   // input line.
   std::array<char, TERMINAL_RX_BUFSIZE> rx_buffs[2];
   int rx_pos = 0;
-  bool rx_other_buffer_on_loan = false;
   std::array<char, TERMINAL_RX_BUFSIZE> *rx_buff = &rx_buffs[0];
   TerminalRXBuffer rx_buff_idx = TERMINAL_BUFFER_0;
 
   char tx_buff[USART_TX_BUFSIZE];
   int tx_size = 0;
 };
+
+
+// Save a single character for transmission. We do this rather than
+// sending characters directly to the USART so that we can erase and
+// redraw input lines in interactive mode.
 
 template <typename USART> void Terminal<USART>::tx(char ch) {
   if (tx_size >= USART_TX_BUFSIZE) {
@@ -119,6 +140,9 @@ template <typename USART> void Terminal<USART>::tx(char ch) {
   }
   tx_buff[tx_size++] = ch;
 }
+
+
+// Variants of output functions with new line and flush.
 
 template<typename USART>
 void Terminal<USART>::println(const char *str) {
@@ -136,6 +160,9 @@ void Terminal<USART>::println(int i) {
   flush();
 }
 
+
+// Output a string.
+
 template<typename USART>
 void Terminal<USART>::print(const char *str) {
   while (*str) {
@@ -143,6 +170,9 @@ void Terminal<USART>::print(const char *str) {
     ++str;
   }
 }
+
+
+// Output an integer.
 
 template<typename USART>
 void Terminal<USART>::print(int i) {
@@ -158,13 +188,20 @@ void Terminal<USART>::print(int i) {
     tx(buff[idx++]);
 }
 
+
+// Output an error message. These are all short codes preceded by a
+// '!' character.
+
 template<typename USART>
 void Terminal<USART>::error(const char *msg) {
-  tx('\r');
-  tx('\n');
   print("!");
   println(msg);
 }
+
+
+// Flush output: in interactive mode, we need to erase and redraw the
+// input line to avoid corruption in the serial terminal application
+// connected to our USART.
 
 template<typename USART>
 void Terminal<USART>::flush(void) {
@@ -175,11 +212,19 @@ void Terminal<USART>::flush(void) {
   if (interactive && state == INPUT) redraw_input();
 }
 
+
+// Switch between interactive and the default non-interactive mode.
+
 template<typename USART>
 void Terminal<USART>::set_interactive(bool inter) {
   interactive = inter;
   if (interactive) prompt(true);
 }
+
+
+// The events that we need to deal with are character input from the
+// USART, and signalling from downstream consumers of line input that
+// they are done with processing the last line that was received.
 
 template <typename USART>
 bool Terminal<USART>::dispatch(const Events::Event &e) {
@@ -190,7 +235,6 @@ bool Terminal<USART>::dispatch(const Events::Event &e) {
 
   case Events::TERMINAL_LINE_PROCESSED:
     if (interactive) prompt(true);
-    rx_other_buffer_on_loan = false;
     state = INPUT;
     return true;
 
@@ -198,6 +242,9 @@ bool Terminal<USART>::dispatch(const Events::Event &e) {
     return false;
   }
 }
+
+
+// Process a single character received from the USART.
 
 template <typename USART>
 void Terminal<USART>::process_rx_char(char ch) {
@@ -222,15 +269,19 @@ void Terminal<USART>::process_rx_char(char ch) {
     rx_buff = &rx_buffs[rx_buff_idx];
     rx_buff->fill('\0');
     rx_pos = 0;
-    rx_other_buffer_on_loan = true;
     state = PROCESSING;
 
     break;
 
   case '\b':
+    // Backspace deletes a single character backwards.
     if (rx_pos > 0) {
       --rx_pos;
-      usart.tx('\b'); usart.tx(' '); usart.tx('\b'); usart.flush();
+      // In interactive mode, we need to erase the character in the
+      // serial terminal view as well as in the buffer.
+      if (interactive) {
+        usart.tx('\b'); usart.tx(' '); usart.tx('\b'); usart.flush();
+      }
     }
     break;
 
@@ -252,6 +303,11 @@ void Terminal<USART>::process_rx_char(char ch) {
     }
   }
 }
+
+
+// The following two methods are used when it's necessary to write an
+// output line when an input line is being edited: the input line is
+// erased, the output line is written, then the input line is redrawn.
 
 template <typename USART> void Terminal<USART>::erase_input(void) {
   for (int i = 0; i < rx_pos + 2; ++i) {
