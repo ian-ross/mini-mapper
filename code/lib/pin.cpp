@@ -9,7 +9,8 @@ static void EnableClock(GPIO_TypeDef *port) {
   // ** the same way for Linux-side tests as on the STM32!!! See
   // ** test/mocks/stm32f767xx_peripherals.c for the details of how
   // ** this is done.
-  uint32_t mask = 1 << (((uintptr_t)port - (uintptr_t)AHB1PERIPH_BASE) / 0x0400UL);
+  uint32_t mask =
+    1 << (((uintptr_t)port - (uintptr_t)AHB1PERIPH_BASE) / 0x0400UL);
   RCC->AHB1ENR |= mask;
 }
 
@@ -48,9 +49,11 @@ TEST_CASE("GPIO abstraction") {
   init_mock_gpios();
 
   SUBCASE("mock GPIO initialisation") {
-    CHECK(((GPIOA->MODER & GPIO_MODER_MODER15_Msk) >> GPIO_MODER_MODER15_Pos) == 0x02);
+    CHECK(((GPIOA->MODER & GPIO_MODER_MODER15_Msk) >>
+           GPIO_MODER_MODER15_Pos) == 0x02);
     CHECK(READ_BIT(GPIOC->OTYPER, GPIO_OTYPER_OT11) == 0x00);
-    CHECK(((GPIOB->OSPEEDR & GPIO_OSPEEDR_OSPEEDR3_Msk) >> GPIO_OSPEEDR_OSPEEDR3_Pos) == 0x03);
+    CHECK(((GPIOB->OSPEEDR & GPIO_OSPEEDR_OSPEEDR3_Msk) >>
+           GPIO_OSPEEDR_OSPEEDR3_Pos) == 0x03);
   }
 
   SUBCASE("GPIO output setup") {

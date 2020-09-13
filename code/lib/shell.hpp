@@ -32,9 +32,11 @@ public:
 
   Module(const char *module_name) : name(module_name) { }
 
-  virtual CommandResult set_variable(const char *name, const char *value) = 0;
+  virtual CommandResult set_variable
+    (const char *name, const char *value) = 0;
   virtual CommandResult show_variable(const char *name) = 0;
-  virtual CommandResult run_command(const char *cmd, int nargs, char *args[]) = 0;
+  virtual CommandResult run_command
+    (const char *cmd, int nargs, char *args[]) = 0;
 
 private:
 
@@ -53,8 +55,12 @@ public:
 
   CoreModule() : Module("core") { }
 
-  virtual CommandResult set_variable(const char *name, const char *value) { return SKIPPED; }
-  virtual CommandResult show_variable(const char *name) { return SKIPPED; }
+  virtual CommandResult set_variable(const char *name, const char *value) {
+    return SKIPPED;
+  }
+  virtual CommandResult show_variable(const char *name) {
+    return SKIPPED;
+  }
   virtual CommandResult run_command(const char *cmd, int nargs, char *args[]);
 
   void setShell(CommandShell &shell) { sh = &shell; }

@@ -53,7 +53,7 @@ void Manager::drain(void) {
       // Try the consumers in turn to see who wants to process this
       // event...
       for (int j = 0; !consumed && j < nconsumers; ++j) {
-        if (consumers[j]) {
+        if (consumers[j] != nullptr) {
           if (consumers[j]->dispatch(queue[i])) {
             consumed = true;
           }

@@ -61,7 +61,8 @@ void CommandShell::process_command(char *buf) {
 
   bool processed = false;
   for (int i = 0; i < nmodules; ++i) {
-    CommandResult res = modules[i]->run_command(words[0], nwords - 1, &words[1]);
+    CommandResult res =
+      modules[i]->run_command(words[0], nwords - 1, &words[1]);
     processed = handle_result(res);
     if (processed) break;
   }
@@ -139,7 +140,8 @@ void CommandShell::operator+=(Module &mod) {
 // Command runner for core module: implements "set" and "show"
 // commands by handing off to CommandShell methods.
 
-CommandResult CoreModule::run_command(const char *cmd, int nargs, char *args[]) {
+CommandResult CoreModule::run_command
+  (const char *cmd, int nargs, char *args[]) {
   if (!strcmp(cmd, "set")) {
     if (nargs != 2) return COMMAND_ERROR;
     return sh->set_variable(args[0], args[1]);

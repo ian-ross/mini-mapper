@@ -90,7 +90,8 @@ USART::USART(uint8_t iusart,
 
   // 5. Select the DMA channel (request) using CHSEL[3:0] in the
   //    DMA_SxCR register.
-  MODIFY_REG(dma->CR, DMA_SxCR_CHSEL_Msk, dma_chan.channel << DMA_SxCR_CHSEL_Pos);
+  MODIFY_REG(dma->CR, DMA_SxCR_CHSEL_Msk,
+             dma_chan.channel << DMA_SxCR_CHSEL_Pos);
 
   // DMA is flow controller.
   CLEAR_BIT(dma->CR, DMA_SxCR_PFCTRL);
@@ -204,9 +205,11 @@ void USART::start_tx_dma(void) {
   // Ensure all relevant interrupts are enabled.
   SET_BIT(dma->CR, DMA_SxCR_TCIE);
 
-  // 10. Activate the stream by setting the EN bit in the DMA_SxCR register.
+  // 10. Activate the stream by setting the EN bit in the DMA_SxCR
+  //     register.
   SET_BIT(dma->CR, DMA_SxCR_EN);
 
+  // TODO: SOME OF THIS SHOULD BE DONE *BEFORE* ENABLING THE DMA!
   // Swap DMA buffers for writing and mark that a DMA is in progress.
   tx_buff_idx = 1 - tx_buff_idx;
   tx_buff = tx_buffs[tx_buff_idx];

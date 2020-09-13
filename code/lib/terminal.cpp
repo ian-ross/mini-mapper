@@ -72,7 +72,7 @@ TEST_CASE("Terminal") {
     ALLOW_CALL(usart, tx(_)).LR_SIDE_EFFECT(check += _1);
     REQUIRE_CALL(usart, flush());
     terminal.error("UROR");
-    REQUIRE(check == "\r\n!UROR\r\n");
+    REQUIRE(check == "!UROR\r\n");
   }
 
   SUBCASE("initial prompt in interactive mode") {
@@ -85,7 +85,8 @@ TEST_CASE("Terminal") {
 
   SUBCASE("line event generated correctly (non-interactive)") {
     ALLOW_CALL(usart, dispatch(_)).RETURN(false);
-    REQUIRE_CALL(consumer, dispatch(Events::Event{Events::TERMINAL_LINE_RECEIVED,0}))
+    REQUIRE_CALL(consumer,
+                 dispatch(Events::Event{Events::TERMINAL_LINE_RECEIVED,0}))
       .RETURN(true);
     for (auto ch : "test\r") {
       if (ch != '\0') ev.post(Events::USART_RX_CHAR, ch);
@@ -97,7 +98,8 @@ TEST_CASE("Terminal") {
 
   SUBCASE("RX buffer overflow detected correctly (non-interactive)") {
     ALLOW_CALL(usart, dispatch(_)).RETURN(false);
-    REQUIRE_CALL(consumer, dispatch(Events::Event{Events::TERMINAL_RX_OVERFLOW,0}))
+    REQUIRE_CALL(consumer,
+                 dispatch(Events::Event{Events::TERMINAL_RX_OVERFLOW,0}))
       .RETURN(true);
     for (int i = 0; i < 81; ++i) {
       ev.post(Events::USART_RX_CHAR, 'x');
