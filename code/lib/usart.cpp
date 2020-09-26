@@ -9,13 +9,7 @@ static IRQn_Type dma_irqn(int idma, int istream);
 
 // Set up USART for interrupt-driven RX, DMA-driven TX.
 
-USART::USART(uint8_t iusart,
-             const Pin &tx, GPIOAF tx_af,
-             const Pin &rx, GPIOAF rx_af,
-             const DMAChannel &dma_chan) :
-  Events::Consumer("USART"),
-  usart(usart_base(iusart)), dma(usart_dma_stream(iusart))
-{
+void USART::init(void) {
   volatile uint32_t &apbenr_reg = RCC->APB1ENR;
   const uint32_t apbenr_bit = RCC_APB1ENR_USART3EN;
   volatile uint32_t &ahbenr_dma_reg = RCC->AHB1ENR;
@@ -63,10 +57,10 @@ USART::USART(uint8_t iusart,
 
   // Pin configuration: set TX to output (PP, pull-up), RX to input,
   // set both to the appropriate alternate function.
-  tx.Output(GPIO_SPEED_VERY_HIGH, GPIO_TYPE_PUSH_PULL, GPIO_PUPD_PULL_UP);
-  rx.Input(GPIO_SPEED_VERY_HIGH);
-  tx.Alternate(tx_af);
-  rx.Alternate(rx_af);
+  tx_pin.Output(GPIO_SPEED_VERY_HIGH, GPIO_TYPE_PUSH_PULL, GPIO_PUPD_PULL_UP);
+  rx_pin.Input(GPIO_SPEED_VERY_HIGH);
+  tx_pin.Alternate(tx_af);
+  rx_pin.Alternate(rx_af);
 
   // Receive interrupt setup: enable USART interrupts in NVIC and
   // enable RX interrupt (also handles overrun errors).
@@ -143,14 +137,13 @@ USART::USART(uint8_t iusart,
   NVIC_EnableIRQ(dma_irqn(dma_chan.dma, dma_chan.stream));
 }
 
-
 // Buffer a single character for transmission.
 
 void USART::tx(char c) {
   // Buffer overflow: clear buffer, post error.
   if (tx_size >= USART_TX_BUFSIZE) {
     tx_size = 0;
-    mgr->post(Events::USART_TX_OVERFLOW);
+    if (mgr) mgr->post(Events::USART_TX_OVERFLOW);
     return;
   }
 
@@ -164,16 +157,22 @@ void USART::tx(char c) {
 // which sets the `need_flush` flag, and a DMA TX is started at the
 // next SysTick.
 
-bool USART::dispatch(const Events::Event &e) {
-  // Skip non-SysTick events.
-  if (e.tag != Events::SYSTICK) return false;
+void USART::dispatch(const Events::Event &e) {
+  switch (e.tag) {
+  case Events::EVENT_LOOP_STARTED:
+    init();
+    mgr->post(Events::USART_INIT, iusart);
+    break;
 
-  // Skip conditions that don't require us to start a DMA TX.
-  if (need_flush && tx_size != 0 && !tx_sending)
-    start_tx_dma();
+  case Events::SYSTICK:
+    // Skip conditions that don't require us to start a DMA TX.
+    if (need_flush && tx_size != 0 && !tx_sending)
+      start_tx_dma();
+    break;
 
-  // Didn't consume event.
-  return false;
+  default:
+    break;
+  }
 }
 
 
@@ -225,14 +224,14 @@ void USART::rx_irq(void) {
   // Overrun: clear buffer, return error.
   if (usart->ISR & USART_ISR_ORE) {
     SET_BIT(usart->ICR, USART_ICR_ORECF);
-    mgr->post(Events::USART_RX_OVERRUN);
+    if (mgr) mgr->post(Events::USART_RX_OVERRUN);
     return;
   }
 
   // Byte received.
   if (usart->ISR & USART_ISR_RXNE) {
     char c = usart->RDR;
-    mgr->post(Events::USART_RX_CHAR, c);
+    if (mgr) mgr->post(Events::USART_RX_CHAR, c);
   }
 }
 
@@ -259,7 +258,7 @@ void USART::tx_dma_irq(void) {
   }
 
   if (tx_error) {
-    mgr->post(Events::USART_TX_ERROR);
+    if (mgr) mgr->post(Events::USART_TX_ERROR);
   }
 }
 
@@ -267,7 +266,7 @@ void USART::tx_dma_irq(void) {
 // The addresses for these aren't assigned systematically, hence the
 // need for a switch statement here.
 
-static USART_TypeDef *usart_base(int iusart) {
+USART_TypeDef *USART::usart_base(int iusart) {
   switch (iusart) {
   case 1: return USART1;
   case 2: return USART2;
@@ -284,7 +283,7 @@ static USART_TypeDef *usart_base(int iusart) {
 // MOST PERIPHERALS. FOR EXAMPLE, USART3_TX IS ON DMA1_Stream3,
 // CHANNEL 4 AND ON DMA1_Stream4, CHANNEL 7.
 
-static DMA_Stream_TypeDef *usart_dma_stream(int iusart) {
+DMA_Stream_TypeDef *USART::usart_dma_stream(int iusart) {
   switch (iusart) {
   case 1: return DMA2_Stream7;
   case 2: return DMA1_Stream6;
@@ -353,26 +352,33 @@ TEST_CASE("USART") {
   ev += consumer;
 
   SUBCASE("RX ISR enqueues correct event") {
+    ALLOW_CALL(consumer, dispatch(_))
+      .WITH(_1.tag == Events::EVENT_LOOP_STARTED);
+    ev.drain();
     USART3->RDR = 'x';
     SET_BIT(USART3->ISR, USART_ISR_RXNE);
     usart.rx_irq();
     REQUIRE_CALL(consumer, dispatch(_))
-      .RETURN(_1.tag == Events::USART_RX_CHAR && _1.param == 'x');
+      .WITH(_1.tag == Events::USART_RX_CHAR && _1.param == 'x');
     ev.drain();
     CHECK(ev.pending_count() == 0);
   }
 
   SUBCASE("RX overrun enqueues correct event") {
+    ALLOW_CALL(consumer, dispatch(_))
+      .WITH(_1.tag == Events::EVENT_LOOP_STARTED);
+    ev.drain();
     SET_BIT(USART3->ISR, USART_ISR_ORE);
     usart.rx_irq();
     REQUIRE_CALL(consumer, dispatch(_))
-      .RETURN(_1.tag == Events::USART_RX_OVERRUN);
+      .WITH(_1.tag == Events::USART_RX_OVERRUN);
     ev.drain();
     CHECK(ev.pending_count() == 0);
   }
 
   SUBCASE("SysTick triggers TX DMA") {
-    ALLOW_CALL(consumer, dispatch(_)).RETURN(false);
+    ALLOW_CALL(consumer, dispatch(_));
+    ev.drain();
     memset(DMA1_Stream3, 0, sizeof(DMA_Stream_TypeDef));
     for (auto c : "abcdef") {
       usart.tx(c);

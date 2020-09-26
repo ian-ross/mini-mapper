@@ -7,7 +7,11 @@ BASE=../..
 # Optimise for size on STM32 platform and use link-time optimisation.
 #OPT=-Os -flto
 #LDFLAGS += -flto
-OPT=-g -Og
+#OPT=-g -Og
+OPT=-g
+
+# Add shell module sources.
+SRCS += $(addprefix ../modules/, $(MODULE_SRCS))
 
 # Common STM32 hardware setup sources: cache and clock configuration
 # and startup code.
@@ -15,6 +19,9 @@ SRCS += \
   $(BASE)/hw/setup.cpp \
   $(BASE)/hw/system_stm32f7xx.c \
   $(BASE)/hw/startup_stm32f767xx.s
+
+# Access to module include directory.
+INCS += ../modules
 
 # Build library and binary targets.
 all: builddir shared-lib build/libmm.a build/$(TARGET).bin build/$(TARGET).hex

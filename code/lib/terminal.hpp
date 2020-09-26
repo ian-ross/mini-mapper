@@ -71,7 +71,7 @@ static const int TERMINAL_RX_BUFSIZE = 80;
 
 
 template<typename USART>
-class Terminal : public TerminalInterface, public Events::Consumer {
+class TerminalT : public TerminalInterface, public Events::Consumer {
 public:
 
   // The state of the Terminal indicates whether we have an input line
@@ -80,7 +80,7 @@ public:
   // output).
   enum State { INITIAL, INPUT, PROCESSING };
 
-  Terminal(USART &usart): Events::Consumer("Terminal"), usart(usart) { }
+  TerminalT(USART &usart): Events::Consumer("Terminal"), usart(usart) { }
 
   // Control of interactive mode.
   void set_interactive(bool inter) override;
@@ -97,7 +97,7 @@ public:
   void error(const char *msg) override;
 
   // Event handling.
-  bool dispatch(const Events::Event &e) override;
+  void dispatch(const Events::Event &e) override;
 
 private:
 
@@ -132,7 +132,7 @@ private:
 // sending characters directly to the USART so that we can erase and
 // redraw input lines in interactive mode.
 
-template <typename USART> void Terminal<USART>::tx(char ch) {
+template <typename USART> void TerminalT<USART>::tx(char ch) {
   if (tx_size >= USART_TX_BUFSIZE) {
     tx_size = 0;
     mgr->post(Events::USART_TX_OVERFLOW);
@@ -145,7 +145,7 @@ template <typename USART> void Terminal<USART>::tx(char ch) {
 // Variants of output functions with new line and flush.
 
 template<typename USART>
-void Terminal<USART>::println(const char *str) {
+void TerminalT<USART>::println(const char *str) {
   print(str);
   tx('\r');
   tx('\n');
@@ -153,7 +153,7 @@ void Terminal<USART>::println(const char *str) {
 }
 
 template<typename USART>
-void Terminal<USART>::println(int i) {
+void TerminalT<USART>::println(int i) {
   print(i);
   tx('\r');
   tx('\n');
@@ -164,7 +164,7 @@ void Terminal<USART>::println(int i) {
 // Output a string.
 
 template<typename USART>
-void Terminal<USART>::print(const char *str) {
+void TerminalT<USART>::print(const char *str) {
   while (*str) {
     tx(*str);
     ++str;
@@ -175,7 +175,7 @@ void Terminal<USART>::print(const char *str) {
 // Output an integer.
 
 template<typename USART>
-void Terminal<USART>::print(int i) {
+void TerminalT<USART>::print(int i) {
   const int MAX_DIGITS = 16;
   char buff[MAX_DIGITS + 1];
   buff[MAX_DIGITS] = '\0';
@@ -193,7 +193,7 @@ void Terminal<USART>::print(int i) {
 // '!' character.
 
 template<typename USART>
-void Terminal<USART>::error(const char *msg) {
+void TerminalT<USART>::error(const char *msg) {
   print("!");
   println(msg);
 }
@@ -204,7 +204,7 @@ void Terminal<USART>::error(const char *msg) {
 // connected to our USART.
 
 template<typename USART>
-void Terminal<USART>::flush(void) {
+void TerminalT<USART>::flush(void) {
   if (interactive && state == INPUT) erase_input();
   for (int i = 0; i < tx_size; ++i) usart.tx(tx_buff[i]);
   tx_size = 0;
@@ -216,7 +216,7 @@ void Terminal<USART>::flush(void) {
 // Switch between interactive and the default non-interactive mode.
 
 template<typename USART>
-void Terminal<USART>::set_interactive(bool inter) {
+void TerminalT<USART>::set_interactive(bool inter) {
   interactive = inter;
   if (interactive) prompt(true);
 }
@@ -227,19 +227,23 @@ void Terminal<USART>::set_interactive(bool inter) {
 // they are done with processing the last line that was received.
 
 template <typename USART>
-bool Terminal<USART>::dispatch(const Events::Event &e) {
+void TerminalT<USART>::dispatch(const Events::Event &e) {
   switch (e.tag) {
+  case Events::USART_INIT:
+    if (e.param == usart.index()) mgr->post(Events::TERMINAL_INIT);
+    break;
+
   case Events::USART_RX_CHAR:
     process_rx_char(e.param);
-    return true;
+    break;
 
   case Events::TERMINAL_LINE_PROCESSED:
     if (interactive) prompt(true);
     state = INPUT;
-    return true;
+    break;
 
   default:
-    return false;
+    break;
   }
 }
 
@@ -247,7 +251,7 @@ bool Terminal<USART>::dispatch(const Events::Event &e) {
 // Process a single character received from the USART.
 
 template <typename USART>
-void Terminal<USART>::process_rx_char(char ch) {
+void TerminalT<USART>::process_rx_char(char ch) {
   switch (ch) {
   case '\r':
     // End of line signalled just by carriage return...
@@ -309,7 +313,7 @@ void Terminal<USART>::process_rx_char(char ch) {
 // output line when an input line is being edited: the input line is
 // erased, the output line is written, then the input line is redrawn.
 
-template <typename USART> void Terminal<USART>::erase_input(void) {
+template <typename USART> void TerminalT<USART>::erase_input(void) {
   for (int i = 0; i < rx_pos + 2; ++i) {
     usart.tx('\b');
     usart.tx(' ');
@@ -318,7 +322,7 @@ template <typename USART> void Terminal<USART>::erase_input(void) {
   usart.flush();
 }
 
-template <typename USART> void Terminal<USART>::redraw_input(void) {
+template <typename USART> void TerminalT<USART>::redraw_input(void) {
   usart.tx('>');
   usart.tx(' ');
   for (int i = 0; i < rx_pos; ++i) usart.tx((*rx_buff)[i]);

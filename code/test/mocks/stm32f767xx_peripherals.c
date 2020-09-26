@@ -1,5 +1,9 @@
 #include "stm32f767xx.h"
 
+uint32_t AHB1_frequency = 0;
+uint32_t APB1_frequency = 0;
+uint32_t APB2_frequency = 0;
+
 static TIM_TypeDef tim2;
 TIM_TypeDef *TIM2 = &tim2;
 
@@ -369,4 +373,74 @@ void init_mock_gpios(void)
   init_mock_gpio(GPIOI);
   init_mock_gpio(GPIOJ);
   init_mock_gpio(GPIOK);
+}
+
+void init_mock_timer(TIM_TypeDef *tim) {
+  uint32_t arr = 0x00000000;
+  uint32_t af1 = 0x00000000;
+  uint32_t af2 = 0x00000000;
+  if (tim == TIM2 || tim == TIM5) {
+    arr = 0xFFFFFFFF;
+  } else if (tim == TIM1 || tim == TIM3 || tim == TIM4 ||
+             tim == TIM6 || tim == TIM7 || tim == TIM8) {
+    arr = 0x0000FFFF;
+  }
+  if (tim == TIM1 || tim == TIM8) {
+    af1 = 0x00000001;
+    af2 = 0x00000001;
+  }
+  tim->CR1 = 0x00;
+  tim->CR2 = 0x00;
+  tim->SMCR = 0x00;
+  tim->DIER = 0x00;
+  tim->SR = 0x00;
+  tim->EGR = 0x00;
+  tim->CCMR1 = 0x00;
+  tim->CCMR2 = 0x00;
+  tim->CCER = 0x00;
+  tim->CNT = 0x00;
+  tim->PSC = 0x00;
+  tim->ARR = arr;
+  tim->RCR = 0x00;
+  tim->CCR1 = 0x00;
+  tim->CCR2 = 0x00;
+  tim->CCR3 = 0x00;
+  tim->CCR4 = 0x00;
+  tim->BDTR = 0x00;
+  tim->DCR = 0x00;
+  tim->DMAR = 0x00;
+  tim->OR = 0x00;
+  tim->CCMR3 = 0x00;
+  tim->CCR5 = 0x00;
+  tim->CCR6 = 0x00;
+  tim->AF1 = af1;
+  tim->AF2 = af2;
+}
+
+void init_mock_timers(void) {
+  init_mock_timer(TIM1);
+  init_mock_timer(TIM2);
+  init_mock_timer(TIM3);
+  init_mock_timer(TIM4);
+  init_mock_timer(TIM5);
+  init_mock_timer(TIM6);
+  init_mock_timer(TIM7);
+  init_mock_timer(TIM8);
+  init_mock_timer(TIM9);
+  init_mock_timer(TIM10);
+  init_mock_timer(TIM11);
+  init_mock_timer(TIM12);
+  init_mock_timer(TIM13);
+  init_mock_timer(TIM14);
+}
+
+void init_mock_mcu(void) {
+  const uint32_t core_clock = 216000000;
+  AHB1_frequency = core_clock / 1;
+  APB1_frequency = core_clock / 8;
+  APB2_frequency = core_clock / 4;
+
+  init_peripheral_clocks();
+  init_mock_gpios();
+  init_mock_timers();
 }

@@ -14,6 +14,7 @@
 inline void wfe(void) { __WFE(); }
 Events::Manager ev(wfe);
 
+using Terminal = TerminalT<USART>;
 
 USART usart3(3, PD8, GPIO_AF_7, PD9, GPIO_AF_7, DMAChannel { 1, 3, 4 });
 
@@ -34,21 +35,21 @@ public:
   TerminalDemo() : Events::Consumer("TerminalDemo") { }
 
   // Event dispatch...
-  bool dispatch(const Events::Event &e) {
+  void dispatch(const Events::Event &e) {
     switch (e.tag) {
     case Events::SYSTICK:
       if (++tick_counter == 1000) {
         tick_counter = 0;
         write_tick_message(count++);
       }
-      return false;
+      return;
 
     case Events::TERMINAL_LINE_RECEIVED:
       process_line((TerminalRXBuffer)e.param);
-      return true;
+      return;
 
     default:
-      return false;
+      return;
     }
   }
 

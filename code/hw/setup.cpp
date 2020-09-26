@@ -2,6 +2,10 @@
 
 #include "bsp-nucleo.h"
 
+uint32_t AHB1_frequency = 0;
+uint32_t APB1_frequency = 0;
+uint32_t APB2_frequency = 0;
+
 // Enable L1 instruction and data caches.
 void enable_caches(void) {
   SCB_EnableICache();
@@ -51,14 +55,20 @@ void configure_clock(void) {
   // Select PLL as system clock source and configure HCLK, PCLK1 and
   // PCLK2 clock dividers. Set APB dividers to safe values, then
   // update system clock divider and source before setting APB
-  // dividers to final values.
+  // dividers to final values, to run AHB at 216 MHz, APB1 at 27 MHz
+  // (216 / 8) (max. permitted = 45 MHz) and APB2 at 54 MHz (216 / 4)
+  // (max. permitted = 90 MHz).
   MODIFY_REG(RCC->CFGR, RCC_CFGR_PPRE1, RCC_CFGR_PPRE1_DIV16);
   MODIFY_REG(RCC->CFGR, RCC_CFGR_PPRE2, RCC_CFGR_PPRE2_DIV16);
   MODIFY_REG(RCC->CFGR, RCC_CFGR_HPRE, RCC_CFGR_HPRE_DIV1);
   MODIFY_REG(RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_PLL);
   while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) { __asm("nop"); }
-  MODIFY_REG(RCC->CFGR, RCC_CFGR_PPRE1, RCC_CFGR_PPRE1_DIV4);
-  MODIFY_REG(RCC->CFGR, RCC_CFGR_PPRE2, RCC_CFGR_PPRE2_DIV2);
+  MODIFY_REG(RCC->CFGR, RCC_CFGR_PPRE1, RCC_CFGR_PPRE1_DIV8);
+  MODIFY_REG(RCC->CFGR, RCC_CFGR_PPRE2, RCC_CFGR_PPRE2_DIV4);
+  const uint32_t core_clock = 216000000;
+  AHB1_frequency = core_clock / 1;
+  APB1_frequency = core_clock / 8;
+  APB2_frequency = core_clock / 4;
 
   // Update CMSIS system core clock.
   SystemCoreClockUpdate();

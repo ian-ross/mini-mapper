@@ -19,6 +19,7 @@ Manager::Manager(EventWaiter w) : waiter{w} {
 void Manager::operator+=(Consumer &c) {
   if (nconsumers >= MAX_CONSUMERS) {
     fatal("too many event consumers");
+    return;
   }
   consumers[nconsumers++] = &c;
   c.mgr = this;
@@ -28,13 +29,31 @@ void Manager::operator+=(Consumer &c) {
 // Post a new event to the queue, which we treat as a circular buffer.
 
 void Manager::post(Tag tag, uint32_t param) {
+  if (!started) {
+    fatal("event posted before event loop started");
+    return;
+  }
   if (nevents >= QUEUE_SIZE) {
     fatal("too many pending events");
+    return;
   }
   queue[qpos].tag = tag;
   queue[qpos].param = param;
   qpos = (qpos + 1) % QUEUE_SIZE;
   nevents++;
+}
+
+
+// Deliver a single event.
+
+void Manager::deliver(Event &e) {
+  // Try the consumers in turn to see who wants to process this
+  // event...
+  for (int j = 0; j < nconsumers; ++j) {
+    if (consumers[j] != nullptr) {
+      consumers[j]->dispatch(e);
+    }
+  }
 }
 
 
@@ -46,29 +65,16 @@ void Manager::post(Tag tag, uint32_t param) {
 // NOW.
 
 void Manager::drain(void) {
+  if (!started) {
+    Event start{EVENT_LOOP_STARTED, 0};
+    deliver(start);
+    started = true;
+  }
+
   for (int i = qpos; nevents > 0; i = (i + 1) % QUEUE_SIZE) {
     if (queue[i].tag != NO_EVENT) {
-      bool consumed = false;
-
-      // Try the consumers in turn to see who wants to process this
-      // event...
-      for (int j = 0; !consumed && j < nconsumers; ++j) {
-        if (consumers[j] != nullptr) {
-          if (consumers[j]->dispatch(queue[i])) {
-            consumed = true;
-          }
-        }
-      }
-
-      // Make sure that all events that are posted get consumed
-      // (except for SysTick, which can be used by multiple
-      // consumers).
-      if (!consumed && queue[i].tag != SYSTICK) {
-        int tag = queue[i].tag;
-        fatal("event not consumed", &tag);
-      }
-
-      // Empty the slot in the event queue.
+      // Deliver event and empty the slot in the event queue.
+      deliver(queue[i]);
       queue[i].tag = NO_EVENT;
       nevents--;
     }
@@ -118,15 +124,16 @@ TEST_CASE("Event management") {
     CHECK(ev.consumer_count() == 1);
   }
 
-  SUBCASE("can post events") {
+  SUBCASE("cannot post events before event loop started") {
     ev.post(Events::USART_RX_CHAR, 'c');
-    CHECK(ev.pending_count() == 1);
+    CHECK(ev.pending_count() == 0);
   }
 
   SUBCASE("events are delivered") {
+    REQUIRE_CALL(consumer, dispatch(_));
+    ev.drain();
     ev.post(Events::USART_RX_CHAR, 'c');
-    REQUIRE_CALL(consumer, dispatch(_))
-      .RETURN(_1.tag == Events::USART_RX_CHAR);
+    REQUIRE_CALL(consumer, dispatch(_));
     ev.drain();
     CHECK(ev.pending_count() == 0);
   }

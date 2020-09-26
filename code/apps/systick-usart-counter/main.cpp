@@ -30,21 +30,21 @@ public:
   TickerWriter() : Events::Consumer("TickerWriter") { }
 
   // Event dispatch...
-  bool dispatch(const Events::Event &e) {
+  void dispatch(const Events::Event &e) {
     switch (e.tag) {
     case Events::SYSTICK:
       if (++tick_counter == 1000) {
         tick_counter = 0;
         write_tick_message(count++);
       }
-      return false;
+      break;
 
     case Events::USART_RX_CHAR:
       write_rx_message(e.param);
-      return true;
+      break;
 
     default:
-      return false;
+      break;
     }
   }
 

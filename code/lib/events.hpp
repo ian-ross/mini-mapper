@@ -25,16 +25,20 @@ namespace Events {
 
 enum Tag {
   NO_EVENT = 0,
+  EVENT_LOOP_STARTED,
   SYSTICK,
+  USART_INIT,
   USART_RX_CHAR,
   USART_RX_OVERRUN,
   USART_TX_DMA_DONE,
   USART_TX_ERROR,
   USART_TX_OVERFLOW,
+  TERMINAL_INIT,
   TERMINAL_LINE_RECEIVED,
   TERMINAL_LINE_PROCESSED,
   TERMINAL_RX_OVERFLOW,
   TERMINAL_CANNOT_FLUSH,
+  SHELL_INIT,
 };
 
 
@@ -96,8 +100,13 @@ public:
 
 private:
 
+  void deliver(Event &e);
+
   // Function to wait for new hardware events.
   EventWaiter waiter;
+
+  // Has the event loop been started?
+  bool started = false;
 
   // Use std::array for event queue and consumers list to have a fixed
   // sized array that looks like an STL vector.
@@ -125,7 +134,7 @@ public:
   const char *name(void) const { return n; }
 
   friend class Manager;
-  virtual bool dispatch(const Event &e) = 0;
+  virtual void dispatch(const Event &e) = 0;
 
 protected:
 

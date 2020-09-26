@@ -38,8 +38,8 @@ LDLIBS = -lmm -lc -lm -lnosys -lsupc++
 
 .PHONY: shared-lib
 shared-lib:
-	if [[ ! -e ../../lib-build ]] ; then $(MK) -p ../../lib-build ; fi
-	if [[ ! -e build/lib ]] ; then ln -s ../../lib-build build/lib ; fi
+	@if [[ ! -e ../lib-build ]] ; then $(MK) -p ../lib-build ; fi
+	@if [[ ! -e build/lib ]] ; then ln -s ../../lib-build build/lib ; fi
 
 .PHONY: flash
 flash:

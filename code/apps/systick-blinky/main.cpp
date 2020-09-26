@@ -49,20 +49,16 @@ public:
     Events::Consumer("TickerToggler"), pin{p}, toggle_ticks{t} { }
 
   // Event dispatch...
-  bool dispatch(const Events::Event &e) {
+  void dispatch(const Events::Event &e) {
     // Skip anything that's not a SysTick.
     if (e.tag != Events::SYSTICK)
-      return false;
+      return;
 
     if (++tick_counter == toggle_ticks) {
       // Toggle the pin and reset our counter every time we roll over.
       tick_counter = 0;
       pin.Toggle();
     }
-
-    // Mark that we didn't consume the event, so other event consumers
-    // can use it too.
-    return false;
   }
 
 private:

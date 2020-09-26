@@ -36,10 +36,14 @@ LIBOBJS = $(addprefix build/lib/,$(LIBOBJS1))
 # Derive application object files from sources: fix file extensions,
 # modify object paths to point into build directory.
 OBJS1 = $(subst $(BASE)/,,$(SRCS))
-OBJS2 = $(patsubst %.cpp,%.o,$(OBJS1))
-OBJS3 = $(patsubst %.c,%.o,$(OBJS2))
-OBJS4 = $(patsubst %.s,%.o,$(OBJS3))
-OBJS = $(addprefix build/,$(OBJS4))
+OBJS2 = $(subst ../modules/,modules/,$(OBJS1))
+OBJS3 = $(patsubst %.cpp,%.o,$(OBJS2))
+OBJS4 = $(patsubst %.c,%.o,$(OBJS3))
+OBJS5 = $(patsubst %.s,%.o,$(OBJS4))
+OBJS = $(addprefix build/,$(OBJS5))
+
+show:
+	@echo $(OBJS)
 
 .PRECIOUS: $(LIBOBJS) $(OBJS)
 
@@ -66,6 +70,11 @@ build/%.o: %.cpp
 	@$(CXX) -std=c++17 -MP -MMD -c -o $@ $< $(CXXFLAGS) $(INC_PATHS)
 
 build/%.o: $(BASE)/%.cpp
+	$(info ==> Compiling file: $(notdir $<))
+	@$(MK) -p $(dir $@)
+	@$(CXX) -std=c++17 -MP -MMD -c -o $@ $< $(CXXFLAGS) $(INC_PATHS)
+
+build/modules/%.o: ../modules/%.cpp
 	$(info ==> Compiling file: $(notdir $<))
 	@$(MK) -p $(dir $@)
 	@$(CXX) -std=c++17 -MP -MMD -c -o $@ $< $(CXXFLAGS) $(INC_PATHS)

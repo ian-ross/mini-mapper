@@ -43,6 +43,14 @@ enum GPIOAF {
   GPIO_AF_5,
   GPIO_AF_6,
   GPIO_AF_7,
+  GPIO_AF_8,
+  GPIO_AF_9,
+  GPIO_AF_10,
+  GPIO_AF_11,
+  GPIO_AF_12,
+  GPIO_AF_13,
+  GPIO_AF_14,
+  GPIO_AF_15,
 };
 
 
@@ -56,6 +64,10 @@ class Pin {
 public:
 
   Pin(GPIO_TypeDef *port, uint16_t pin) : port(port), pin(pin) { }
+
+  bool operator==(const Pin &other) const {
+    return port == other.port && pin == other.pin;
+  }
 
   const GPIO_TypeDef *Port() const { return port; }
   const uint16_t PinMask() const { return 1 << pin; }

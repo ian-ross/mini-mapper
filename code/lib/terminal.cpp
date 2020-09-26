@@ -34,8 +34,11 @@ TEST_CASE("Terminal") {
   MockEventWaiter waiter;
   Events::Manager ev(MockEventWaiter::wait_for_event);
   MockUSART usart;
-  Terminal terminal(usart);
+  ALLOW_CALL(usart, index()).RETURN(3);
+  ALLOW_CALL(usart, dispatch(_));
+  TerminalT terminal(usart);
   MockEventConsumer consumer;
+  ALLOW_CALL(consumer, dispatch(_));
   ev += usart;
   ev += terminal;
   ev += consumer;
@@ -44,6 +47,9 @@ TEST_CASE("Terminal") {
     std::string check;
     ALLOW_CALL(usart, tx(_)).LR_SIDE_EFFECT(check += _1);
     REQUIRE_CALL(usart, flush());
+    ev.drain();
+    ev.post(Events::USART_INIT, 3);
+    ev.drain();
     terminal.print("test");
     terminal.flush();
     REQUIRE(check == "test");
@@ -53,6 +59,9 @@ TEST_CASE("Terminal") {
     std::string check;
     ALLOW_CALL(usart, tx(_)).LR_SIDE_EFFECT(check += _1);
     REQUIRE_CALL(usart, flush());
+    ev.drain();
+    ev.post(Events::USART_INIT, 3);
+    ev.drain();
     terminal.print(123);
     terminal.flush();
     REQUIRE(check == "123");
@@ -62,6 +71,9 @@ TEST_CASE("Terminal") {
     std::string check;
     ALLOW_CALL(usart, tx(_)).LR_SIDE_EFFECT(check += _1);
     REQUIRE_CALL(usart, flush());
+    ev.drain();
+    ev.post(Events::USART_INIT, 3);
+    ev.drain();
     terminal.print("val=");
     terminal.println(64);
     REQUIRE(check == "val=64\r\n");
@@ -71,6 +83,9 @@ TEST_CASE("Terminal") {
     std::string check;
     ALLOW_CALL(usart, tx(_)).LR_SIDE_EFFECT(check += _1);
     REQUIRE_CALL(usart, flush());
+    ev.drain();
+    ev.post(Events::USART_INIT, 3);
+    ev.drain();
     terminal.error("UROR");
     REQUIRE(check == "!UROR\r\n");
   }
@@ -79,15 +94,20 @@ TEST_CASE("Terminal") {
     std::string check;
     ALLOW_CALL(usart, tx(_)).LR_SIDE_EFFECT(check += _1);
     REQUIRE_CALL(usart, flush()).TIMES(AT_LEAST(1));
+    ev.drain();
+    ev.post(Events::USART_INIT, 3);
+    ev.drain();
     terminal.set_interactive(true);
     REQUIRE(check == "> ");
   }
 
   SUBCASE("line event generated correctly (non-interactive)") {
-    ALLOW_CALL(usart, dispatch(_)).RETURN(false);
+    ALLOW_CALL(usart, dispatch(_));
     REQUIRE_CALL(consumer,
-                 dispatch(Events::Event{Events::TERMINAL_LINE_RECEIVED,0}))
-      .RETURN(true);
+                 dispatch(Events::Event{Events::TERMINAL_LINE_RECEIVED,0}));
+    ev.drain();
+    ev.post(Events::USART_INIT, 3);
+    ev.drain();
     for (auto ch : "test\r") {
       if (ch != '\0') ev.post(Events::USART_RX_CHAR, ch);
       ev.drain();
@@ -97,10 +117,12 @@ TEST_CASE("Terminal") {
   }
 
   SUBCASE("RX buffer overflow detected correctly (non-interactive)") {
-    ALLOW_CALL(usart, dispatch(_)).RETURN(false);
+    ALLOW_CALL(usart, dispatch(_));
     REQUIRE_CALL(consumer,
-                 dispatch(Events::Event{Events::TERMINAL_RX_OVERFLOW,0}))
-      .RETURN(true);
+                 dispatch(Events::Event{Events::TERMINAL_RX_OVERFLOW,0}));
+    ev.drain();
+    ev.post(Events::USART_INIT, 3);
+    ev.drain();
     for (int i = 0; i < 81; ++i) {
       ev.post(Events::USART_RX_CHAR, 'x');
       ev.drain();
@@ -108,15 +130,17 @@ TEST_CASE("Terminal") {
   }
 
   SUBCASE("line event generated correctly (interactive)") {
-    ALLOW_CALL(usart, dispatch(_)).RETURN(false);
+    ALLOW_CALL(usart, dispatch(_));
     std::string check;
     ALLOW_CALL(usart, tx(_)).LR_SIDE_EFFECT(check += _1);
     ALLOW_CALL(usart, flush());
     REQUIRE_CALL(consumer,
                  dispatch(Events::Event{Events::TERMINAL_LINE_RECEIVED,
-                                        TERMINAL_BUFFER_0}))
-      .RETURN(true);
+                                        TERMINAL_BUFFER_0}));
 
+    ev.drain();
+    ev.post(Events::USART_INIT, 3);
+    ev.drain();
     terminal.set_interactive(true);
     for (auto ch : "test\r") {
       if (ch != '\0') ev.post(Events::USART_RX_CHAR, ch);
@@ -132,15 +156,17 @@ TEST_CASE("Terminal") {
   }
 
   SUBCASE("backspace handled (interactive)") {
-    ALLOW_CALL(usart, dispatch(_)).RETURN(false);
+    ALLOW_CALL(usart, dispatch(_));
     std::string check;
     ALLOW_CALL(usart, tx(_)).LR_SIDE_EFFECT(check += _1);
     ALLOW_CALL(usart, flush());
     REQUIRE_CALL(consumer,
                  dispatch(Events::Event{Events::TERMINAL_LINE_RECEIVED,
-                                        TERMINAL_BUFFER_0}))
-      .RETURN(true);
+                                        TERMINAL_BUFFER_0}));
 
+    ev.drain();
+    ev.post(Events::USART_INIT, 3);
+    ev.drain();
     terminal.set_interactive(true);
     for (auto ch : "tex\bst\r") {
       if (ch != '\0') ev.post(Events::USART_RX_CHAR, ch);
@@ -156,7 +182,7 @@ TEST_CASE("Terminal") {
   }
 
   SUBCASE("response output and prompt (interactive)") {
-    ALLOW_CALL(usart, dispatch(_)).RETURN(false);
+    ALLOW_CALL(usart, dispatch(_));
     std::string check;
     ALLOW_CALL(usart, tx(_)).LR_SIDE_EFFECT(check += _1);
     ALLOW_CALL(usart, flush());
@@ -164,9 +190,11 @@ TEST_CASE("Terminal") {
                  dispatch(Events::Event{Events::TERMINAL_LINE_RECEIVED,
                                         TERMINAL_BUFFER_0}))
       .LR_SIDE_EFFECT(terminal.println("OK"))
-      .LR_SIDE_EFFECT(ev.post(Events::TERMINAL_LINE_PROCESSED))
-      .RETURN(true);
+      .LR_SIDE_EFFECT(ev.post(Events::TERMINAL_LINE_PROCESSED));
 
+    ev.drain();
+    ev.post(Events::USART_INIT, 3);
+    ev.drain();
     terminal.set_interactive(true);
     for (auto ch : "cmd\r") {
       if (ch != '\0') ev.post(Events::USART_RX_CHAR, ch);
@@ -179,7 +207,7 @@ TEST_CASE("Terminal") {
   }
 
   SUBCASE("unsolicited output, input line erase and redraw (interactive)") {
-    ALLOW_CALL(usart, dispatch(_)).RETURN(false);
+    ALLOW_CALL(usart, dispatch(_));
     std::string check;
     ALLOW_CALL(usart, tx(_)).LR_SIDE_EFFECT(check += _1);
     ALLOW_CALL(usart, flush());
@@ -187,9 +215,11 @@ TEST_CASE("Terminal") {
                  dispatch(Events::Event{Events::TERMINAL_LINE_RECEIVED,
                                         TERMINAL_BUFFER_0}))
       .LR_SIDE_EFFECT(terminal.println("OK"))
-      .LR_SIDE_EFFECT(ev.post(Events::TERMINAL_LINE_PROCESSED))
-      .RETURN(true);
+      .LR_SIDE_EFFECT(ev.post(Events::TERMINAL_LINE_PROCESSED));
 
+    ev.drain();
+    ev.post(Events::USART_INIT, 3);
+    ev.drain();
     terminal.set_interactive(true);
     ev.post(Events::USART_RX_CHAR, 'c');
     ev.drain();

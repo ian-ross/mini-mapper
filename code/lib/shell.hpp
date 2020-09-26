@@ -32,6 +32,7 @@ public:
 
   Module(const char *module_name) : name(module_name) { }
 
+  virtual void init(void) { }
   virtual CommandResult set_variable
     (const char *name, const char *value) = 0;
   virtual CommandResult show_variable(const char *name) = 0;
@@ -79,7 +80,7 @@ private:
 class CommandShell : public Events::Consumer {
 public:
   CommandShell(TerminalInterface &terminal);
-  virtual bool dispatch(const Events::Event &e) override;
+  virtual void dispatch(const Events::Event &e) override;
 
   void process_command(char *buf);
 

@@ -1,4 +1,4 @@
-// Simple SysTick-driven "multi-blinky" running from command shell.
+// Command shell with PWM and LED blinky modules.
 
 #include <cstring>
 
@@ -15,6 +15,7 @@
 
 // Shell modules.
 #include "blinky_module.hpp"
+#include "pwm_module.hpp"
 
 
 // Event management for real hardware plus setup for terminal using
@@ -35,6 +36,7 @@ extern "C" void SysTick_Handler(void) { ev.post(Events::SYSTICK); }
 
 
 BlinkyModule blinky;
+PWMModule pwm;
 
 int main(void)
 {
@@ -45,10 +47,12 @@ int main(void)
   configure_clock();
   SysTick_Config(SystemCoreClock / 1000);
   terminal.set_interactive(true);
+  pwm.init();
 
   // Create command shell with core module (which implements the "set"
-  // and "show" commands) and LED blinky module.
+  // and "show" commands) and PWM and LED blinky modules.
   Shell::CommandShell shell(terminal);
+  shell += pwm;
   shell += blinky;
 
   // Add all event consumers to event manager.
@@ -57,5 +61,7 @@ int main(void)
   ev += shell;
   ev += blinky;
 
+  terminal.print("ARR = ");
+  terminal.println(pwm.reload());
   ev.loop();
 }

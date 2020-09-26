@@ -14,13 +14,21 @@ public:
   USART(uint8_t iusart,
         const Pin &tx, GPIOAF tx_af,
         const Pin &rx, GPIOAF rx_af,
-        const DMAChannel &dma_chan);
+        const DMAChannel &dma_chan) :
+    Events::Consumer("USART"), iusart(iusart),
+    tx_pin(tx), tx_af(tx_af),
+    rx_pin(rx), rx_af(rx_af),
+    dma_chan(dma_chan),
+    usart(usart_base(iusart)),
+    dma(usart_dma_stream(iusart)) { }
   ~USART() { }
 
   USART(const USART&) = delete;
   USART(USART&&) = delete;
   USART& operator=(const USART&) = delete;
   USART& operator=(USART&&) = delete;
+
+  int index(void) const { return iusart; }
 
   // Buffer a single character for transmission.
   void tx(char c);
@@ -34,10 +42,18 @@ public:
   // transmission is started at the next SysTick from the `dispatch`
   // method.
   void flush(void) { need_flush = true; }
-  bool dispatch(const Events::Event &e) override;
+  void dispatch(const Events::Event &e) override;
 
 private:
 
+  uint8_t iusart;
+  const Pin &tx_pin;
+  GPIOAF tx_af;
+  const Pin &rx_pin;
+  GPIOAF rx_af;
+  const DMAChannel dma_chan;
+
+  void init(void);
   void start_tx_dma(void);
 
   // Hardware resources: USART peripheral and DMA stream.
@@ -56,6 +72,9 @@ private:
   volatile bool tx_sending = false;
   volatile bool tx_error = false;
   volatile bool need_flush = false;
+
+  static USART_TypeDef *usart_base(int iusart);
+  static DMA_Stream_TypeDef *usart_dma_stream(int iusart);
 };
 
 #endif

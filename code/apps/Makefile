@@ -2,6 +2,7 @@ SUBDIRS = \
   systick-blinky \
   systick-usart-counter \
   shell-blinky \
+  shell-pwm \
   terminal-demo
 
 all:
@@ -18,3 +19,4 @@ clean:
 	  $(MAKE) -C "$${subdir}" clean \
     || exit 1; \
 	done
+	$(RM) -fr lib-build

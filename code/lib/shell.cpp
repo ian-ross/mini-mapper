@@ -21,14 +21,13 @@ CommandShell::CommandShell(TerminalInterface &t) :
 // command, then post an event to indicate that the line has been
 // processed and the terminal may reclaim the RX buffer.
 
-bool CommandShell::dispatch(const Events::Event &e) {
+void CommandShell::dispatch(const Events::Event &e) {
   if (e.tag != Events::TERMINAL_LINE_RECEIVED) {
-    return false;
+    return;
   }
 
   process_command(term->buffer((TerminalRXBuffer)e.param));
   mgr->post(Events::TERMINAL_LINE_PROCESSED);
-  return true;
 }
 
 
@@ -132,8 +131,10 @@ bool CommandShell::handle_result(CommandResult cr) {
 void CommandShell::operator+=(Module &mod) {
   if (nmodules >= MAX_MODULES) {
     fatal("too many shell modules");
+    return;
   }
   modules[nmodules++] = &mod;
+  mod.init();
 }
 
 
@@ -207,6 +208,7 @@ TEST_CASE("Command shell") {
   MockEventWaiter waiter;
   Events::Manager ev(MockEventWaiter::wait_for_event);
   MockEventConsumer consumer;
+  ALLOW_CALL(consumer, dispatch(_));
   ev += shell;
   ev += consumer;
 
@@ -217,6 +219,7 @@ TEST_CASE("Command shell") {
 
   SUBCASE("commands get dispatched to correct module") {
     shell += module;
+    ev.drain();
 
     char cmd[TERMINAL_RX_BUFSIZE] = "test";
     ALLOW_CALL(terminal, buffer(_)).RETURN((char *)&cmd[0]);
@@ -226,13 +229,13 @@ TEST_CASE("Command shell") {
       .WITH(strcmp(_1, "test") == 0)
       .RETURN(Shell::COMMAND_OK);
     ALLOW_CALL(consumer, dispatch(_))
-      .WITH(_1.tag == Events::TERMINAL_LINE_PROCESSED)
-      .RETURN(true);
+      .WITH(_1.tag == Events::TERMINAL_LINE_PROCESSED);
     ev.drain();
   }
 
   SUBCASE("command arguments are passed to module correctly") {
     shell += module;
+    ev.drain();
 
     char cmd[TERMINAL_RX_BUFSIZE] = "test abc 123";
     ALLOW_CALL(terminal, buffer(_)).RETURN((char *)&cmd[0]);
@@ -244,13 +247,13 @@ TEST_CASE("Command shell") {
       .WITH(strcmp(_3[1], "123") == 0)
       .RETURN(Shell::COMMAND_OK);
     ALLOW_CALL(consumer, dispatch(_))
-      .WITH(_1.tag == Events::TERMINAL_LINE_PROCESSED)
-      .RETURN(true);
+      .WITH(_1.tag == Events::TERMINAL_LINE_PROCESSED);
     ev.drain();
   }
 
   SUBCASE("unknown commands generate an error") {
     shell += module;
+    ev.drain();
 
     char cmd[TERMINAL_RX_BUFSIZE] = "unknown";
     ALLOW_CALL(terminal, buffer(_)).RETURN((char *)&cmd[0]);
@@ -260,8 +263,7 @@ TEST_CASE("Command shell") {
 
     REQUIRE_CALL(terminal, error(_)).WITH(strcmp(_1, "SHUN") == 0);
     ALLOW_CALL(consumer, dispatch(_))
-      .WITH(_1.tag == Events::TERMINAL_LINE_PROCESSED)
-      .RETURN(true);
+      .WITH(_1.tag == Events::TERMINAL_LINE_PROCESSED);
     ev.drain();
   }
 
@@ -281,6 +283,7 @@ TEST_CASE("Command shell") {
 
   SUBCASE("variable setting works") {
     shell += module;
+    ev.drain();
 
     char cmd[TERMINAL_RX_BUFSIZE] = "set test-var true";
     ALLOW_CALL(terminal, buffer(_)).RETURN((char *)&cmd[0]);
@@ -291,13 +294,13 @@ TEST_CASE("Command shell") {
       .WITH(strcmp(_2, "true") == 0)
       .RETURN(Shell::COMMAND_OK);
     ALLOW_CALL(consumer, dispatch(_))
-      .WITH(_1.tag == Events::TERMINAL_LINE_PROCESSED)
-      .RETURN(true);
+      .WITH(_1.tag == Events::TERMINAL_LINE_PROCESSED);
     ev.drain();
   }
 
   SUBCASE("setting unknown variable generates an error") {
     shell += module;
+    ev.drain();
 
     char cmd[TERMINAL_RX_BUFSIZE] = "set test-var true";
     ALLOW_CALL(terminal, buffer(_)).RETURN((char *)&cmd[0]);
@@ -306,13 +309,13 @@ TEST_CASE("Command shell") {
     REQUIRE_CALL(module, set_variable(_, _)).RETURN(Shell::SKIPPED);
     REQUIRE_CALL(terminal, error(_)).WITH(strcmp(_1, "SHUV") == 0);
     ALLOW_CALL(consumer, dispatch(_))
-      .WITH(_1.tag == Events::TERMINAL_LINE_PROCESSED)
-      .RETURN(true);
+      .WITH(_1.tag == Events::TERMINAL_LINE_PROCESSED);
     ev.drain();
   }
 
   SUBCASE("showing variables works") {
     shell += module;
+    ev.drain();
 
     char cmd[TERMINAL_RX_BUFSIZE] = "show test-var";
     ALLOW_CALL(terminal, buffer(_)).RETURN((char *)&cmd[0]);
@@ -320,8 +323,7 @@ TEST_CASE("Command shell") {
 
     REQUIRE_CALL(module, show_variable(_)).RETURN(Shell::COMMAND_OK);
     ALLOW_CALL(consumer, dispatch(_))
-      .WITH(_1.tag == Events::TERMINAL_LINE_PROCESSED)
-      .RETURN(true);
+      .WITH(_1.tag == Events::TERMINAL_LINE_PROCESSED);
     ev.drain();
   }
 }

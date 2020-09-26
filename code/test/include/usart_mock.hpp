@@ -11,7 +11,8 @@ public:
 
   MockUSART() : trompeloeil::mock_interface<Events::Consumer>("(USART)") {}
 
-  MAKE_MOCK1(dispatch, bool(const Events::Event &), override);
+  MAKE_CONST_MOCK0(index, int(void));
+  MAKE_MOCK1(dispatch, void(const Events::Event &), override);
   MAKE_MOCK1(tx, void(char));
   MAKE_MOCK0(flush, void(void));
 };

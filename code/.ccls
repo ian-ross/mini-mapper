@@ -4,5 +4,6 @@ clang
 -Itest/include
 -Ihw
 -Ilib
+-Iapps/modules
 -DSTM32F767xx
 -DTEST
