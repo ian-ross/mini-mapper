@@ -13,7 +13,7 @@ static bool parse_duty(const char *s, int &duty, bool &pct);
 
 
 PWMModule::PWMModule() :
-  Shell::Module{"blinky"}, pwm{TIM10, PB8, 30000} { }
+  Shell::Module{"blinky"}, pwm{TIM10, PB8, 5000} { }
 
 
 // The variables supported by the BlinkyModule shell module are
@@ -43,8 +43,10 @@ PWMModule::set_variable(const char *name, const char *value) {
     return Shell::INVALID_VALUE_FOR_VARIABLE;
   } else if (!strcmp(name, "pwm-duty")) {
     int val;
-    bool pct;
-    if (!parse_duty(value, val, pct))
+    bool pct = false;
+    if (!strcmp(value, "max")) {
+      val = pwm.ReloadCount() + 1;
+    } else if (!parse_duty(value, val, pct))
       return Shell::INVALID_VALUE_FOR_VARIABLE;
     if (pct) {
       pwm.SetDutyPct(val);

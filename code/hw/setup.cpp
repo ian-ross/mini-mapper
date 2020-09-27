@@ -67,8 +67,8 @@ void configure_clock(void) {
   MODIFY_REG(RCC->CFGR, RCC_CFGR_PPRE2, RCC_CFGR_PPRE2_DIV4);
   const uint32_t core_clock = 216000000;
   AHB1_frequency = core_clock / 1;
-  APB1_frequency = core_clock / 8;
-  APB2_frequency = core_clock / 4;
+  APB1_frequency = core_clock / 8 * 2;
+  APB2_frequency = core_clock / 4 * 2;
 
   // Update CMSIS system core clock.
   SystemCoreClockUpdate();

@@ -19,7 +19,7 @@ public:
   bool IsInverted(void) const { return READ_BIT(timer->CCER, TIM_CCER_CC1P); }
   int ReloadCount(void) const { return timer->ARR; }
   void SetDuty(uint16_t duty) {
-    if (duty > timer->ARR) duty = 0;
+    if (duty > timer->ARR + 1) duty = 0;
     timer->CCR1 = duty;
     SET_BIT(timer->EGR, TIM_EGR_UG);
   }

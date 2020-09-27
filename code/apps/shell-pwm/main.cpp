@@ -61,7 +61,5 @@ int main(void)
   ev += shell;
   ev += blinky;
 
-  terminal.print("ARR = ");
-  terminal.println(pwm.reload());
   ev.loop();
 }

@@ -30,7 +30,7 @@ void Manager::operator+=(Consumer &c) {
 
 void Manager::post(Tag tag, uint32_t param) {
   if (!started) {
-    fatal("event posted before event loop started");
+    if (tag != SYSTICK) fatal("event posted before event loop started");
     return;
   }
   if (nevents >= QUEUE_SIZE) {
@@ -66,9 +66,9 @@ void Manager::deliver(Event &e) {
 
 void Manager::drain(void) {
   if (!started) {
+    started = true;
     Event start{EVENT_LOOP_STARTED, 0};
     deliver(start);
-    started = true;
   }
 
   for (int i = qpos; nevents > 0; i = (i + 1) % QUEUE_SIZE) {
