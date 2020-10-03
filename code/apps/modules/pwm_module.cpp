@@ -13,7 +13,7 @@ static bool parse_duty(const char *s, int &duty, bool &pct);
 
 
 PWMModule::PWMModule() :
-  Shell::Module{"blinky"}, pwm{TIM10, PB8, 5000} { }
+  Shell::Module{"pwm"}, pwm{TIM10, PB8, 5000} { }
 
 
 // The variables supported by the BlinkyModule shell module are
@@ -25,19 +25,19 @@ Shell::CommandResult
 PWMModule::set_variable(const char *name, const char *value) {
   if (!strcmp(name, "pwm-state")) {
     if (!strcmp(value, "on")) {
-      pwm.On();
+      pwm.on();
       return Shell::COMMAND_OK;
     } else if (!strcmp(value, "off")) {
-      pwm.Off();
+      pwm.off();
       return Shell::COMMAND_OK;
     }
     return Shell::INVALID_VALUE_FOR_VARIABLE;
   } else if (!strcmp(name, "pwm-polarity")) {
     if (!strcmp(value, "pos")) {
-      pwm.SetInverted(false);
+      pwm.set_inverted(false);
       return Shell::COMMAND_OK;
     } else if (!strcmp(value, "neg")) {
-      pwm.SetInverted(true);
+      pwm.set_inverted(true);
       return Shell::COMMAND_OK;
     }
     return Shell::INVALID_VALUE_FOR_VARIABLE;
@@ -45,13 +45,13 @@ PWMModule::set_variable(const char *name, const char *value) {
     int val;
     bool pct = false;
     if (!strcmp(value, "max")) {
-      val = pwm.ReloadCount() + 1;
+      val = pwm.reload_count() + 1;
     } else if (!parse_duty(value, val, pct))
       return Shell::INVALID_VALUE_FOR_VARIABLE;
     if (pct) {
-      pwm.SetDutyPct(val);
+      pwm.set_duty_pct(val);
     } else {
-      pwm.SetDuty(val);
+      pwm.set_duty(val);
     }
     return Shell::COMMAND_OK;
   }
@@ -60,21 +60,21 @@ PWMModule::set_variable(const char *name, const char *value) {
 
 Shell::CommandResult PWMModule::show_variable(const char *name) {
   if (!strcmp(name, "pwm-state")) {
-    terminal.println(pwm.IsOn() ? "on" : "off");
+    terminal.println(pwm.is_on() ? "on" : "off");
     return Shell::COMMAND_OK;
   } else if (!strcmp(name, "pwm-polarity")) {
-    terminal.println(pwm.IsInverted() ? "neg" : "pos");
+    terminal.println(pwm.is_inverted() ? "neg" : "pos");
     return Shell::COMMAND_OK;
   } else if (!strcmp(name, "pwm-duty")) {
-    int duty = pwm.Duty();
-    int duty_pct = pwm.DutyPct();
+    int duty = pwm.duty();
+    int duty_pct = pwm.duty_pct();
     terminal.print(duty);
     terminal.print(" (");
     terminal.print(duty_pct);
     terminal.println("%)");
     return Shell::COMMAND_OK;
   } else if (!strcmp(name, "pwm-reload")) {
-    terminal.println(pwm.ReloadCount());
+    terminal.println(pwm.reload_count());
     return Shell::COMMAND_OK;
   } else {
     return Shell::SKIPPED;
@@ -91,10 +91,10 @@ Shell::CommandResult PWMModule::run_command
   if (nargs != 1) return Shell::COMMAND_ERROR;
 
   if (!strcmp(args[0], "on")) {
-    pwm.On();
+    pwm.on();
     return Shell::COMMAND_OK;
   } else if (!strcmp(args[0], "off")) {
-    pwm.Off();
+    pwm.off();
     return Shell::COMMAND_OK;
   }
   return Shell::INVALID_VALUE_FOR_VARIABLE;

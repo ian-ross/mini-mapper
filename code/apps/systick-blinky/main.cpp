@@ -57,7 +57,7 @@ public:
     if (++tick_counter == toggle_ticks) {
       // Toggle the pin and reset our counter every time we roll over.
       tick_counter = 0;
-      pin.Toggle();
+      pin.toggle();
     }
   }
 
@@ -82,7 +82,7 @@ int main(void)
   // and the Pin abstraction allows us to set up the pin mode easily
   // (incidentally enabling the right AHB peripheral clock as well.)
   Pin LED1(LED1_PORT, LED1_PIN);
-  LED1.Output(GPIO_SPEED_VERY_HIGH, GPIO_TYPE_PUSH_PULL, GPIO_PUPD_NONE);
+  LED1.output(GPIO_SPEED_VERY_HIGH, GPIO_TYPE_PUSH_PULL, GPIO_PUPD_NONE);
 
   // Create an event consumer to toggle the LED, add it to the event
   // manager and run the event loop.

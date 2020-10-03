@@ -1,6 +1,6 @@
 #include "pin.hpp"
 
-static void EnableClock(GPIO_TypeDef *port) {
+static void enable_clock(GPIO_TypeDef *port) {
   // Enable GPIO clock: AHB1ENR bits are one per port, starting from
   // zero, and the port addresses are every 0x0400 starting at the
   // base address.
@@ -14,24 +14,24 @@ static void EnableClock(GPIO_TypeDef *port) {
   RCC->AHB1ENR |= mask;
 }
 
-void Pin::Output(GPIOSpeed speed, GPIOOutputType type, GPIOPUPD pupd) const {
-  EnableClock(port);
-  MODIFY_REG(port->OSPEEDR, 0x03 << (2 * pin), (int)speed << (2 * pin));
-  MODIFY_REG(port->OTYPER, 0x01 << pin, (int)type << pin);
-  MODIFY_REG(port->PUPDR, 0x03 << (2 * pin), (int)pupd << (2 * pin));
-  MODIFY_REG(port->MODER, 0x03 << (2 * pin), 0x01 << (2 * pin));
+void Pin::output(GPIOSpeed speed, GPIOOutputType type, GPIOPUPD pupd) const {
+  enable_clock(_port);
+  MODIFY_REG(_port->OSPEEDR, 0x03 << (2 * _pin), (int)speed << (2 * _pin));
+  MODIFY_REG(_port->OTYPER, 0x01 << _pin, (int)type << _pin);
+  MODIFY_REG(_port->PUPDR, 0x03 << (2 * _pin), (int)pupd << (2 * _pin));
+  MODIFY_REG(_port->MODER, 0x03 << (2 * _pin), 0x01 << (2 * _pin));
 }
 
-void Pin::Input(GPIOSpeed speed) const {
-  EnableClock(port);
-  MODIFY_REG(port->OSPEEDR, 0x03 << (2 * pin), (int)speed << (2 * pin));
-  MODIFY_REG(port->MODER, 0x03 << (2 * pin), 0x00 << (2 * pin));
+void Pin::input(GPIOSpeed speed) const {
+  enable_clock(_port);
+  MODIFY_REG(_port->OSPEEDR, 0x03 << (2 * _pin), (int)speed << (2 * _pin));
+  MODIFY_REG(_port->MODER, 0x03 << (2 * _pin), 0x00 << (2 * _pin));
 }
 
-void Pin::Alternate(GPIOAF af) const {
-  EnableClock(port);
-  MODIFY_REG(port->MODER, 0x03 << (2 * pin), 0x02 << (2 * pin));
-  MODIFY_REG(port->AFR[pin / 8], 0x0F << 4 * (pin % 8), af << 4 * (pin % 8));
+void Pin::alternate(GPIOAF af) const {
+  enable_clock(_port);
+  MODIFY_REG(_port->MODER, 0x03 << (2 * _pin), 0x02 << (2 * _pin));
+  MODIFY_REG(_port->AFR[_pin / 8], 0x0F << 4 * (_pin % 8), af << 4 * (_pin % 8));
 }
 
 
@@ -57,7 +57,7 @@ TEST_CASE("GPIO abstraction") {
   }
 
   SUBCASE("GPIO output setup") {
-    PD8.Output(GPIO_SPEED_VERY_HIGH, GPIO_TYPE_OPEN_DRAIN, GPIO_PUPD_PULL_UP);
+    PD8.output(GPIO_SPEED_VERY_HIGH, GPIO_TYPE_OPEN_DRAIN, GPIO_PUPD_PULL_UP);
     CHECK(READ_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIODEN) == RCC_AHB1ENR_GPIODEN);
     CHECK(((GPIOD->OSPEEDR & (0x03 << 16)) >> 16) == GPIO_SPEED_VERY_HIGH);
     CHECK((READ_BIT(GPIOD->OTYPER, 1 << 8) >> 8) == GPIO_TYPE_OPEN_DRAIN);
@@ -65,13 +65,13 @@ TEST_CASE("GPIO abstraction") {
   }
 
   SUBCASE("GPIO input setup") {
-    PC9.Input(GPIO_SPEED_HIGH);
+    PC9.input(GPIO_SPEED_HIGH);
     CHECK(READ_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOCEN) == RCC_AHB1ENR_GPIOCEN);
     CHECK(((GPIOC->OSPEEDR & (0x03 << 18)) >> 18) == GPIO_SPEED_HIGH);
   }
 
   SUBCASE("GPIO alternate function setup") {
-    PA7.Alternate(GPIO_AF_5);
+    PA7.alternate(GPIO_AF_5);
     CHECK(READ_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOAEN) == RCC_AHB1ENR_GPIOAEN);
     CHECK(((GPIOA->MODER & (0x03 << 14)) >> 14) == 0x02);
     CHECK(((GPIOA->AFR[0] & (0x0F << 28)) >> 28) == 0x05);
@@ -79,14 +79,14 @@ TEST_CASE("GPIO abstraction") {
   }
 
   SUBCASE("GPIO output set/reset/toggle") {
-    PA6.Output(GPIO_SPEED_VERY_HIGH, GPIO_TYPE_OPEN_DRAIN, GPIO_PUPD_PULL_UP);
-    PA6.Set();
+    PA6.output(GPIO_SPEED_VERY_HIGH, GPIO_TYPE_OPEN_DRAIN, GPIO_PUPD_PULL_UP);
+    PA6.set();
     CHECK((READ_BIT(GPIOA->ODR, 1 << 6) >> 6) == 0x01);
-    PA6.Reset();
+    PA6.reset();
     CHECK((READ_BIT(GPIOA->ODR, 1 << 6) >> 6) == 0x00);
-    PA6.Toggle();
+    PA6.toggle();
     CHECK((READ_BIT(GPIOA->ODR, 1 << 6) >> 6) == 0x01);
-    PA6.Toggle();
+    PA6.toggle();
     CHECK((READ_BIT(GPIOA->ODR, 1 << 6) >> 6) == 0x00);
   }
 }

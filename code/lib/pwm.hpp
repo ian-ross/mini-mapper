@@ -8,42 +8,42 @@
 
 class PWM {
 public:
-  PWM(TIM_TypeDef *t, const Pin &p, uint32_t f)
-    : timer{t}, pin{p}, frequency{f} { }
+  PWM(TIM_TypeDef *timer, const Pin &pin, uint32_t frequency)
+    : _timer{timer}, _pin{pin}, _frequency{frequency} { }
 
-  void Init(void);
+  void init(void);
 
-  uint16_t Duty(void) const { return timer->CCR1; }
-  int DutyPct(void) const { return timer->CCR1 * 100 / timer->ARR; }
-  bool IsOn(void) const { return READ_BIT(timer->CR1, TIM_CR1_CEN); }
-  bool IsInverted(void) const { return READ_BIT(timer->CCER, TIM_CCER_CC1P); }
-  int ReloadCount(void) const { return timer->ARR; }
-  void SetDuty(uint16_t duty) {
-    if (duty > timer->ARR + 1) duty = 0;
-    timer->CCR1 = duty;
-    SET_BIT(timer->EGR, TIM_EGR_UG);
+  uint16_t duty(void) const { return _timer->CCR1; }
+  int duty_pct(void) const { return _timer->CCR1 * 100 / _timer->ARR; }
+  bool is_on(void) const { return READ_BIT(_timer->CR1, TIM_CR1_CEN); }
+  bool is_inverted(void) const { return READ_BIT(_timer->CCER, TIM_CCER_CC1P); }
+  int reload_count(void) const { return _timer->ARR; }
+  void set_duty(uint16_t duty) {
+    if (duty > _timer->ARR + 1) duty = 0;
+    _timer->CCR1 = duty;
+    SET_BIT(_timer->EGR, TIM_EGR_UG);
   }
-  void SetDutyPct(int duty_pct) {
+  void set_duty_pct(int duty_pct) {
     if (duty_pct < 0) duty_pct = 0;
     if (duty_pct > 100) duty_pct = 100;
-    timer->CCR1 = duty_pct * timer->ARR / 100;
-    SET_BIT(timer->EGR, TIM_EGR_UG);
+    _timer->CCR1 = duty_pct * _timer->ARR / 100;
+    SET_BIT(_timer->EGR, TIM_EGR_UG);
   }
-  void SetInverted(bool inv);
+  void set_inverted(bool inv);
 
-  void On() {
+  void on() {
     // Trigger update of timer parameters before enabling timer.
-    SET_BIT(timer->EGR, TIM_EGR_UG);
-    SET_BIT(timer->CR1, TIM_CR1_CEN);
+    SET_BIT(_timer->EGR, TIM_EGR_UG);
+    SET_BIT(_timer->CR1, TIM_CR1_CEN);
   }
-  void Off() { CLEAR_BIT(timer->CR1, TIM_CR1_CEN); }
+  void off() { CLEAR_BIT(_timer->CR1, TIM_CR1_CEN); }
 
 
 private:
 
-  TIM_TypeDef *timer;
-  const Pin &pin;
-  uint32_t frequency;
+  TIM_TypeDef *_timer;
+  const Pin &_pin;
+  uint32_t _frequency;
 
   uint32_t input_frequency(void) const;
 };

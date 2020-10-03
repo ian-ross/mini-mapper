@@ -63,36 +63,36 @@ enum GPIOAF {
 class Pin {
 public:
 
-  Pin(GPIO_TypeDef *port, uint16_t pin) : port(port), pin(pin) { }
+  Pin(GPIO_TypeDef *port, uint16_t pin) : _port(port), _pin(pin) { }
 
   bool operator==(const Pin &other) const {
-    return port == other.port && pin == other.pin;
+    return _port == other._port && _pin == other._pin;
   }
 
-  const GPIO_TypeDef *Port() const { return port; }
-  const uint16_t PinMask() const { return 1 << pin; }
+  const GPIO_TypeDef *port() const { return _port; }
+  const uint16_t pin_mask() const { return 1 << _pin; }
 
   // Set pin as GPIO output.
-  void Output(GPIOSpeed speed, GPIOOutputType type, GPIOPUPD pupd) const;
+  void output(GPIOSpeed speed, GPIOOutputType type, GPIOPUPD pupd) const;
 
   // Set pin as GPIO input.
-  void Input(GPIOSpeed speed) const;
+  void input(GPIOSpeed speed) const;
 
   // Set pin to alternate function.
-  void Alternate(GPIOAF af) const;
+  void alternate(GPIOAF af) const;
 
   // Outputs: set, reset, toggle.
-  void Set() const { port->ODR |= PinMask(); }
-  void Reset() const { port->ODR &= ~PinMask(); }
-  void Toggle() const { port->ODR ^= PinMask(); }
+  void set() const { _port->ODR |= pin_mask(); }
+  void reset() const { _port->ODR &= ~pin_mask(); }
+  void toggle() const { _port->ODR ^= pin_mask(); }
 
   // Inputs: read.
   // TBD
 
 private:
 
-  GPIO_TypeDef *port;
-  uint16_t pin;
+  GPIO_TypeDef *_port;
+  uint16_t _pin;
 };
 
 

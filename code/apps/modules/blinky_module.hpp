@@ -35,7 +35,8 @@ public:
   // Shell command and variable processing (from Shell::Module).
   Shell::CommandResult set_variable(const char *name, const char *value) override;
   Shell::CommandResult show_variable(const char *name) override;
-  Shell::CommandResult run_command(const char *cmd, int nargs, char *args[]) override;
+  Shell::CommandResult run_command(const char *cmd,
+                                   int nargs, char *args[]) override;
 
 private:
 

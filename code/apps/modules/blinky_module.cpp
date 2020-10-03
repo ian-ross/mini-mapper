@@ -12,7 +12,7 @@ extern Terminal terminal;
 
 void BlinkyModule::init(void) {
   for (auto led : leds)
-    led.Output(GPIO_SPEED_VERY_HIGH, GPIO_TYPE_PUSH_PULL, GPIO_PUPD_NONE);
+    led.output(GPIO_SPEED_VERY_HIGH, GPIO_TYPE_PUSH_PULL, GPIO_PUPD_NONE);
 }
 
 
@@ -28,7 +28,7 @@ void BlinkyModule::dispatch(const Events::Event &e) {
     if (states[i] == BLINK) {
       if (++tick_count[i] >= delay_ticks[i]) {
         tick_count[i] = 0;
-        leds[i].Toggle();
+        leds[i].toggle();
       }
     }
   }
@@ -124,13 +124,13 @@ void BlinkyModule::set_state(int led, State state) {
   states[led] = state;
   switch (state) {
   case ON:
-    leds[led].Set();
+    leds[led].set();
     break;
   case OFF:
-    leds[led].Reset();
+    leds[led].reset();
     break;
   case BLINK:
-    leds[led].Reset();
+    leds[led].reset();
     tick_count[led] = 0;
     break;
   }

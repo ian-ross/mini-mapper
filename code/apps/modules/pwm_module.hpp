@@ -14,14 +14,14 @@ class PWMModule : public Shell::Module {
 public:
 
   PWMModule();
-  void init(void) override { pwm.Init(); }
+  void init(void) override { pwm.init(); }
 
   // Shell command and variable processing (from Shell::Module).
   Shell::CommandResult set_variable(const char *name, const char *value) override;
   Shell::CommandResult show_variable(const char *name) override;
   Shell::CommandResult run_command(const char *cmd, int nargs, char *args[]) override;
 
-  uint32_t reload(void) const { return pwm.ReloadCount(); }
+  uint32_t reload(void) const { return pwm.reload_count(); }
 
 private:
 
