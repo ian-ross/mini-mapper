@@ -27,14 +27,16 @@ public:
   // high (duty = 101%?) or low (duty = 0?).
 
   Driver(TIM_TypeDef *timer, int pwm_frequency, const Pin &in1, const Pin &in2);
-  void init(void) { _pwm.init(); }
+  void init(void);
 
   void stop(void);
   void brake(void);
   void forward(int pwm_duty_pct);
   void reverse(int pwm_duty_pct);
 
+#ifndef TEST
 private:
+#endif
 
   PWM _pwm;
 };
