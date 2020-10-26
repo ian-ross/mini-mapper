@@ -64,6 +64,7 @@ class Pin {
 public:
 
   Pin(GPIO_TypeDef *port, uint16_t pin) : _port(port), _pin(pin) { }
+  Pin(const Pin &other) = default;
 
   bool operator==(const Pin &other) const {
     return _port == other._port && _pin == other._pin;
