@@ -39,3 +39,6 @@ version.h
 *.a
 .ccls-cache
 /code/apps/lib-build/
+/prototypes/motor-board/code/test-bench/.envrc
+/prototypes/motor-board/code/test-bench/.venv/
+/misc-code/

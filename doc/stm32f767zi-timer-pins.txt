@@ -1,0 +1,43 @@
+TIM2 (4)
+ - CH1: PA0 (AF1), PA5 (AF1), PA15 (AF1)
+ - CH2: PA1 (AF1), PB3 (AF1)
+ - CH3: PA2 (AF1), PB10 (AF1)
+ - CH4: PA3 (AF1), PB11 (AF1)
+
+TIM3 (4)
+ - CH1: PA6 (AF2), PB4 (AF2), PC6 (AF2)
+ - CH2: PA7 (AF2), PB5 (AF2), PC7 (AF2)
+ - CH3: PB0 (AF2), PC8 (AF2)
+ - CH4: PB1 (AF2), PC9 (AF2)
+
+TIM4 (4)
+ - CH1: PB6 (AF2), PD12 (AF2)
+ - CH2: PB7 (AF2), PD13 (AF2)
+ - CH3: PB8 (AF2), PD14 (AF2)
+ - CH4: PB9 (AF2), PD15 (AF2)
+
+TIM5 (4)
+ - CH1: PA0 (AF2), PH10 (AF2)
+ - CH2: PA1 (AF2), PH11 (AF2)
+ - CH3: PA2 (AF2), PH12 (AF2)
+ - CH4: PA3 (AF2), PI0 (AF2)
+
+TIM9 (2)
+ - CH1: PA2 (AF3), PE5 (AF3)
+ - CH2: PA3 (AF3), PE6 (AF3)
+
+TIM10 (1)
+ - CH1: PB8 (AF3), PF6 (AF3)
+
+TIM11 (1)
+ - CH1: PB9 (AF3), PF7 (AF3)
+
+TIM12 (2)
+ - CH1: PB14 (AF9), PH6 (AF9)
+ - CH2: PB15 (AF9), PH9 (AF9)
+
+TIM13 (1)
+ - CH1: PA6 (AF9), PF8 (AF9)
+
+TIM14 (1)
+ - CH1: PA7 (AF9), PF9 (AF9)

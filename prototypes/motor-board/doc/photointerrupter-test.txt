@@ -1,0 +1,13 @@
+
+ - Current limiting resistor on IR LED = 81.7 Ohm
+ - Detector resistor = 5.7 k Ohm
+ - Supply voltage = 3.313 V
+ - "Light" voltage = 3.221 V
+ - "Dark" voltage = 0.9 mV - 91.1 mV (depends on exact location of
+   occluder and amount of ambient radiation excluded)
+
+=>
+
+ - Light current = 56.5 mA
+ - Dark current = 0.158 - 15.9 uA
+

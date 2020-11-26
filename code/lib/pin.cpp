@@ -28,6 +28,11 @@ void Pin::input(GPIOSpeed speed) const {
   MODIFY_REG(_port->MODER, 0x03 << (2 * _pin), 0x00 << (2 * _pin));
 }
 
+void Pin::analog(void) const {
+  enable_clock(_port);
+  MODIFY_REG(_port->MODER, 0x03 << (2 * _pin), 0x03 << (2 * _pin));
+}
+
 void Pin::alternate(GPIOAF af) const {
   enable_clock(_port);
   MODIFY_REG(_port->MODER, 0x03 << (2 * _pin), 0x02 << (2 * _pin));

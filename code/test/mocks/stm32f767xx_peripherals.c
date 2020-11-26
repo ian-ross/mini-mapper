@@ -437,8 +437,8 @@ void init_mock_timers(void) {
 void init_mock_mcu(void) {
   const uint32_t core_clock = 216000000;
   AHB1_frequency = core_clock / 1;
-  APB1_frequency = core_clock / 8;
-  APB2_frequency = core_clock / 4;
+  APB1_frequency = core_clock / 8 * 2;
+  APB2_frequency = core_clock / 4 * 2;
 
   init_peripheral_clocks();
   init_mock_gpios();

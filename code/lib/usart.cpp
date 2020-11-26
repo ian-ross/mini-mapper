@@ -1,10 +1,10 @@
+#include "dma.hpp"
 #include "events.hpp"
 #include "usart.hpp"
 
 static USART_TypeDef *usart_base(int iusart);
 static DMA_Stream_TypeDef *usart_dma_stream(int iusart);
 static IRQn_Type usart_irqn(int iusart);
-static IRQn_Type dma_irqn(int idma, int istream);
 
 
 // Set up USART for interrupt-driven RX, DMA-driven TX.
@@ -134,7 +134,7 @@ void USART::init(void) {
 
   // Transmit DMA interrupt setup: enable DMA interrupts for DMA
   // channel attached to USART.
-  NVIC_EnableIRQ(dma_irqn(_dma_chan.dma, _dma_chan.stream));
+  NVIC_EnableIRQ(dma_irqn(_dma_chan));
 }
 
 // Buffer a single character for transmission.
@@ -306,29 +306,6 @@ static IRQn_Type usart_irqn(int iusart) {
   default: return NonMaskableInt_IRQn;
   }
 }
-
-static IRQn_Type dma_irqn(int idma, int istream) {
-  switch (idma * 10 + istream) {
-  case 10: return DMA1_Stream0_IRQn;
-  case 11: return DMA1_Stream1_IRQn;
-  case 12: return DMA1_Stream2_IRQn;
-  case 13: return DMA1_Stream3_IRQn;
-  case 14: return DMA1_Stream4_IRQn;
-  case 15: return DMA1_Stream5_IRQn;
-  case 16: return DMA1_Stream6_IRQn;
-  case 17: return DMA1_Stream7_IRQn;
-  case 20: return DMA2_Stream0_IRQn;
-  case 21: return DMA2_Stream1_IRQn;
-  case 22: return DMA2_Stream2_IRQn;
-  case 23: return DMA2_Stream3_IRQn;
-  case 24: return DMA2_Stream4_IRQn;
-  case 25: return DMA2_Stream5_IRQn;
-  case 26: return DMA2_Stream6_IRQn;
-  case 27: return DMA2_Stream7_IRQn;
-  default: return NonMaskableInt_IRQn;
-  }
-}
-
 
 //----------------------------------------------------------------------
 //

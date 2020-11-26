@@ -10,7 +10,7 @@ namespace Shell {
 // the core shell module.
 
 CommandShell::CommandShell(TerminalInterface &t) :
-  Events::Consumer("SHELL"), term(&t) {
+  Events::Consumer("Shell"), term(&t) {
   core.setShell(*this);
   *this += core;
 }

@@ -79,6 +79,9 @@ public:
   // Set pin as GPIO input.
   void input(GPIOSpeed speed) const;
 
+  // Set pin as analog input.
+  void analog(void) const;
+
   // Set pin to alternate function.
   void alternate(GPIOAF af) const;
 
