@@ -25,6 +25,7 @@
 // The DMA ISR for the DMA stream used should be set up to call the
 // `dma_transfer_complete_irq` method of the `Motor::Torque` object.
 
+#include <iostream>
 #include <numeric>
 
 #include "bsp-generic.h"
@@ -33,6 +34,8 @@
 
 
 static int pin_adc_channel(const ADC_TypeDef *adc, const Pin &pin);
+static uint32_t adc_extsel_code(const TIM_TypeDef *_timer);
+static void set_adc_sample_time(ADC_TypeDef *adc, uint8_t ch, uint8_t t);
 
 
 // Simple constructor: most initialisation is done in the `init`
@@ -93,9 +96,7 @@ void Motor::Torque::init(void) {
   // Configure peripherals.
   configure_dma();
   configure_timer();
-
-  // Configure ADC.
-
+  configure_adc();
 }
 
 
@@ -152,7 +153,7 @@ void Motor::Torque::configure_dma(void) {
 
   // Determine DMA stream peripheral address.
   DMA_Stream_TypeDef *stream =
-    (DMA_Stream_TypeDef *)(DMA2_Stream0_BASE + (_dmac.stream - 1) * 0x018UL);
+    (DMA_Stream_TypeDef *)(DMA2_Stream0_BASE + _dmac.stream * 0x018UL);
 
   // Configure DMA transfer:
   //  - DMA transfer in circular mode to match with ADC configuration:
@@ -201,7 +202,7 @@ void Motor::Torque::configure_timer(void) {
   // factor on their clock source.
   uint32_t apb1_prescaler = READ_BIT(RCC->CFGR, RCC_CFGR_PPRE1);
   uint32_t timer_clock_frequency =
-    SystemCoreClock >> APBPrescTable[apb1_prescaler >>  RCC_CFGR_PPRE1_Pos];
+    SystemCoreClock >> APBPrescTable[apb1_prescaler >> RCC_CFGR_PPRE1_Pos];
   if (apb1_prescaler != RCC_CFGR_PPRE1_DIV1) {
     timer_clock_frequency *= 2;
   }
@@ -210,11 +211,11 @@ void Motor::Torque::configure_timer(void) {
   // milliseconds, so setting the timer prescaler so that the timer
   // counter updates at 1 MHz will allow us to cover all intervals
   // that we need, even for 16-bit timers.
-  uint32_t timer_prescaler = timer_clock_frequency / 1000000;
+  const uint32_t prescaled_freq = 1000000;
+  uint32_t timer_prescaler = timer_clock_frequency / prescaled_freq;
 
   // Timer reload value for required repeat period.
-  uint32_t timer_reload =
-    (_interval_ms * timer_clock_frequency) / (1000 * timer_prescaler);
+  uint32_t timer_reload = prescaled_freq / (1000 / _interval_ms);
 
   // Enable timer peripheral clock.
   uint32_t timer_periph_clock = 0;
@@ -227,20 +228,64 @@ void Motor::Torque::configure_timer(void) {
   tmpreg = READ_BIT(RCC->APB1ENR, timer_periph_clock);
   (void)tmpreg;
 
-  // Configure timer.
+  // Configure timer timebase.
   WRITE_REG(_timer->PSC, timer_prescaler - 1);
   WRITE_REG(_timer->ARR, timer_reload - 1);
   MODIFY_REG(_timer->CR1, (TIM_CR1_DIR | TIM_CR1_CMS), 0);
   WRITE_REG(_timer->RCR, 0);
-  // TODO: CHECK THIS...
-  // XXX: STOPPED HERE!!!
-  MODIFY_REG(_timer->CR2, TIM_CR2_MMS, TIM_CR2_MMS_1); // TRGO update
 
-  // Enable timer interrupts for debugging.
-  SET_BIT(_timer->DIER, TIM_DIER_UIE);
-  // TODO: IRQ NUMBERS.
-  NVIC_SetPriority(TIM2_IRQn, 0);
-  NVIC_EnableIRQ(TIM2_IRQn);
+  // Configure timer TRGO signal on timer update event (i.e.
+  // roll-over).
+  MODIFY_REG(_timer->CR2, TIM_CR2_MMS, 0x02 << TIM_CR2_MMS_Pos);
+}
+
+
+// Set up ADC: configure input channels, sample timer, DMA connection,
+// trigger source.
+
+void Motor::Torque::configure_adc(void) {
+  // Start appropriate ADC peripheral clock.
+  uint32_t apb_bit;
+  if (_adc == ADC1) apb_bit = RCC_APB2ENR_ADC1EN;
+  if (_adc == ADC2) apb_bit = RCC_APB2ENR_ADC2EN;
+  if (_adc == ADC3) apb_bit = RCC_APB2ENR_ADC3EN;
+  __IO uint32_t tmpreg;
+  SET_BIT(RCC->APB2ENR, apb_bit);
+  tmpreg = READ_BIT(RCC->APB2ENR, apb_bit);
+  (void)tmpreg;
+
+  // Set ADC clock source: APB2 clock / 2.
+  MODIFY_REG(ADC123_COMMON->CCR, ADC_CCR_ADCPRE, 0);
+
+  // Set ADC regular continuous mode: off.
+  MODIFY_REG(_adc->CR2, ADC_CR2_CONT, 0);
+
+  // Set ADC regular trigger source: rising edge of timer TRGO.
+  MODIFY_REG(_adc->CR2, ADC_CR2_EXTSEL,
+             adc_extsel_code(_timer) << ADC_CR2_EXTSEL_Pos);
+  MODIFY_REG(_adc->CR2, ADC_CR2_EXTEN, 0x01 << ADC_CR2_EXTEN_Pos);
+
+  // Set ADC regular sequencer length: two channels (left and right).
+  MODIFY_REG(_adc->SQR1, ADC_SQR1_L, (2 - 1) << ADC_SQR1_L_Pos);
+
+  // Set ADC group regular sequence: left channel @ rank 0, right
+  // channel @ rank 1.
+  int left_ch = pin_adc_channel(_adc, _pins[Instance::LEFT]);
+  int right_ch = pin_adc_channel(_adc, _pins[Instance::RIGHT]);
+  MODIFY_REG(_adc->SQR3, ADC_SQR3_SQ1, left_ch << ADC_SQR3_SQ1_Pos);
+  MODIFY_REG(_adc->SQR3, ADC_SQR3_SQ2, right_ch << ADC_SQR3_SQ2_Pos);
+
+  // Set ADC input channel sample time: 56 cycles.
+  // TODO: DECIDE ON SAMPLE TIME!
+  set_adc_sample_time(_adc, left_ch, 0x03);
+  set_adc_sample_time(_adc, right_ch, 0x03);
+
+  // Enable multiple conversions.
+  SET_BIT(_adc->CR1, ADC_CR1_SCAN);
+
+  // Enable DMA transfer for ADC.
+  SET_BIT(_adc->CR2, ADC_CR2_DMA);
+  CLEAR_BIT(_adc->CR2, ADC_CR2_DDS);
 }
 
 
@@ -255,6 +300,27 @@ void Motor::Torque::stop(void) {
   CLEAR_BIT(_timer->CR1, TIM_CR1_CEN);
   SET_BIT(_timer->EGR, TIM_EGR_UG);
 }
+
+
+//------------------------------------------------------------------------------
+//
+// TODO: FILL THIS IN
+//
+
+Motor::Torque::Calibration::Calibration() {
+
+}
+
+float Motor::Torque::Calibration::current(float adc_count) const {
+  return 0.0;
+}
+
+float Motor::Torque::Calibration::torque(float adc_count) const {
+  return 0.0;
+}
+
+//
+//------------------------------------------------------------------------------
 
 
 // ADC input pin assignments: pins ordered by ADC channel. Assignments
@@ -284,6 +350,29 @@ static int pin_adc_channel(const ADC_TypeDef *adc, const Pin &pin) {
 }
 
 
+// Determine code for external triggering of ADC from timer TRGO
+// signal (value to be inserted into EXTSEL field of ADC's CR2
+// configuration register).
+
+static uint32_t adc_extsel_code(const TIM_TypeDef *tim) {
+  if (tim == TIM5) return 0x04;
+  if (tim == TIM2) return 0x0B;
+  if (tim == TIM4) return 0x0C;
+  if (tim == TIM6) return 0x0D;
+  return 0;
+}
+
+
+// Set ADC sample time for a given channel: these are split into two
+// registers, channels 0-9 in SMPR2, and channels 10-18 in SMPR1.
+
+static void set_adc_sample_time(ADC_TypeDef *adc, uint8_t ch, uint8_t t) {
+  if (ch >= 10)
+    MODIFY_REG(adc->SMPR1, 0x07 << 3 * (ch - 10), t << 3 * (ch - 10));
+  else
+    MODIFY_REG(adc->SMPR2, 0x07 << 3 * ch, t << 3 * ch);
+}
+
 
 //----------------------------------------------------------------------
 //
@@ -297,7 +386,80 @@ static int pin_adc_channel(const ADC_TypeDef *adc, const Pin &pin) {
 #include "doctest/trompeloeil.hpp"
 #include "events_mock.hpp"
 
-// extern char fatal_msg[];
+extern char fatal_msg[];
+
+TEST_CASE("Motor::Torque initialisation") {
+  init_mock_mcu();
+  fatal_msg[0] = '\0';
+
+  Motor::Torque::Calibration cal;
+  DMAChannel dma{2, 0, 0};
+
+  SUBCASE("create torque monitor with invalid timer") {
+    Motor::Torque torque(TIM1, ADC1, dma, 100 /* ms */, cal, PA4, PA5);
+    torque.init();
+    CHECK(strcmp(fatal_msg, "timer is not supported as ADC trigger!") == 0);
+  }
+
+  SUBCASE("create torque monitor with invalid pin assignments") {
+    Motor::Torque torque(TIM6, ADC1, dma, 100 /* ms */, cal, PB3, PA5);
+    torque.init();
+    CHECK(strcmp(fatal_msg, "cannot use requested pins as ADC inputs!") == 0);
+  }
+
+  SUBCASE("create torque monitor with invalid DMA controller") {
+    DMAChannel dma{1, 0, 0};
+    Motor::Torque torque(TIM6, ADC1, dma, 100 /* ms */, cal, PA4, PA5);
+    torque.init();
+    CHECK(strcmp(fatal_msg, "invalid DMA controller for ADC!") == 0);
+  }
+
+  SUBCASE("create torque monitor with invalid DMA stream/channel") {
+    DMAChannel dma{2, 2, 0};
+    Motor::Torque torque(TIM6, ADC1, dma, 100 /* ms */, cal, PA4, PA5);
+    torque.init();
+    CHECK(strcmp(fatal_msg, "invalid DMA stream/channel for ADC!") == 0);
+  }
+
+  SUBCASE("create torque monitor with valid configuration") {
+    Motor::Torque torque(TIM6, ADC1, dma, 100 /* ms */, cal, PA4, PA5);
+    torque.init();
+    CHECK(strcmp(fatal_msg, "") == 0);
+
+    // Check GPIOs set to analog.
+    CHECK(((GPIOA->MODER & (0x03 << (2 * 4))) >> (2 * 4)) == 0x03);
+    CHECK(((GPIOA->MODER & (0x03 << (2 * 5))) >> (2 * 5)) == 0x03);
+
+    // Check peripheral clocks: timer, ADC, DMA, GPIO ports.
+    CHECK(READ_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM6EN) == RCC_APB1ENR_TIM6EN);
+    CHECK(READ_BIT(RCC->APB2ENR, RCC_APB2ENR_ADC1EN) == RCC_APB2ENR_ADC1EN);
+    CHECK(READ_BIT(RCC->AHB1ENR, RCC_AHB1ENR_DMA2EN) == RCC_AHB1ENR_DMA2EN);
+    CHECK(READ_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOAEN) == RCC_AHB1ENR_GPIOAEN);
+
+    // Check timer timebase.
+    uint32_t timer_clock_frequency = 54000000;
+    uint32_t prescaler = timer_clock_frequency / 1000000 - 1;
+    uint32_t reload = 1000000 / (1000 / 100) - 1;
+    CHECK(TIM6->PSC == prescaler);
+    CHECK(TIM6->ARR == reload);
+
+    // Check timer mode.
+    CHECK(READ_BIT(TIM6->CR1, TIM_CR1_CEN) == 0);
+    CHECK(((TIM6->CR2 & TIM_CR2_MMS) >> TIM_CR2_MMS_Pos) == 0x02);
+
+    // Check timer->ADC triggering.
+    CHECK((READ_BIT(ADC1->CR2, ADC_CR2_EXTSEL) >> ADC_CR2_EXTSEL_Pos) == 0x0D);
+    CHECK((READ_BIT(TIM6->CR2, TIM_CR2_MMS) >> TIM_CR2_MMS_Pos) == 0x02);
+
+    // Check ADC channel sequencing and sample times.
+    CHECK((READ_BIT(ADC1->SQR1, ADC_SQR1_L) >> ADC_SQR1_L_Pos) == (2 - 1));
+    CHECK((READ_BIT(ADC1->SQR3, ADC_SQR3_SQ1) >> ADC_SQR3_SQ1_Pos) == 4);
+    CHECK((READ_BIT(ADC1->SQR3, ADC_SQR3_SQ2) >> ADC_SQR3_SQ2_Pos) == 5);
+
+    // Check DMA transfer count (proxy for other settings).
+    CHECK(DMA2_Stream0->NDTR == 2);
+  }
+}
 
 
 #endif

@@ -64,14 +64,7 @@ public:
          int measure_interval_ms, const Calibration &calib,
          const Pin &left_pin, const Pin &right_pin);
 
-  // Specify the GPIO pin used for a torque measurement instance. May
-  // only be called *before* `init` is called.
-  // TODO: ERROR RETURN?
-  void add_instance(Instance instance, const Pin &pin);
-
-  // Initialise timer, ADC and DMA. Must be called *after* all
-  // `add_instance` calls.
-  // TODO: ERROR RETURN?
+  // Initialise timer, ADC and DMA.
   void init(void);
 
   // To be called from DMA transfer complete IRQ.
@@ -129,10 +122,12 @@ private:
   // buffer is filled.
   int _sample_idx = -1;
 
+  // GPIO pins used as analog inputs: left, then right.
   std::array<Pin, 2> _pins;
 
   void configure_dma(void);
   void configure_timer(void);
+  void configure_adc(void);
 };
 
 };

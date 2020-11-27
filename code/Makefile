@@ -20,6 +20,7 @@ TESTSRCS = \
   test/test_main.cpp \
   test/mocks/core_cm7_peripherals.c \
   test/mocks/stm32f767xx_peripherals.c \
+  hw/system_stm32f7xx.c \
   $(wildcard test/mocks/*_mock.cpp)
 
 # Test object files: convert extensions, convert paths to point into

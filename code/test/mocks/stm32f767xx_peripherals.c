@@ -1,329 +1,22 @@
-#include "stm32f767xx.h"
+#include "bsp-generic.h"
 
 uint32_t AHB1_frequency = 0;
 uint32_t APB1_frequency = 0;
 uint32_t APB2_frequency = 0;
 
-static TIM_TypeDef tim2;
-TIM_TypeDef *TIM2 = &tim2;
 
-static TIM_TypeDef tim3;
-TIM_TypeDef *TIM3 = &tim3;
+uint8_t ahb1periph[0x10000];
+uint8_t *AHB1PERIPH_BASE = ahb1periph;
 
-static TIM_TypeDef tim4;
-TIM_TypeDef *TIM4 = &tim4;
+uint8_t ahb2periph[0x10000];
+uint8_t *AHB2PERIPH_BASE = ahb2periph;
 
-static TIM_TypeDef tim5;
-TIM_TypeDef *TIM5 = &tim5;
+uint8_t apb1periph[0x10000];
+uint8_t *APB1PERIPH_BASE = apb1periph;
 
-static TIM_TypeDef tim6;
-TIM_TypeDef *TIM6 = &tim6;
+uint8_t apb2periph[0x10000];
+uint8_t *APB2PERIPH_BASE = apb2periph;
 
-static TIM_TypeDef tim7;
-TIM_TypeDef *TIM7 = &tim7;
-
-static TIM_TypeDef tim12;
-TIM_TypeDef *TIM12 = &tim12;
-
-static TIM_TypeDef tim13;
-TIM_TypeDef *TIM13 = &tim13;
-
-static TIM_TypeDef tim14;
-TIM_TypeDef *TIM14 = &tim14;
-
-static LPTIM_TypeDef lptim1;
-LPTIM_TypeDef *LPTIM1 = &lptim1;
-
-static RTC_TypeDef rtc;
-RTC_TypeDef *RTC = &rtc;
-
-static WWDG_TypeDef wwdg;
-WWDG_TypeDef *WWDG = &wwdg;
-
-static IWDG_TypeDef iwdg;
-IWDG_TypeDef *IWDG = &iwdg;
-
-static SPI_TypeDef spi2;
-SPI_TypeDef *SPI2 = &spi2;
-
-static SPI_TypeDef spi3;
-SPI_TypeDef *SPI3 = &spi3;
-
-static SPDIFRX_TypeDef spdifrx;
-SPDIFRX_TypeDef *SPDIFRX = &spdifrx;
-
-static USART_TypeDef usart2;
-USART_TypeDef *USART2 = &usart2;
-
-static USART_TypeDef usart3;
-USART_TypeDef *USART3 = &usart3;
-
-static USART_TypeDef uart4;
-USART_TypeDef *UART4 = &uart4;
-
-static USART_TypeDef uart5;
-USART_TypeDef *UART5 = &uart5;
-
-static I2C_TypeDef i2c1;
-I2C_TypeDef *I2C1 = &i2c1;
-
-static I2C_TypeDef i2c2;
-I2C_TypeDef *I2C2 = &i2c2;
-
-static I2C_TypeDef i2c3;
-I2C_TypeDef *I2C3 = &i2c3;
-
-static I2C_TypeDef i2c4;
-I2C_TypeDef *I2C4 = &i2c4;
-
-static CAN_TypeDef can1;
-CAN_TypeDef *CAN1 = &can1;
-
-static CAN_TypeDef can2;
-CAN_TypeDef *CAN2 = &can2;
-
-static CEC_TypeDef cec;
-CEC_TypeDef *CEC = &cec;
-
-static PWR_TypeDef pwr;
-PWR_TypeDef *PWR = &pwr;
-
-static DAC_TypeDef dac1;
-DAC_TypeDef *DAC1 = &dac1;
-
-static DAC_TypeDef dac;
-DAC_TypeDef *DAC = &dac;
-
-static USART_TypeDef uart7;
-USART_TypeDef *UART7 = &uart7;
-
-static USART_TypeDef uart8;
-USART_TypeDef *UART8 = &uart8;
-
-static TIM_TypeDef tim1;
-TIM_TypeDef *TIM1 = &tim1;
-
-static TIM_TypeDef tim8;
-TIM_TypeDef *TIM8 = &tim8;
-
-static USART_TypeDef usart1;
-USART_TypeDef *USART1 = &usart1;
-
-static USART_TypeDef usart6;
-USART_TypeDef *USART6 = &usart6;
-
-static ADC_Common_TypeDef adc;
-ADC_Common_TypeDef *ADC = &adc;
-
-static ADC_TypeDef adc1;
-ADC_TypeDef *ADC1 = &adc1;
-
-static ADC_TypeDef adc2;
-ADC_TypeDef *ADC2 = &adc2;
-
-static ADC_TypeDef adc3;
-ADC_TypeDef *ADC3 = &adc3;
-
-static ADC_Common_TypeDef adc123_common;
-ADC_Common_TypeDef *ADC123_COMMON = &adc123_common;
-
-static SDMMC_TypeDef sdmmc1;
-SDMMC_TypeDef *SDMMC1 = &sdmmc1;
-
-static SPI_TypeDef spi1;
-SPI_TypeDef *SPI1 = &spi1;
-
-static SPI_TypeDef spi4;
-SPI_TypeDef *SPI4 = &spi4;
-
-static SYSCFG_TypeDef syscfg;
-SYSCFG_TypeDef *SYSCFG = &syscfg;
-
-static EXTI_TypeDef exti;
-EXTI_TypeDef *EXTI = &exti;
-
-static TIM_TypeDef tim9;
-TIM_TypeDef *TIM9 = &tim9;
-
-static TIM_TypeDef tim10;
-TIM_TypeDef *TIM10 = &tim10;
-
-static TIM_TypeDef tim11;
-TIM_TypeDef *TIM11 = &tim11;
-
-static SPI_TypeDef spi5;
-SPI_TypeDef *SPI5 = &spi5;
-
-static SPI_TypeDef spi6;
-SPI_TypeDef *SPI6 = &spi6;
-
-static SAI_TypeDef sai1;
-SAI_TypeDef *SAI1 = &sai1;
-
-static SAI_TypeDef sai2;
-SAI_TypeDef *SAI2 = &sai2;
-
-static SAI_Block_TypeDef sai1_block_a;
-SAI_Block_TypeDef *SAI1_Block_A = &sai1_block_a;
-
-static SAI_Block_TypeDef sai1_block_b;
-SAI_Block_TypeDef *SAI1_Block_B = &sai1_block_b;
-
-static SAI_Block_TypeDef sai2_block_a;
-SAI_Block_TypeDef *SAI2_Block_A = &sai2_block_a;
-
-static SAI_Block_TypeDef sai2_block_b;
-SAI_Block_TypeDef *SAI2_Block_B = &sai2_block_b;
-
-static LTDC_TypeDef ltdc;
-LTDC_TypeDef *LTDC = &ltdc;
-
-static LTDC_Layer_TypeDef ltdc_layer1;
-LTDC_Layer_TypeDef *LTDC_Layer1 = &ltdc_layer1;
-
-static LTDC_Layer_TypeDef ltdc_layer2;
-LTDC_Layer_TypeDef *LTDC_Layer2 = &ltdc_layer2;
-
-uint8_t ahb1periph_base[0x10000];
-uint8_t *AHB1PERIPH_BASE = ahb1periph_base;
-
-static DMA_TypeDef dma1;
-DMA_TypeDef *DMA1 = &dma1;
-
-static DMA_Stream_TypeDef dma1_stream0;
-DMA_Stream_TypeDef *DMA1_Stream0 = &dma1_stream0;
-
-static DMA_Stream_TypeDef dma1_stream1;
-DMA_Stream_TypeDef *DMA1_Stream1 = &dma1_stream1;
-
-static DMA_Stream_TypeDef dma1_stream2;
-DMA_Stream_TypeDef *DMA1_Stream2 = &dma1_stream2;
-
-static DMA_Stream_TypeDef dma1_stream3;
-DMA_Stream_TypeDef *DMA1_Stream3 = &dma1_stream3;
-
-static DMA_Stream_TypeDef dma1_stream4;
-DMA_Stream_TypeDef *DMA1_Stream4 = &dma1_stream4;
-
-static DMA_Stream_TypeDef dma1_stream5;
-DMA_Stream_TypeDef *DMA1_Stream5 = &dma1_stream5;
-
-static DMA_Stream_TypeDef dma1_stream6;
-DMA_Stream_TypeDef *DMA1_Stream6 = &dma1_stream6;
-
-static DMA_Stream_TypeDef dma1_stream7;
-DMA_Stream_TypeDef *DMA1_Stream7 = &dma1_stream7;
-
-static DMA_TypeDef dma2;
-DMA_TypeDef *DMA2 = &dma2;
-
-static DMA_Stream_TypeDef dma2_stream0;
-DMA_Stream_TypeDef *DMA2_Stream0 = &dma2_stream0;
-
-static DMA_Stream_TypeDef dma2_stream1;
-DMA_Stream_TypeDef *DMA2_Stream1 = &dma2_stream1;
-
-static DMA_Stream_TypeDef dma2_stream2;
-DMA_Stream_TypeDef *DMA2_Stream2 = &dma2_stream2;
-
-static DMA_Stream_TypeDef dma2_stream3;
-DMA_Stream_TypeDef *DMA2_Stream3 = &dma2_stream3;
-
-static DMA_Stream_TypeDef dma2_stream4;
-DMA_Stream_TypeDef *DMA2_Stream4 = &dma2_stream4;
-
-static DMA_Stream_TypeDef dma2_stream5;
-DMA_Stream_TypeDef *DMA2_Stream5 = &dma2_stream5;
-
-static DMA_Stream_TypeDef dma2_stream6;
-DMA_Stream_TypeDef *DMA2_Stream6 = &dma2_stream6;
-
-static DMA_Stream_TypeDef dma2_stream7;
-DMA_Stream_TypeDef *DMA2_Stream7 = &dma2_stream7;
-
-static ETH_TypeDef eth;
-ETH_TypeDef *ETH = &eth;
-
-static DMA2D_TypeDef dma2d;
-DMA2D_TypeDef *DMA2D = &dma2d;
-
-static DCMI_TypeDef dcmi;
-DCMI_TypeDef *DCMI = &dcmi;
-
-static RNG_TypeDef rng;
-RNG_TypeDef *RNG = &rng;
-
-static FMC_Bank1_TypeDef fmc_bank1;
-FMC_Bank1_TypeDef *FMC_Bank1 = &fmc_bank1;
-
-static FMC_Bank1E_TypeDef fmc_bank1e;
-FMC_Bank1E_TypeDef *FMC_Bank1E = &fmc_bank1e;
-
-static FMC_Bank3_TypeDef fmc_bank3;
-FMC_Bank3_TypeDef *FMC_Bank3 = &fmc_bank3;
-
-static FMC_Bank5_6_TypeDef fmc_bank5_6;
-FMC_Bank5_6_TypeDef *FMC_Bank5_6 = &fmc_bank5_6;
-
-static QUADSPI_TypeDef quadspi;
-QUADSPI_TypeDef *QUADSPI = &quadspi;
-
-static DBGMCU_TypeDef dbgmcu;
-DBGMCU_TypeDef *DBGMCU = &dbgmcu;
-
-static USB_OTG_GlobalTypeDef usb_otg_fs;
-USB_OTG_GlobalTypeDef *USB_OTG_FS = &usb_otg_fs;
-
-static USB_OTG_GlobalTypeDef usb_otg_hs;
-USB_OTG_GlobalTypeDef *USB_OTG_HS = &usb_otg_hs;
-
-static CAN_TypeDef can3;
-CAN_TypeDef *CAN3 = &can3;
-
-static SDMMC_TypeDef sdmmc2;
-SDMMC_TypeDef *SDMMC2 = &sdmmc2;
-
-static MDIOS_TypeDef mdios;
-MDIOS_TypeDef *MDIOS = &mdios;
-
-static DFSDM_Channel_TypeDef dfsdm1_channel0;
-DFSDM_Channel_TypeDef *DFSDM1_Channel0 = &dfsdm1_channel0;
-
-static DFSDM_Channel_TypeDef dfsdm1_channel1;
-DFSDM_Channel_TypeDef *DFSDM1_Channel1 = &dfsdm1_channel1;
-
-static DFSDM_Channel_TypeDef dfsdm1_channel2;
-DFSDM_Channel_TypeDef *DFSDM1_Channel2 = &dfsdm1_channel2;
-
-static DFSDM_Channel_TypeDef dfsdm1_channel3;
-DFSDM_Channel_TypeDef *DFSDM1_Channel3 = &dfsdm1_channel3;
-
-static DFSDM_Channel_TypeDef dfsdm1_channel4;
-DFSDM_Channel_TypeDef *DFSDM1_Channel4 = &dfsdm1_channel4;
-
-static DFSDM_Channel_TypeDef dfsdm1_channel5;
-DFSDM_Channel_TypeDef *DFSDM1_Channel5 = &dfsdm1_channel5;
-
-static DFSDM_Channel_TypeDef dfsdm1_channel6;
-DFSDM_Channel_TypeDef *DFSDM1_Channel6 = &dfsdm1_channel6;
-
-static DFSDM_Channel_TypeDef dfsdm1_channel7;
-DFSDM_Channel_TypeDef *DFSDM1_Channel7 = &dfsdm1_channel7;
-
-static DFSDM_Filter_TypeDef dfsdm1_filter0;
-DFSDM_Filter_TypeDef *DFSDM1_Filter0 = &dfsdm1_filter0;
-
-static DFSDM_Filter_TypeDef dfsdm1_filter1;
-DFSDM_Filter_TypeDef *DFSDM1_Filter1 = &dfsdm1_filter1;
-
-static DFSDM_Filter_TypeDef dfsdm1_filter2;
-DFSDM_Filter_TypeDef *DFSDM1_Filter2 = &dfsdm1_filter2;
-
-static DFSDM_Filter_TypeDef dfsdm1_filter3;
-DFSDM_Filter_TypeDef *DFSDM1_Filter3 = &dfsdm1_filter3;
-
-static JPEG_TypeDef jpeg;
-JPEG_TypeDef *JPEG = &jpeg;
 
 void init_peripheral_clocks(void)
 {
@@ -435,10 +128,33 @@ void init_mock_timers(void) {
 }
 
 void init_mock_mcu(void) {
+  SET_BIT(RCC->CR, RCC_CR_HSEBYP);
+  SET_BIT(RCC->CR, RCC_CR_HSEON);
+  SET_BIT(RCC->CR, RCC_CR_HSERDY);
+  MODIFY_REG(RCC->PLLCFGR, RCC_PLLCFGR_PLLSRC_HSE, RCC_PLLCFGR_PLLSRC_HSE);
+  MODIFY_REG(RCC->PLLCFGR, RCC_PLLCFGR_PLLM, 8 << RCC_PLLCFGR_PLLM_Pos);
+  MODIFY_REG(RCC->PLLCFGR, RCC_PLLCFGR_PLLN, 432 << RCC_PLLCFGR_PLLN_Pos);
+  MODIFY_REG(RCC->PLLCFGR, RCC_PLLCFGR_PLLP, (2/2-1) << RCC_PLLCFGR_PLLP_Pos);
+  MODIFY_REG(RCC->PLLCFGR, RCC_PLLCFGR_PLLQ, 9 << RCC_PLLCFGR_PLLQ_Pos);
+  MODIFY_REG(RCC->PLLCFGR, RCC_PLLCFGR_PLLR, 7 << RCC_PLLCFGR_PLLR_Pos);
+  SET_BIT(RCC->CR, RCC_CR_PLLON);
+  SET_BIT(RCC->CR, RCC_CR_PLLRDY);
+  SET_BIT(RCC->APB1ENR, RCC_APB1ENR_PWREN);
+  SET_BIT(PWR->CR1, PWR_CR1_ODEN);
+  SET_BIT(PWR->CR1, PWR_CR1_ODSWEN);
+  MODIFY_REG(FLASH->ACR, FLASH_ACR_LATENCY, 7 << FLASH_ACR_LATENCY_Pos);
+  MODIFY_REG(RCC->CFGR, RCC_CFGR_PPRE1, RCC_CFGR_PPRE1_DIV16);
+  MODIFY_REG(RCC->CFGR, RCC_CFGR_PPRE2, RCC_CFGR_PPRE2_DIV16);
+  MODIFY_REG(RCC->CFGR, RCC_CFGR_HPRE, RCC_CFGR_HPRE_DIV1);
+  MODIFY_REG(RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_PLL);
+  MODIFY_REG(RCC->CFGR, RCC_CFGR_SWS, RCC_CFGR_SWS_PLL);
+  MODIFY_REG(RCC->CFGR, RCC_CFGR_PPRE1, RCC_CFGR_PPRE1_DIV8);
+  MODIFY_REG(RCC->CFGR, RCC_CFGR_PPRE2, RCC_CFGR_PPRE2_DIV4);
   const uint32_t core_clock = 216000000;
   AHB1_frequency = core_clock / 1;
   APB1_frequency = core_clock / 8 * 2;
   APB2_frequency = core_clock / 4 * 2;
+  SystemCoreClockUpdate();
 
   init_peripheral_clocks();
   init_mock_gpios();
