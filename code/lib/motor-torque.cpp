@@ -138,7 +138,7 @@ float Motor::Torque::smoothed(Instance instance) {
     return 0.0f;
   else {
     const SampleBuffer &ss = _samples[instance];
-    int accum = std::accumulate(ss.cbegin(), ss.cend(), 0.0f);
+    float accum = std::accumulate(ss.cbegin(), ss.cend(), 0.0f);
     return accum / SAMPLE_COUNT;
   }
 }
@@ -461,5 +461,86 @@ TEST_CASE("Motor::Torque initialisation") {
   }
 }
 
+TEST_CASE("Motor::Torque start/stop") {
+  init_mock_mcu();
+  fatal_msg[0] = '\0';
+
+  Motor::Torque::Calibration cal;
+  DMAChannel dma{2, 0, 0};
+  Motor::Torque torque(TIM6, ADC1, dma, 100 /* ms */, cal, PA4, PA5);
+  torque.init();
+  CHECK(strcmp(fatal_msg, "") == 0);
+
+  SUBCASE("Start sampling") {
+    torque.start();
+    CHECK(strcmp(fatal_msg, "") == 0);
+    CHECK((READ_BIT(TIM6->CR1, TIM_CR1_CEN) >> TIM_CR1_CEN_Pos) == 0x01);
+  }
+
+  SUBCASE("Start and stop sampling") {
+    torque.start();
+    torque.stop();
+    CHECK(strcmp(fatal_msg, "") == 0);
+    CHECK((READ_BIT(TIM6->CR1, TIM_CR1_CEN) >> TIM_CR1_CEN_Pos) == 0);
+  }
+}
+
+TEST_CASE("Motor::Torque data collection") {
+  init_mock_mcu();
+  fatal_msg[0] = '\0';
+
+  Motor::Torque::Calibration cal;
+  DMAChannel dma{2, 0, 0};
+  Motor::Torque torque(TIM6, ADC1, dma, 100 /* ms */, cal, PA4, PA5);
+  torque.init();
+  CHECK(strcmp(fatal_msg, "") == 0);
+
+  SUBCASE("First sample") {
+    // Before any samples.
+    CHECK(torque.latest(Motor::LEFT) == 0);
+    CHECK(torque.smoothed(Motor::LEFT) == 0);
+    CHECK(torque.latest(Motor::RIGHT) == 0);
+    CHECK(torque.smoothed(Motor::RIGHT) == 0);
+
+    // Fill in a single sample.
+    torque._dma_buffer[Motor::LEFT] = 123;
+    torque._dma_buffer[Motor::RIGHT] = 456;
+
+    // Set DMA transfer complete flag and call ISR.
+    SET_BIT(DMA2->LISR, DMA_LISR_TCIF0);
+    torque.dma_transfer_complete_irq();
+
+    // Single sample should fill in all values in smoothing buffer.
+    CHECK(torque.latest(Motor::LEFT) == 123);
+    CHECK(torque.smoothed(Motor::LEFT) == 123);
+    CHECK(torque.latest(Motor::RIGHT) == 456);
+    CHECK(torque.smoothed(Motor::RIGHT) == 456);
+  }
+
+  SUBCASE("Multiple samples") {
+    float totals[2] = { 0.0, 0.0 };
+    float last[2];
+    for (int sample = 0; sample < Motor::Torque::SAMPLE_COUNT; ++sample) {
+      // Fill in a single sample.
+      last[Motor::LEFT] = sample + 1;
+      last[Motor::RIGHT] = 2 * sample + 1;
+      torque._dma_buffer[Motor::LEFT] = sample + 1;
+      torque._dma_buffer[Motor::RIGHT] = 2 * sample + 1;
+      totals[Motor::LEFT] += last[Motor::LEFT];
+      totals[Motor::RIGHT] += last[Motor::RIGHT];
+
+      // Set DMA transfer complete flag and call ISR.
+      SET_BIT(DMA2->LISR, DMA_LISR_TCIF0);
+      torque.dma_transfer_complete_irq();
+    }
+
+    CHECK(torque.latest(Motor::LEFT) == last[Motor::LEFT]);
+    CHECK(torque.latest(Motor::RIGHT) == last[Motor::RIGHT]);
+    CHECK(torque.smoothed(Motor::LEFT) ==
+          (totals[Motor::LEFT] / Motor::Torque::SAMPLE_COUNT));
+    CHECK(torque.smoothed(Motor::RIGHT) ==
+          (totals[Motor::RIGHT] / Motor::Torque::SAMPLE_COUNT));
+  }
+}
 
 #endif

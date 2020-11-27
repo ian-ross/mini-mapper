@@ -11,6 +11,14 @@
 
 namespace Motor {
 
+// We support two motor instances, one for the left motor and one for
+// the right.
+enum Instance : uint8_t {
+  LEFT = 0,
+  RIGHT
+};
+
+
 // Measure motor torque by current sensing for multiple motors:
 //
 //  * Multiple motor instances can be added by giving the pin used for
@@ -32,13 +40,6 @@ public:
   // We collect a number of samples into a circular buffer for
   // smoothing.
   static const int SAMPLE_COUNT = 32;
-
-  // We support two torque measurement instances, one for the left motor and one for
-  // the right.
-  enum Instance : uint8_t {
-    LEFT = 0,
-    RIGHT
-  };
 
   // We keep SAMPLE_COUNT samples at a time for smoothing. Each sample
   // is a 12-bit ADC result stored in a 16-bit half-word.
@@ -87,7 +88,11 @@ public:
   void start(void);
   void stop(void);
 
+#ifndef TEST
+  // Kind of shonky, but it makes life oh so much easier when
+  // testing...
 private:
+#endif
 
   // MCU timer used to trigger ADC conversions.
   TIM_TypeDef *_timer;
