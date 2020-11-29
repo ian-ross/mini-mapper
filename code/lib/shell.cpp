@@ -26,7 +26,7 @@ void CommandShell::dispatch(const Events::Event &e) {
     return;
   }
 
-  process_command(term->buffer((TerminalRXBuffer)e.param));
+  process_command(term->buffer((TerminalRXBuffer)e.param1));
   mgr->post(Events::TERMINAL_LINE_PROCESSED);
 }
 

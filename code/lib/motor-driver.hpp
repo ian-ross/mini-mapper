@@ -1,5 +1,5 @@
-#ifndef _H_MOTOR_
-#define _H_MOTOR_
+#ifndef _H_MOTOR_DRIVER_
+#define _H_MOTOR_DRIVER_
 
 #include "pin.hpp"
 #include "pwm.hpp"

@@ -39,18 +39,21 @@ enum Tag {
   TERMINAL_RX_OVERFLOW,
   TERMINAL_CANNOT_FLUSH,
   SHELL_INIT,
+  ENCODER_CAPTURE,
+  ENCODER_OVERCAPTURE,
 };
 
 
-// Events have a tag and an optional parameter, which we keep as a
+// Events have a tag and two optional parameters, which we keep as a
 // uint32_t for simplicity.
 
 struct Event {
   Tag tag;
-  uint32_t param;
+  uint32_t param1;
+  uint32_t param2;
 
   bool operator==(const Event &other) {
-    return tag == other.tag && param == other.param;
+    return tag == other.tag && param1 == other.param1 && param2 == other.param2;
   }
 };
 
@@ -83,7 +86,7 @@ public:
   void operator+=(Consumer &c);
 
   // Post a new event to the event queue.
-  void post(Tag tag, uint32_t param = 0);
+  void post(Tag tag, uint32_t param1 = 0, uint32_t param2 = 0);
 
   // Consumer and pending event counts.
   int consumer_count(void) const { return nconsumers; }

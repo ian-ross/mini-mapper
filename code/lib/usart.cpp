@@ -335,7 +335,7 @@ TEST_CASE("USART") {
     SET_BIT(USART3->ISR, USART_ISR_RXNE);
     usart.rx_irq();
     REQUIRE_CALL(consumer, dispatch(_))
-      .WITH(_1.tag == Events::USART_RX_CHAR && _1.param == 'x');
+      .WITH(_1.tag == Events::USART_RX_CHAR && _1.param1 == 'x');
     ev.drain();
     CHECK(ev.pending_count() == 0);
   }

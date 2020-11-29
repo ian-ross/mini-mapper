@@ -28,7 +28,7 @@ void Manager::operator+=(Consumer &c) {
 
 // Post a new event to the queue, which we treat as a circular buffer.
 
-void Manager::post(Tag tag, uint32_t param) {
+  void Manager::post(Tag tag, uint32_t param1, uint32_t param2) {
   if (!started) {
     if (tag != SYSTICK) fatal("event posted before event loop started");
     return;
@@ -38,7 +38,8 @@ void Manager::post(Tag tag, uint32_t param) {
     return;
   }
   queue[qpos].tag = tag;
-  queue[qpos].param = param;
+  queue[qpos].param1 = param1;
+  queue[qpos].param2 = param2;
   qpos = (qpos + 1) % QUEUE_SIZE;
   nevents++;
 }
@@ -108,7 +109,7 @@ void Manager::loop(void) {
 namespace trompeloeil {
   template <>
   inline void print(std::ostream& os, const Events::Event &e) {
-    os << "Event{" << e.tag << "," << e.param << "}";
+    os << "Event{" << e.tag << "," << e.param1 << "," << e.param2 << "}";
   }
 }
 

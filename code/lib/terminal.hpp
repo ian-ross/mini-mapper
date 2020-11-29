@@ -230,11 +230,11 @@ template <typename USART>
 void TerminalT<USART>::dispatch(const Events::Event &e) {
   switch (e.tag) {
   case Events::USART_INIT:
-    if (e.param == usart.index()) mgr->post(Events::TERMINAL_INIT);
+    if (e.param1 == usart.index()) mgr->post(Events::TERMINAL_INIT);
     break;
 
   case Events::USART_RX_CHAR:
-    process_rx_char(e.param);
+    process_rx_char(e.param1);
     break;
 
   case Events::TERMINAL_LINE_PROCESSED:

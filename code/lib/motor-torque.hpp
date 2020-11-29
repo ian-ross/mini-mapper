@@ -1,5 +1,5 @@
-#ifndef _H_MOTOR_
-#define _H_MOTOR_
+#ifndef _H_MOTOR_TORQUE_
+#define _H_MOTOR_TORQUE_
 
 #include <array>
 
@@ -7,17 +7,10 @@
 #include "pin.hpp"
 #include "pwm.hpp"
 #include "events.hpp"
+#include "motor-utils.hpp"
 
 
 namespace Motor {
-
-// We support two motor instances, one for the left motor and one for
-// the right.
-enum Instance : uint8_t {
-  LEFT = 0,
-  RIGHT
-};
-
 
 // Measure motor torque by current sensing for multiple motors:
 //
