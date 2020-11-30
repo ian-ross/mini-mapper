@@ -9,13 +9,13 @@
 static int pin_channel(const TIM_TypeDef *tim, const Pin &pin, GPIOAF *af);
 static void enable_capture(TIM_TypeDef *tim, int ch);
 
-
-Motor::Encoder::Encoder(TIM_TypeDef *timer,
-                        const Pin &left_pin, const Pin &right_pin,
-                        const WheelInfo &wheel_info) :
+Motor::Encoder::Encoder(TIM_TypeDef *timer, const Pin &left_pin,
+                        const Pin &right_pin, const WheelInfo &wheel_info) :
   Events::Consumer("Motor::Encoder"),
-  _timer{timer}, _wheel_info{wheel_info}, _pins{left_pin, right_pin} { }
-
+  _timer{timer}, _wheel_info{wheel_info}, _pins{left_pin, right_pin},
+  _tooth_distance_μm{static_cast<float>(wheel_info.circumference) /
+                     wheel_info.encoder_gear_ratio / wheel_info.encoder_teeth}
+{}
 
 void Motor::Encoder::init(void) {
   // Check timer selection (must be 32-bit timer with multiple capture
@@ -157,9 +157,11 @@ void Motor::Encoder::discard_edges(Instance i, uint32_t now) {
 
 void Motor::Encoder::dispatch(const Events::Event &e) {
   switch (e.tag) {
-  case Events::ENCODER_OVERCAPTURE:
-    // TODO: RECORD ERROR STATE SOMEWHERE...
+  case Events::ENCODER_OVERCAPTURE: {
+    Instance i = static_cast<Instance>(e.param1);
+    _overcapture[i] = true;
     break;
+  }
 
   case Events::ENCODER_CAPTURE: {
     Instance i = static_cast<Instance>(e.param1);
@@ -170,7 +172,7 @@ void Motor::Encoder::dispatch(const Events::Event &e) {
     ++_valid_samples[i];
     if (_valid_samples[i] > SAMPLE_COUNT) _valid_samples[i] = SAMPLE_COUNT;
     _sample_idx[i] = (is + 1) % SAMPLE_COUNT;
-    // TODO: SET last_edge
+    _last_edge[i] = _pins[i].read() ? RISING : FALLING;
     break;
   }
 
@@ -247,6 +249,8 @@ float Motor::Encoder::interval(Averaging avg_mode, Instance instance) const {
   }
 
   case BOXCAR: {
+    // TODO: CLEAN THIS UP -- DO WE WANT TO AVERAGE ACROSS INTER-EDGE
+    // INTERVALS, OR INTER-TOOTH INTERVALS?
     if (_valid_samples[instance] < 2) break;
     int ip = (_sample_idx[instance] + SAMPLE_COUNT - 1) % SAMPLE_COUNT;
     float total = 0.0;
@@ -259,6 +263,8 @@ float Motor::Encoder::interval(Averaging avg_mode, Instance instance) const {
   }
 
   case EXPONENTIAL:  {
+    // TODO: CLEAN THIS UP -- DO WE WANT TO AVERAGE ACROSS INTER-EDGE
+    // INTERVALS, OR INTER-TOOTH INTERVALS?
     if (_valid_samples[instance] < 2) break;
     int ip = (_sample_idx[instance] + SAMPLE_COUNT - 1) % SAMPLE_COUNT;
     float total = 0.0;
@@ -283,6 +289,29 @@ Motor::Encoder::Edge Motor::Encoder::last_edge(Instance instance) const {
 }
 
 float Motor::Encoder::speed(Averaging avg_mode, Instance instance) const {
+  switch (avg_mode) {
+  case LAST_EDGES: {
+    if (_valid_samples[instance] < 2) break;
+    return (_tooth_distance_μm / 2) / interval(avg_mode, instance);
+  }
+
+  case LAST_TOOTH: {
+    if (_valid_samples[instance] < 3) break;
+    return _tooth_distance_μm / interval(avg_mode, instance);
+  }
+
+  case BOXCAR:
+  case EXPONENTIAL: {
+    // TODO: THINK ABOUT BETTER WAYS TO DO THIS!
+    if (_valid_samples[instance] < 2) break;
+    int ip = (_sample_idx[instance] + SAMPLE_COUNT - 1) % SAMPLE_COUNT;
+    int in = (ip + SAMPLE_COUNT - _valid_samples[instance] + 1) % SAMPLE_COUNT;
+    float interval_μs = _edge_times[instance][ip] - _edge_times[instance][in];
+    float distance_μm = _tooth_distance_μm / 2 * (_valid_samples[instance] - 1);
+    return distance_μm / interval_μs;
+  }
+  }
+
   return 0;
 }
 

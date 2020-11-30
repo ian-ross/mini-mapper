@@ -1,4 +1,4 @@
-\documentclass[a4paper,11pt,article]{memoir}
+\documentclass[a4paper,11pt]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage{fourier}
@@ -48,27 +48,27 @@ drivers myself.
 
 The basic requirements I want to follow are:
 
-\begin{description}
-  \item[Language]{Firmware written in C++, maybe doing some
+\begin{itemize}
+  \item{\textbf{Language} Firmware written in C++, maybe doing some
     experiments with Rust later on.}
-  \item[Libraries]{Use only low-level CMSIS hardware definitions,
-    writing my own C++ HAL.}
-  \item[Build system]{Use Make for building, possibly adding Meson on
-    top of this later on.}
-  \item[IDE]{Use Emacs as an IDE, setting up the necessary tools for
-    comfortable development.}
-  \item[Communications]{Develop a command shell to run on the Nucleo
-    board, talking to a PC over a USB serial port. This will make it
-    easy both to do ad hoc experiments directly talking to the shell
-    with Minicom, but also to write GUI front-ends for experiments and
-    data collection using Python GTK or something similar. (This is
-    the approach I used for my Teensy Load project, and I find it
-    really useful.)}
-  \item[STM32 features]{Clocks; power; USB serial (USART + DMA +
-    interrupts); GPIOs and timers for PWM motor control; ADC for motor
-    coil current sensing; GPIO input, interrupt and timer for motor
-    encoder pulse detection.}
-\end{description}
+  \item{\textbf{Libraries} Use only low-level CMSIS hardware
+    definitions, writing my own C++ HAL.}
+  \item{\textbf{Build system} Use Make for building, possibly adding
+    Meson on top of this later on.}
+  \item{\textbf{IDE} Use Emacs as an IDE, setting up the necessary
+    tools for comfortable development.}
+  \item{\textbf{Communications} Develop a command shell to run on the
+    Nucleo board, talking to a PC over a USB serial port. This will
+    make it easy both to do ad hoc experiments directly talking to the
+    shell with Minicom, but also to write GUI front-ends for
+    experiments and data collection using Python GTK or something
+    similar. (This is the approach I used for my Teensy Load project,
+    and I find it really useful.)}
+  \item{\textbf{STM32 features} Clocks; power; USB serial (USART + DMA
+    + interrupts); GPIOs and timers for PWM motor control; ADC for
+    motor coil current sensing; GPIO input, interrupt and timer for
+    motor encoder pulse detection.}
+\end{itemize}
 
 I want to cover the following topics in this prototyping phase:
 \begin{enumerate}
@@ -83,8 +83,12 @@ I want to cover the following topics in this prototyping phase:
     forward/backward, PWM duty cycle), monitoring of motor coil
     current and motor encoder pulses; data saving; real-time
     graphing.}
-  \item{Encapsulation of \texttt{Motor}, \texttt{MotorEncoder} and
-    \texttt{MotorController} abstractions.}
+  \item{Encapsulation of motor abstractions: \texttt{Motor::Driver}
+    for PWM driver, \texttt{Motor::Torque} for motor coil current
+    measurement for torque estimation, \texttt{Motor::Encoder} for the
+    encoder disk measuring motor rotation and
+    \texttt{Motor::Controller} for the overall control of all motor
+    functions.}
   \item{Constant speed PID control, including independent optical
     speed measurement.}
   \item{Soft start/ramp control.}
@@ -93,9 +97,9 @@ I want to cover the following topics in this prototyping phase:
 This should be enough for the first ``direct control'' milestone.
 
 
-\subsection{Initial setup}
+\section{Initial setup}
 
-\subsubsection{Platform and tools}
+\subsection{Platform and tools}
 
 \begin{itemize}
   \item{I'm using the \texttt{arm-none-eabi} version of GCC, which is
@@ -127,24 +131,24 @@ This should be enough for the first ``direct control'' milestone.
     good understanding of how things really work.}
 \end{itemize}
 
-\subsubsection{Blinky}
+\subsection{Blinky}
 
 
-\subsection{Software architecture}
+\section{Software architecture}
 
 
-\subsection{USB serial shell}
+\section{USB serial shell}
 
-\subsubsection{USART setup}
-
-
-\subsubsection{Command shell}
+\subsection{USART setup}
 
 
-\subsection{PWM demonstration}
+\subsection{Command shell}
 
 
-\subsection{Experiment front-end GUI}
+\section{PWM demonstration}
+
+
+\section{Experiment front-end GUI}
 
 
 \section{Microcontroller setup}
@@ -176,5 +180,106 @@ The Nucleo board has an STM32F767ZI processor on it.
     cycle yields a PWM frequency of 31.25\,kHz.}
 \end{itemize}
 
+\subsection{Motor torque measurement}
+
+\subsection{Motor encoder}
+
+The motor encoder uses a photointerrupter and an encoder disk on the
+motor shaft. The motor shaft rotation rate is reduced by a 48:1
+gearbox to drive the wheels.
+
+Here are some basic questions and notes on the software approach for
+capturing the edge transitions from the encoder.
+
+\textit{How to do edge capture? Can you do capture on multiple pins
+  using the same timer? Can you do both rising and falling edges at
+  the same time?}
+
+\begin{itemize}
+  \item{Timers with input capture are basically all timers except TIM6
+    and TIM7 basic timers.}
+  \item{Timers with multiple input capture channels are TIM9, TIM12 (2
+    channels); TIM2, TIM3, TIM4, TIM5 (4 channels); TIM1, TIM8 (4
+    channels).}
+  \item{Typical times we'll want to measure:
+    \begin{itemize}
+      \item{Wheel turning at 90 rpm (max, equivalent to 28.3 cm/s
+        linear speed) => encoder turning at 90 x 48 = 4320 rpm = 72
+        Hz.}
+      \item{Disk has 12 teeth => tooth frequency = 72 x 12 = 864 Hz.}
+      \item{If teeth/gaps are same size, edge freq. = 864 x 2 = 1728
+        Hz. (Teeth and gaps aren't same size, but this is
+        indicative.)}
+      \item{So time between edges will be 578.7 μs.}
+   \end{itemize}}
+  \item{If we have a timer with a prescaler set to give a count
+    frequency of 1 MHz, then a 16-bit counter will be able to measure
+    times of up to 65.536 ms. A 32-bit counter will be able to measure
+    times of up to 4294.97 s (i.e. 1 hr 11 min 34.97 s).}
+  \item{At 1 mm/s linear speed, we see 1 / (60π) * 48 * 12 * 2 = 6.11
+    edges per second, i.e. an inter-edge time of 163.6 ms. Seems like
+    a 32-bit timer might be easier in this case...}
+  \item{If we use a 32-bit timer, we can also reduce the prescaler to
+    get a higher count frequency and corresponding better timing
+    accuracy.}
+  \item{The 32-bit timers are TIM2 and TIM5, both of which have four
+    capture channels.}
+  \item{GPIO inputs for capture channels have to be assigned as
+    specific alternate functions. There seem to be enough redundant
+    assignments to make this easy enough to do.}
+  \item{Can either get an interrupt on the capture event, or get the
+    capture timer count transferred via DMA and get an interrupt on
+    DMA transfer complete. (For our purposes, an interrupt on each
+    capture event is probably simplest to deal with, because we need
+    to look at the GPIO level to know whether we have a rising or
+    falling edge. In the ISR for the capture, we can check the GPIO
+    level, bundle that up with the capture count and the channel we're
+    looking at, and emit an event carrying all that information for
+    later processing.)}
+  \item{Capture edge polarity is controlled by the CCxP and CCxNP
+    fields in the TIMx->CCER register: setting both of these bits
+    captures both rising and falling edges.}
+\end{itemize}
+
+\textit{What information do we want to make available? Ultimately we
+  want to provide a speed measurement, possibly with different kinds
+  of smoothing (none: latest instantaneous value, boxcar smoothing
+  over sample time, exponentially weighted smoothing?), but we also
+  probably want access to raw time values as well, i.e. times of the
+  last N edge transitions.}
+
+\begin{itemize}
+  \item{For a single encoder, we expect to get a sequence of
+    alternating rising and falling edges. We'll store the edge type
+    (rising or falling) and the timer count when the edge occurred.
+    We'll keep the last N edge times, retiring eges when they get too
+    old or we need to reuse storage space.}
+  \item{We want to be able to retrieve time differences between edges
+    and to convert them into rotation rates and linear speeds, both on
+    an instantaneous basis and smoothed over the collected data (for
+    the last 500 ms or something similar?).}
+  \item{To start with, let's provide functions to retrieve time
+    differences between adjacent edges (i.e. of opposite polarity) and
+    between adjacent edges of the same polarity.}
+\end{itemize}
+
+\textit{What sort of time resolution do we need? And what to do about
+  the really slow cases when the wheel is more or less stopped? Do we
+  need some sort of rollover counter to time longer periods?}
+
+\begin{itemize}
+  \item{A single edge corresponds to 60π / 48 / 12 / 2 = 0.16 mm
+    (assuming symmetry of rising and falling edges).}
+  \item{Using a 32-bit timer running at 1 MHz, we can get 1 μs
+    resolution for each edge. At maximum speed (90 rpm for the wheel,
+    i.e. 60π * 1.5 = 282.74 mm/s), 1 μs corresponds to a linear
+    distance of 0.28 μm. At lower speeds, the linear distance
+    resolution is correspondingly finer.}
+  \item{As noted above, with a timer count frequency of 1 MHz, a
+    32-bit counter is able to measure times of up to 4294.97 s (i.e. 1
+    hr 11 min 34.97 s).}
+  \item{Both of these factors indicate that a 1 MHz 32-bit timer is
+    pretty huge overkill... So let's go with that then!}
+\end{itemize}
 
 \end{document}

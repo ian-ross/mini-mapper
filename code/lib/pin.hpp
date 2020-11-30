@@ -91,7 +91,8 @@ public:
   void toggle() const { _port->ODR ^= pin_mask(); }
 
   // Inputs: read.
-  // TBD
+  bool read(void) const { return _port->IDR & pin_mask(); }
+
 
 private:
 
