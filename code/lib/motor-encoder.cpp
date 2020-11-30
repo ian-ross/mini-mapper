@@ -18,6 +18,9 @@ Motor::Encoder::Encoder(TIM_TypeDef *timer, const Pin &left_pin,
 {}
 
 void Motor::Encoder::init(void) {
+  if (_inited) return;
+  _inited = true;
+
   // Check timer selection (must be 32-bit timer with multiple capture
   // channels).
   if (_timer != TIM2 &&_timer != TIM5) {
@@ -443,7 +446,7 @@ TEST_CASE("Motor::Encode edge capture") {
     .encoder_gear_ratio = 48,
     .encoder_teeth = 12
   };
-  Motor::Encoder encoder(TIM2, PA2, PA3, wheel_info);
+  Motor::Encoder encoder(TIM2, PB10, PB11, wheel_info);
   ev += encoder;
   encoder.init();
 

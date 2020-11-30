@@ -38,6 +38,13 @@ public:
   // is a 12-bit ADC result stored in a 16-bit half-word.
   using SampleBuffer = std::array<uint16_t, SAMPLE_COUNT>;
 
+  // Averaging modes for torque calculations:
+  //
+  //  - LATEST uses the just last ADC sample.
+  //  - SMOOTHED uses all the available sample data equally weighted
+  //    to produce a smoothed measurement.
+  enum Averaging { LATEST, SMOOTHED };
+
   // Calibration for converting ADC counts to current and torque
   // values.
   class Calibration {
@@ -65,16 +72,15 @@ public:
   void dma_transfer_complete_irq(void);
 
   // Return latest sample for instance.
-  uint16_t latest(Instance instance);
-
-  // Return (box-car) smoothed samples for instance.
-  float smoothed(Instance instance);
+  float adc_count(Averaging avg_mode, Instance instance) const;
 
   // Return current and torque values based on calibration data.
-  float latest_current(Instance i) { return _calib.current(latest(i)); }
-  float smoothed_current(Instance i) { return _calib.current(smoothed(i)); }
-  float latest_torque(Instance i) { return _calib.torque(latest(i)); }
-  float smoothed_torque(Instance i) { return _calib.torque(smoothed(i)); }
+  float current(Averaging a, Instance i) const {
+    return _calib.current(adc_count(a, i));
+  }
+  float torque(Averaging a, Instance i) const {
+    return _calib.torque(adc_count(a, i));
+  }
 
   // Start and stop sample collection. Calling `start` clears sample
   // buffers.
@@ -122,6 +128,8 @@ private:
 
   // GPIO pins used as analog inputs: left, then right.
   std::array<Pin, 2> _pins;
+
+  bool _inited = false;
 
   void configure_dma(void);
   void configure_timer(void);

@@ -53,6 +53,9 @@ Motor::Torque::Torque(TIM_TypeDef *timer, ADC_TypeDef *adc, DMAChannel &dma,
 // collection.
 
 void Motor::Torque::init(void) {
+  if (_inited) return;
+  _inited = true;
+
   // Check timer selection (must be usable as a trigger source for the
   // ADC).
   if (_timer != TIM2 &&_timer != TIM5 &&
@@ -126,20 +129,23 @@ void Motor::Torque::dma_transfer_complete_irq(void) {
   }
 }
 
-uint16_t Motor::Torque::latest(Instance instance) {
-  if (_sample_idx == -1)
-    return 0;
-  else
-    return _samples[instance][_sample_idx];
-}
+float Motor::Torque::adc_count(Averaging avg_mode, Instance instance) const {
+  switch (avg_mode) {
+  case LATEST:
+    if (_sample_idx == -1)
+      return 0;
+    else
+      return _samples[instance][_sample_idx];
 
-float Motor::Torque::smoothed(Instance instance) {
-  if (_sample_idx == -1)
-    return 0.0f;
-  else {
-    const SampleBuffer &ss = _samples[instance];
-    float accum = std::accumulate(ss.cbegin(), ss.cend(), 0.0f);
-    return accum / SAMPLE_COUNT;
+  case SMOOTHED:
+  default:
+    if (_sample_idx == -1)
+      return 0.0f;
+    else {
+      const SampleBuffer &ss = _samples[instance];
+      float accum = std::accumulate(ss.cbegin(), ss.cend(), 0.0f);
+      return accum / SAMPLE_COUNT;
+    }
   }
 }
 
@@ -497,10 +503,10 @@ TEST_CASE("Motor::Torque data collection") {
 
   SUBCASE("First sample") {
     // Before any samples.
-    CHECK(torque.latest(Motor::LEFT) == 0);
-    CHECK(torque.smoothed(Motor::LEFT) == 0);
-    CHECK(torque.latest(Motor::RIGHT) == 0);
-    CHECK(torque.smoothed(Motor::RIGHT) == 0);
+    CHECK(torque.adc_count(Motor::Torque::LATEST, Motor::LEFT) == 0);
+    CHECK(torque.adc_count(Motor::Torque::SMOOTHED, Motor::LEFT) == 0);
+    CHECK(torque.adc_count(Motor::Torque::LATEST, Motor::RIGHT) == 0);
+    CHECK(torque.adc_count(Motor::Torque::SMOOTHED, Motor::RIGHT) == 0);
 
     // Fill in a single sample.
     torque._dma_buffer[Motor::LEFT] = 123;
@@ -511,10 +517,10 @@ TEST_CASE("Motor::Torque data collection") {
     torque.dma_transfer_complete_irq();
 
     // Single sample should fill in all values in smoothing buffer.
-    CHECK(torque.latest(Motor::LEFT) == 123);
-    CHECK(torque.smoothed(Motor::LEFT) == 123);
-    CHECK(torque.latest(Motor::RIGHT) == 456);
-    CHECK(torque.smoothed(Motor::RIGHT) == 456);
+    CHECK(torque.adc_count(Motor::Torque::LATEST, Motor::LEFT) == 123);
+    CHECK(torque.adc_count(Motor::Torque::SMOOTHED, Motor::LEFT) == 123);
+    CHECK(torque.adc_count(Motor::Torque::LATEST, Motor::RIGHT) == 456);
+    CHECK(torque.adc_count(Motor::Torque::SMOOTHED, Motor::RIGHT) == 456);
   }
 
   SUBCASE("Multiple samples") {
@@ -534,11 +540,11 @@ TEST_CASE("Motor::Torque data collection") {
       torque.dma_transfer_complete_irq();
     }
 
-    CHECK(torque.latest(Motor::LEFT) == last[Motor::LEFT]);
-    CHECK(torque.latest(Motor::RIGHT) == last[Motor::RIGHT]);
-    CHECK(torque.smoothed(Motor::LEFT) ==
+    CHECK(torque.adc_count(Motor::Torque::LATEST, Motor::LEFT) == last[Motor::LEFT]);
+    CHECK(torque.adc_count(Motor::Torque::LATEST, Motor::RIGHT) == last[Motor::RIGHT]);
+    CHECK(torque.adc_count(Motor::Torque::SMOOTHED, Motor::LEFT) ==
           (totals[Motor::LEFT] / Motor::Torque::SAMPLE_COUNT));
-    CHECK(torque.smoothed(Motor::RIGHT) ==
+    CHECK(torque.adc_count(Motor::Torque::SMOOTHED, Motor::RIGHT) ==
           (totals[Motor::RIGHT] / Motor::Torque::SAMPLE_COUNT));
   }
 }

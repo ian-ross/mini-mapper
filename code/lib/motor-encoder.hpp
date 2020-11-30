@@ -90,7 +90,7 @@ public:
   bool overcapture(Instance instance) const { return _overcapture[instance]; }
 
   // Clear overcapture flags.
-  void clear_overcapture(void) { _overcapture.fill(false); }
+  void clear_overcapture(Instance instance) { _overcapture[instance] = false; }
 
   // Return inter-capture interval (μs) for wheel instance with
   // specified averaging mode.
@@ -136,6 +136,8 @@ private:
 
   // Polarity of last observed edge for each input pin.
   InstanceArray<Edge> _last_edge = {FALLING, FALLING};
+
+  bool _inited = false;
 
   void discard_edges(Instance i, uint32_t now);
 };
