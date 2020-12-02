@@ -19,6 +19,7 @@ enum CommandResult {
   SKIPPED,                      // Didn't process command.
   COMMAND_OK,                   // Processed OK.
   INVALID_VALUE_FOR_VARIABLE,   // Bad value for variable.
+  COMMAND_PARAMETER_ERROR,      // Invalid parameter for command.
   COMMAND_ERROR                 // Miscellaneous command error.
 };
 

@@ -1,4 +1,3 @@
-#include <iostream>
 #include <cmath>
 
 #include "bsp-generic.h"
@@ -13,7 +12,7 @@ Motor::Encoder::Encoder(TIM_TypeDef *timer, const Pin &left_pin,
                         const Pin &right_pin, const WheelInfo &wheel_info) :
   Events::Consumer("Motor::Encoder"),
   _timer{timer}, _wheel_info{wheel_info}, _pins{left_pin, right_pin},
-  _tooth_distance_μm{static_cast<float>(wheel_info.circumference) /
+  _tooth_distance_um{static_cast<float>(wheel_info.circumference) /
                      wheel_info.encoder_gear_ratio / wheel_info.encoder_teeth}
 {}
 
@@ -295,12 +294,12 @@ float Motor::Encoder::speed(Averaging avg_mode, Instance instance) const {
   switch (avg_mode) {
   case LAST_EDGES: {
     if (_valid_samples[instance] < 2) break;
-    return (_tooth_distance_μm / 2) / interval(avg_mode, instance);
+    return (_tooth_distance_um / 2) / interval(avg_mode, instance);
   }
 
   case LAST_TOOTH: {
     if (_valid_samples[instance] < 3) break;
-    return _tooth_distance_μm / interval(avg_mode, instance);
+    return _tooth_distance_um / interval(avg_mode, instance);
   }
 
   case BOXCAR:
@@ -309,9 +308,9 @@ float Motor::Encoder::speed(Averaging avg_mode, Instance instance) const {
     if (_valid_samples[instance] < 2) break;
     int ip = (_sample_idx[instance] + SAMPLE_COUNT - 1) % SAMPLE_COUNT;
     int in = (ip + SAMPLE_COUNT - _valid_samples[instance] + 1) % SAMPLE_COUNT;
-    float interval_μs = _edge_times[instance][ip] - _edge_times[instance][in];
-    float distance_μm = _tooth_distance_μm / 2 * (_valid_samples[instance] - 1);
-    return distance_μm / interval_μs;
+    float interval_us = _edge_times[instance][ip] - _edge_times[instance][in];
+    float distance_um = _tooth_distance_um / 2 * (_valid_samples[instance] - 1);
+    return distance_um / interval_us;
   }
   }
 

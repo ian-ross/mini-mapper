@@ -25,7 +25,6 @@
 // The DMA ISR for the DMA stream used should be set up to call the
 // `dma_transfer_complete_irq` method of the `Motor::Torque` object.
 
-#include <iostream>
 #include <numeric>
 
 #include "bsp-generic.h"
@@ -313,12 +312,8 @@ void Motor::Torque::stop(void) {
 // TODO: FILL THIS IN
 //
 
-Motor::Torque::Calibration::Calibration() {
-
-}
-
 float Motor::Torque::Calibration::current(float adc_count) const {
-  return 0.0;
+  return adc_count * _current_factor;
 }
 
 float Motor::Torque::Calibration::torque(float adc_count) const {

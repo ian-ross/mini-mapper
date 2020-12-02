@@ -47,15 +47,29 @@ public:
 
   // Calibration for converting ADC counts to current and torque
   // values.
+  //
+  // Nominally:
+  //  - current sense resistor = 400 mΩ
+  //  - current sense opamp gain = 30
+  //
+  // Vsense = 30 x 0.4 x current = 12 x current
+  // ADC count = Vsense / 3.3V * 4095 = 12 x current / 3.3 * 4095
+  //
+  // Current = ADC count / 4095 * 3.3 / 12
   class Calibration {
-    public:
-    Calibration();
+  public:
+    Calibration(float current_factor = 1.0 / 4095 * 3.3 / 12) :
+      _current_factor(current_factor) {}
 
     // Return current (mA) for a given ADC count.
     float current(float adc_count) const;
 
     // Return torque (N mm) for a given ADC count.
     float torque(float adc_count) const;
+
+  private:
+
+    float _current_factor;
   };
 
   // TODO: CALIBRATION FOR CONVERSION FROM ADC COUNTS TO TORQUE

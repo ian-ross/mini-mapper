@@ -117,7 +117,7 @@ private:
 
   // Wheel/encoder information.
   WheelInfo _wheel_info;
-  float _tooth_distance_μm;
+  float _tooth_distance_um;
 
   // GPIO pins used as pulse inputs: left, then right.
   InstanceArray<Pin> _pins;

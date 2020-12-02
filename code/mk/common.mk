@@ -67,17 +67,17 @@ clean:
 build/%.o: %.cpp
 	$(info ==> Compiling file: $(notdir $<))
 	@$(MK) -p $(dir $@)
-	@$(CXX) -std=c++17 -MP -MMD -c -o $@ $< $(CXXFLAGS) $(INC_PATHS)
+	@$(CXX) -std=gnu++17 -MP -MMD -c -o $@ $< $(CXXFLAGS) $(INC_PATHS)
 
 build/%.o: $(BASE)/%.cpp
 	$(info ==> Compiling file: $(notdir $<))
 	@$(MK) -p $(dir $@)
-	@$(CXX) -std=c++17 -MP -MMD -c -o $@ $< $(CXXFLAGS) $(INC_PATHS)
+	@$(CXX) -std=gnu++17 -MP -MMD -c -o $@ $< $(CXXFLAGS) $(INC_PATHS)
 
 build/modules/%.o: ../modules/%.cpp
 	$(info ==> Compiling file: $(notdir $<))
 	@$(MK) -p $(dir $@)
-	@$(CXX) -std=c++17 -MP -MMD -c -o $@ $< $(CXXFLAGS) $(INC_PATHS)
+	@$(CXX) -std=gnu++17 -MP -MMD -c -o $@ $< $(CXXFLAGS) $(INC_PATHS)
 
 build/%.o: $(BASE)/%.c
 	$(info ==> Compiling file: $(notdir $<))

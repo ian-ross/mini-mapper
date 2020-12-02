@@ -34,7 +34,7 @@ TESTOBJS = $(addprefix build/,$(TESTOBJS2))
 # defined in a library. Instead list the TESTOBJS explicitly.
 build/testexe: $(TESTOBJS) $(LIBOBJS)
 	$(info ==> Linking: $@)
-	@$(CXX) -std=c++17 -o $@ $^ $(LDFLAGS)
+	@$(CXX) -std=gnu++17 -o $@ $^ $(LDFLAGS)
 
 # Run doctest test program: output to console.
 .PHONY: test

@@ -26,7 +26,7 @@ public:
   enum State { OFF, ON, BLINK };
 
   BlinkyModule() :
-    Shell::Module("blinky"), Events::Consumer("BlinkyModule") { }
+    Shell::Module{"blinky"}, Events::Consumer{"BlinkyModule"} { }
   void init(void) override;
 
   // Event dispatch (from Events::Consumer).

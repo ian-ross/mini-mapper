@@ -117,6 +117,11 @@ bool CommandShell::handle_result(CommandResult cr) {
     return true;
     break;
 
+  case COMMAND_PARAMETER_ERROR:
+    term->error("SHPA");
+    return true;
+    break;
+
   case COMMAND_ERROR:
     term->error("SHER");
     return true;
