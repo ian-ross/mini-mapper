@@ -122,6 +122,7 @@ private:
 
   // Next insert position for event queue.
   int qpos = 0;
+
 };
 
 

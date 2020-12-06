@@ -1,6 +1,12 @@
 #include "errors.hpp"
 #include "events.hpp"
+#include "bsp-generic.h"
 
+class InterruptFree {
+public:
+  InterruptFree() { __disable_irq(); }
+  ~InterruptFree() { __enable_irq(); }
+};
 
 namespace Events {
 
@@ -28,7 +34,9 @@ void Manager::operator+=(Consumer &c) {
 
 // Post a new event to the queue, which we treat as a circular buffer.
 
-  void Manager::post(Tag tag, uint32_t param1, uint32_t param2) {
+void Manager::post(Tag tag, uint32_t param1, uint32_t param2) {
+  InterruptFree lock;
+
   if (!started) {
     if (tag != SYSTICK) fatal("event posted before event loop started");
     return;
@@ -72,13 +80,19 @@ void Manager::drain(void) {
     deliver(start);
   }
 
-  for (int i = qpos; nevents > 0; i = (i + 1) % QUEUE_SIZE) {
+  int i = qpos;
+  while (true) {
     if (queue[i].tag != NO_EVENT) {
       // Deliver event and empty the slot in the event queue.
       deliver(queue[i]);
       queue[i].tag = NO_EVENT;
+    }
+    {
+      InterruptFree lock;
+      if (nevents == 0) break;
       nevents--;
     }
+    i = (i + 1) % QUEUE_SIZE;
   }
 }
 

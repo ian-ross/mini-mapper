@@ -138,6 +138,7 @@ private:
   InstanceArray<Edge> _last_edge = {FALLING, FALLING};
 
   bool _inited = false;
+  bool _event_loop_started = false;
 
   void discard_edges(Instance i, uint32_t now);
 };

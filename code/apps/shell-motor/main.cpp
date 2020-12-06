@@ -36,7 +36,7 @@ extern "C" void USART3_IRQHandler(void) { usart3.rx_irq(); }
 extern "C" void DMA1_Stream3_IRQHandler(void) { usart3.tx_dma_irq(); }
 extern "C" void SysTick_Handler(void) { ev.post(Events::SYSTICK); }
 extern "C" void DMA2_Stream0_IRQHandler(void) { motor.torque_dma_irq(); }
-
+extern "C" void TIM2_IRQHandler(void) { motor.encoder_irq(); }
 
 int main(void)
 {
@@ -61,7 +61,7 @@ int main(void)
   ev += shell;
   ev += blinky;
   ev += motor;
-  // ev += motor.encoder();
+  ev += motor.motor_encoder();
 
   ev.loop();
 }

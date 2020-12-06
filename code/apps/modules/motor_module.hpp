@@ -30,6 +30,11 @@ public:
   // Called from ISR for torque DMA stream.
   void torque_dma_irq(void) { torque.dma_transfer_complete_irq(); }
 
+  // Called from ISR for encoder timer capture.
+  void encoder_irq(void) { encoder.timer_capture_irq(); }
+
+  Motor::Encoder &motor_encoder(void) { return encoder; }
+
 private:
 
   Motor::Torque::Calibration torque_cal;

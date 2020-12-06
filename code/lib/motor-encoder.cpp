@@ -79,6 +79,10 @@ void Motor::Encoder::init(void) {
   NVIC_EnableIRQ(_timer == TIM2 ? TIM2_IRQn : TIM5_IRQn);
   SET_BIT(_timer->DIER, 0x01 << _chs[Instance::LEFT]);
   SET_BIT(_timer->DIER, 0x01 << _chs[Instance::RIGHT]);
+
+  // Trigger update of timer parameters before enabling timer.
+  SET_BIT(_timer->EGR, TIM_EGR_UG);
+  SET_BIT(_timer->CR1, TIM_CR1_CEN);
 }
 
 static void enable_capture(TIM_TypeDef *tim, int ch) {
@@ -129,10 +133,12 @@ void Motor::Encoder::timer_capture_irq(void) {
       // and emit error event.
       if (READ_BIT(_timer->SR, 0x01 << (8 + _chs[i]))) {
         CLEAR_BIT(_timer->SR, 0x01 << (8 + _chs[i]));
-        mgr->post(Events::ENCODER_OVERCAPTURE, i);
+        if (_event_loop_started)
+          mgr->post(Events::ENCODER_OVERCAPTURE, i);
       } else {
         // Otherwise emit capture event with channel and timer value.
-        mgr->post(Events::ENCODER_CAPTURE, i, capture);
+        if (_event_loop_started)
+          mgr->post(Events::ENCODER_CAPTURE, i, capture);
       }
     }
   }
@@ -159,6 +165,10 @@ void Motor::Encoder::discard_edges(Instance i, uint32_t now) {
 
 void Motor::Encoder::dispatch(const Events::Event &e) {
   switch (e.tag) {
+  case Events::EVENT_LOOP_STARTED:
+    _event_loop_started = true;
+    break;
+
   case Events::ENCODER_OVERCAPTURE: {
     Instance i = static_cast<Instance>(e.param1);
     _overcapture[i] = true;
