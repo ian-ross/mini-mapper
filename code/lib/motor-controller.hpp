@@ -77,6 +77,7 @@ public:
   //  TORQUE
   //
 
+  void measure_torque(bool onoff);
   float torque_adc_count(Torque::Averaging avg_mode) const {
     return _torque.adc_count(avg_mode, _instance);
   }

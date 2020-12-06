@@ -29,14 +29,20 @@ using Terminal = TerminalT<USART>;
 USART usart3(3, PD8, GPIO_AF_7, PD9, GPIO_AF_7, DMAChannel { 1, 3, 4 });
 Terminal terminal(usart3);
 
+BlinkyModule blinky;
+MotorModule motor;
+
 extern "C" void USART3_IRQHandler(void) { usart3.rx_irq(); }
 extern "C" void DMA1_Stream3_IRQHandler(void) { usart3.tx_dma_irq(); }
 extern "C" void SysTick_Handler(void) { ev.post(Events::SYSTICK); }
+extern "C" void DMA2_Stream0_IRQHandler(void) { motor.torque_dma_irq(); }
 
 
+static bool adc_triggered = false;
 
-BlinkyModule blinky;
-MotorModule motor;
+extern "C" void ADC_IRQHandler(void) {
+  adc_triggered = true;
+}
 
 int main(void)
 {
@@ -49,6 +55,10 @@ int main(void)
   terminal.set_interactive(true);
   motor.init();
 
+  SET_BIT(ADC1->CR1, ADC_CR1_EOCIE);
+  NVIC_SetPriority(ADC_IRQn, 0);
+  NVIC_EnableIRQ(ADC_IRQn);
+
   // Create command shell with core module (which implements the "set"
   // and "show" commands) and motor and LED blinky modules.
   Shell::CommandShell shell(terminal);
@@ -60,6 +70,8 @@ int main(void)
   ev += terminal;
   ev += shell;
   ev += blinky;
+  ev += motor;
+  // ev += motor.encoder();
 
   ev.loop();
 }

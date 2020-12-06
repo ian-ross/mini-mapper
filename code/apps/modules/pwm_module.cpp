@@ -118,8 +118,8 @@ Shell::CommandResult PWMModule::show_variable(const char *name) {
 Shell::CommandResult PWMModule::run_command
   (const char *cmd, int nargs, char *args[]) {
   PWM *pwm = nullptr;
-  if (strcmp(cmd, "pwm1")) pwm = &pwm1;
-  if (strcmp(cmd, "pwm4")) pwm = &pwm4;
+  if (!strcmp(cmd, "pwm1")) pwm = &pwm1;
+  if (!strcmp(cmd, "pwm4")) pwm = &pwm4;
   if (pwm == nullptr)
     return Shell::SKIPPED;
   if (nargs != 1) return Shell::COMMAND_ERROR;

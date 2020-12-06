@@ -18,7 +18,7 @@ MotorModule::MotorModule() :
   // TODO: FIX THIS
   torque_cal{},
   torque_dma{2, 0, 0},
-  torque{TIM6, ADC1, torque_dma, 100, torque_cal, PA4, PA5},
+  torque{TIM4, ADC1, torque_dma, 100, torque_cal, PA4, PA5},
   wheel_info{
     .circumference = static_cast<uint32_t>(60.0 * M_PI * 1000.0),
     .encoder_gear_ratio = 48,
@@ -118,16 +118,19 @@ Shell::CommandResult MotorModule::run_command
       return Shell::COMMAND_PARAMETER_ERROR;
     if (val > 100) val = 100;
     controller.forward(val);
+    return Shell::COMMAND_OK;
   } else if (!strcmp(cmd, "reverse") && nargs == 1) {
     int val;
     if (!parse_int(args[0], val))
       return Shell::COMMAND_PARAMETER_ERROR;
     if (val > 100) val = 100;
     controller.reverse(val);
+    return Shell::COMMAND_OK;
   } else if (!strcmp(cmd, "torque") && nargs == 1) {
     if (!strcmp(args[0], "on")) {
       torque_display_interval = torque_display_interval_var;
       torque_display_ticks = 0;
+      controller.measure_torque(true);
       return Shell::COMMAND_OK;
     } else if (!strcmp(args[0], "off")) {
       torque_display_interval = -1;
@@ -138,6 +141,7 @@ Shell::CommandResult MotorModule::run_command
     if (!strcmp(args[0], "on")) {
       encoder_display_interval = encoder_display_interval_var;
       encoder_display_ticks = 0;
+      controller.measure_torque(false);
       return Shell::COMMAND_OK;
     } else if (!strcmp(args[0], "off")) {
       encoder_display_interval = -1;

@@ -198,14 +198,13 @@ void PWM::init(void) {
 // high).
 
 bool PWM::is_inverted(Channel ch) const {
-  int flag = 4 * (int)ch + TIM_CCER_CC1P;
-  return READ_BIT(_timer->CCER, flag);
+  return READ_BIT(_timer->CCER, TIM_CCER_CC1P << (4 * (int)ch));
 }
 
 // Set PWM to inverted (active = low) or normal (active = high) mode.
 
 void PWM::set_inverted(Channel ch, bool inv) {
-  int flag = 4 * (int)ch + TIM_CCER_CC1P;
+  int flag = TIM_CCER_CC1P << (4 * (int)ch);
   if (inv) {
     SET_BIT(_timer->CCER, flag);
   } else {

@@ -23,18 +23,19 @@ Motor::Driver::Driver
 
 void Motor::Driver::init(void) {
   _pwm.init();
+  _pwm.on();
   _pwm.set_inverted(PWM::CH1, true);
   _pwm.set_inverted(PWM::CH2, true);
 }
 
 void Motor::Driver::stop(void) {
-  _pwm.reset(PWM::CH1);
-  _pwm.reset(PWM::CH2);
+  _pwm.set(PWM::CH1);
+  _pwm.set(PWM::CH2);
 }
 
 void Motor::Driver::brake(void) {
-  _pwm.set(PWM::CH1);
-  _pwm.set(PWM::CH2);
+  _pwm.reset(PWM::CH1);
+  _pwm.reset(PWM::CH2);
 }
 
 void Motor::Driver::forward(int pwm_duty_pct) {

@@ -13,6 +13,13 @@ void Motor::Controller::init(void) {
   _driver.init();
 }
 
+void Motor::Controller::measure_torque(bool onoff) {
+  if (onoff)
+    _torque.start();
+  else
+    _torque.stop();
+}
+
 //----------------------------------------------------------------------
 //
 //  TESTS

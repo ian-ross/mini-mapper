@@ -27,6 +27,9 @@ public:
   Shell::CommandResult show_variable(const char *name) override;
   Shell::CommandResult run_command(const char *cmd, int nargs, char *args[]) override;
 
+  // Called from ISR for torque DMA stream.
+  void torque_dma_irq(void) { torque.dma_transfer_complete_irq(); }
+
 private:
 
   Motor::Torque::Calibration torque_cal;

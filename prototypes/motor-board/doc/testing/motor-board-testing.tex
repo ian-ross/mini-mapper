@@ -1,0 +1,239 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{fourier}
+\usepackage{amsmath,amssymb}
+\usepackage{xstring,ifthen,xcolor}
+\usepackage{xspace}
+\usepackage{url}
+
+\usepackage{color}
+\definecolor{orange}{rgb}{0.75,0.5,0}
+\definecolor{magenta}{rgb}{1,0,1}
+\definecolor{cyan}{rgb}{0,1,1}
+\definecolor{grey}{rgb}{0.25,0.25,0.25}
+\newcommand{\outline}[1]{{\color{grey}{\scriptsize #1}}}
+\newcommand{\todo}[1]{{\color{red}\textit{\textbf{#1}}}}
+\newcommand{\note}[1]{{\color{blue}\textit{\textbf{#1}}}}
+\newcommand{\citenote}[1]{{\color{orange}{[\textit{\textbf{#1}}]}}}
+
+\usepackage{tikz}
+\usepackage{pgfmath}
+\usetikzlibrary{calc,shapes,positioning}
+
+\title{Mini-Mapper motor prototype board testing}
+\author{Ian~Ross}
+
+\graphicspath{{figs/}}
+
+\begin{document}
+
+\maketitle
+
+This document reports testing of the motor prototype board:
+
+\begin{enumerate}
+  \item{Basic tests of the electronics by driving the PWM inputs on
+    the board using the Analog Discovery 2, and using the logic
+    analyser and scope functions of the AD2 to monitor the motor
+    encoder and torque measurement outputs.}
+  \item{Tests of the software running on the STM32F767ZI Nucleo-144
+    board, connected to the Analog Discovery 2 to monitor PWM outputs
+    and provide synthetic inputs for the motor encoder and torque
+    measurement code.}
+  \item{``Live'' testing of the software, connecting the motor board
+    to the Nucleo-144 board.}
+\end{enumerate}
+
+The software used for these tests is the \texttt{shell-motor}
+application, which provides a command line interface for basic motor
+operations. (Once this is all working, the emphasis will shift to
+using a Python test bench GUI on a PC to talk to driver code on the
+Nucleo board.)
+
+\section{Motor board initial testing}
+
+\subsection*{Setup}
+
+The motor board and AD2 are set up as follows for this series of
+tests:
+\begin{itemize}
+  \item{Connect 5V wall wart power supply to motor board.}
+  \item{Connect 3.3V supply from AD2 to motor board.}
+  \item{Configure two AD2 digital outputs for \texttt{MOTOR\_IN1} and
+    \texttt{MOTOR\_IN2}.}
+  \item{Configure AD2 digital input for \texttt{PULSE}.}
+  \item{Configure AD2 analog input for \texttt{MOTOR\_SENSE}.}
+\end{itemize}
+
+The initial protocol for testing here was something like this:
+\begin{enumerate}
+  \item{Remove 5V power from motor board.}
+  \item{Disconnect \texttt{MOTOR\_IN1} and \texttt{MOTOR\_IN2} from
+    motor board.}
+  \item{Configure AD2 digital outputs in ``Patterns'' panel and
+    check.}
+  \item{Connect \texttt{MOTOR\_IN1} and \texttt{MOTOR\_IN2} to motor
+    board.}
+  \item{Apply 5V power to motor board.}
+  \item{Run AD2 digital output waveform generator.}
+  \item{Record results: motor motion, \texttt{PULSE} and
+    \texttt{MOTOR\_SENSE} inputs.}
+\end{enumerate}
+
+The control states I tested with this setup were:
+\begin{center}
+  \begin{tabular}{lcc}
+    \textbf{State} & \textbf{\texttt{MOTOR\_IN1}} &
+    \textbf{\texttt{MOTOR\_IN2}} \\
+
+    Motor halted   & HIGH           & HIGH \\
+    Forward 10\%   & HIGH           & PWM: 10\% LOW \\
+    Forward 50\%   & HIGH           & PWM: 50\% LOW \\
+    Forward 100\%  & HIGH           & LOW \\
+    Backward 10\%  & PWM: 10\% LOW  & HIGH \\
+    Backward 50\%  & PWM: 50\% LOW  & HIGH \\
+    Backward 100\% & LOW            & HIGH
+  \end{tabular}
+\end{center}
+
+\subsection*{Results}
+
+\begin{itemize}
+  \item{Quite shockingly, everything worked first time!}
+  \item{After the initial setup, I didn't bother too much with the
+    protocol above, just switching the PWM duty cycle in the AD2
+    ``Patterns'' panel. (Which is a more realistic test than I was
+    originally planning to do anyway.)}
+  \item{The results were pretty much perfect, as far as I can tell.
+    There are only two things that might need some attention.}
+  \item{Pulse times from the motor encoder might need some smoothing,
+    because the encoder disk isn't quite straight.}
+  \item{The signal from the motor coil current sense amplifier that
+    I'm going to use for torque measurements is quite noisy, but that
+    may just be due to seeing the PWM switching frequency coming
+    through into the motor coil current.}
+  \item{But: PWM speed control works, forwards and backwards; the
+    pulse output from the motor encoder works; and torque measurement
+    ``works'', though I need to figure out exactly what I'm seeing
+    there.}
+\end{itemize}
+
+A better solution for the wobble in the motor encoder signal is
+probably to correct the mounting of the encoder disk to the motor
+shaft. I designed the hole in the encoder disk under-size to ensure a
+tight fit, but it's \emph{too} tight because the encoder disks are
+manufactured as PCBs and have two layers of copper with no relief
+around the mounting hole. That means that it's not possible to push
+the encoder disk onto the motor shaft without expanding the hole in
+the disk. I did that in a not very careful way for the disk I'm
+currently using, but I have two others, and could try to drill an
+accurate 2\,mm hole in them to fit exactly the diameter of the motor
+shaft (and then glue them in place).
+
+As for what's going on with the motor coil current signal, I need to
+investigate that in more detail, but there is at least something
+reasonable there, and the DC level of the signal does go up and down
+as the motor drive PWM duty cycle is set to higher and lower values.
+
+\section{Software testing}
+
+\subsection*{Setup}
+
+The Nucleo board and AD2 are set up as follows for this series of
+tests:
+\begin{itemize}
+  \item{Connect ground between Nucleo board and AD2.}
+  \item{Connect \texttt{PE5} and \texttt{PE6} on Nucleo
+    (\texttt{MOTOR\_IN1} and \texttt{MOTOR\_IN2} motor PWM outputs) to
+    logic pins 0 and 1 (inputs) on the AD2.}
+  \item{Connect \texttt{PB10} on Nucleo (\texttt{PULSE} motor encoder
+    input) to logic pin 2 (output) on AD2.}
+  \item{Connect \texttt{PA4} on Nucleo (\texttt{MOTOR\_SENSE} analogue
+    torque input) to AD2 analogue waveform output W1.}
+\end{itemize}
+
+The idea here is for the software on the Nucleo board to drive the PWM
+motor driver signals and for these to be observed by the AD2's logic
+analyser. The motor encoder input to the Nucleo board will be driven
+by the AD2's pattern generator, and the analogue torque input to the
+Nucleo board will be driven by the AD2's signal generator.
+
+The AD2 Waveforms software should be configured as follows:
+\begin{itemize}
+  \item{Logic analyser with inputs 1 and 2 for motor PWM signals from
+    Nucleo board.}
+  \item{Pattern generator to logic pin 3 for variable frequency square
+    wave to drive motor encode input on Nucleo board.}
+  \item{Signal generator to output W1 to drive motor torque
+    measurement input on Nucleo board.}
+\end{itemize}
+
+Test command script:
+\begin{verbatim}
+# Ensure initial state and command processing OK.
+
+stop
+
+
+# Test basic motor commanding.
+
+forward 10
+stop
+reverse 10
+stop
+
+
+# Test torque measurement.
+
+torque on
+
+# Modify DC level of analogue output from AD2 signal generator to test
+# different motor coil current levels.
+
+set torque-interval 5000
+set torque-interval 500
+torque off
+
+
+# Test motor speed encoder.
+
+encoder on
+
+# Modify frequency of square wave output from AD2 pattern generator to
+# test different motor speed measurements.
+
+set encoder-interval 5000
+set encoder-interval 500
+encoder off
+\end{verbatim}
+
+\subsection*{Results}
+
+\begin{itemize}
+  \item{\texttt{stop} gives: DIO0 low, DIO1 high. (WRONG: should be
+    both high.)}
+    \item{\texttt{forward 10} gives: DIO0 high, DIO1 high. (WRONG: should be
+    both DIO0 high, DIO1 PWM.)}
+    \item{\texttt{reverse 10} gives: DIO0 PWM, DIO1 high. (WRONG: should be
+    both high.)}
+\end{itemize}
+
+\subsection{PWM shell regression testing}
+
+\begin{center}
+  \begin{tabular}{lccc}
+    \textbf{Register} & \textbf{Old: works} & \textbf{New: broken} & \textbf{Status} \\
+    \textbf{\texttt{RCC}} \\
+    \texttt{AHB1ENR} & \texttt{0x30000a} & \texttt{0x30000f} & OK \\
+    \texttt{APB1ENR} & \texttt{0x10040400} & \texttt{0x10040402} & OK \\
+    \\
+    \textbf{\texttt{TIM10}} \\
+    \texttt{CR1}  & \texttt{0x81} & \texttt{0x80} & \texttt{CEN} not set! \\
+    \texttt{SR}   & \texttt{0x3} & \texttt{0x1} & No interrupt flag \\
+    \texttt{CNT}  & \texttt{0x6c3} & \texttt{0x0} & Not running! \\
+    \texttt{CCR1} & \texttt{0x2a30} & \texttt{0x1518} & OK
+  \end{tabular}
+\end{center}
+
+\end{document}
