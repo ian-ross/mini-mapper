@@ -60,7 +60,7 @@ void MotorModule::dispatch(const Events::Event &e) {
 static void print_frac(float x) {
   terminal.print(static_cast<int>(x));
   terminal.print(".");
-  int frac = static_cast<int>(x * 100);
+  int frac = static_cast<int>(x * 100) - static_cast<int>(x) * 100;
   if (frac == 0) terminal.print("00");
   else if (frac < 10) {
     terminal.print("0");
@@ -77,11 +77,18 @@ MotorModule::set_variable(const char *name, const char *value) {
     if (!parse_int(value, val))
       return Shell::INVALID_VALUE_FOR_VARIABLE;
     torque_display_interval_var = val;
+    if (torque_display_interval >= 0) {
+      torque_display_interval = val;
+      torque_display_ticks = 0;
+    }
     return Shell::COMMAND_OK;
   } else if (!strcmp(name, "encoder-interval")) {
     if (!parse_int(value, val))
       return Shell::INVALID_VALUE_FOR_VARIABLE;
-    encoder_display_interval_var = val;
+    if (encoder_display_interval >= 0) {
+      encoder_display_interval_var = val;
+      encoder_display_ticks = 0;
+    }
     return Shell::COMMAND_OK;
   }
   return Shell::SKIPPED;

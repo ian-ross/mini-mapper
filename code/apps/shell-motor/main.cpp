@@ -38,12 +38,6 @@ extern "C" void SysTick_Handler(void) { ev.post(Events::SYSTICK); }
 extern "C" void DMA2_Stream0_IRQHandler(void) { motor.torque_dma_irq(); }
 
 
-static bool adc_triggered = false;
-
-extern "C" void ADC_IRQHandler(void) {
-  adc_triggered = true;
-}
-
 int main(void)
 {
   // Standard cache and clock setup, set SysTick to 1 kHz, set
@@ -54,10 +48,6 @@ int main(void)
   SysTick_Config(SystemCoreClock / 1000);
   terminal.set_interactive(true);
   motor.init();
-
-  SET_BIT(ADC1->CR1, ADC_CR1_EOCIE);
-  NVIC_SetPriority(ADC_IRQn, 0);
-  NVIC_EnableIRQ(ADC_IRQn);
 
   // Create command shell with core module (which implements the "set"
   // and "show" commands) and motor and LED blinky modules.

@@ -99,6 +99,7 @@ void Motor::Torque::init(void) {
   configure_dma();
   configure_timer();
   configure_adc();
+  SET_BIT(_adc->CR2, ADC_CR2_ADON);
 }
 
 
@@ -290,20 +291,18 @@ void Motor::Torque::configure_adc(void) {
 
   // Enable DMA transfer for ADC.
   SET_BIT(_adc->CR2, ADC_CR2_DMA);
-  CLEAR_BIT(_adc->CR2, ADC_CR2_DDS);
+  SET_BIT(_adc->CR2, ADC_CR2_DDS);
 }
 
 
 void Motor::Torque::start(void) {
-  // Enable timer and force update generation.
-  SET_BIT(_timer->CR1, TIM_CR1_CEN);
+  // Trigger update of timer parameters before enabling timer.
   SET_BIT(_timer->EGR, TIM_EGR_UG);
+  SET_BIT(_timer->CR1, TIM_CR1_CEN);
 }
 
 void Motor::Torque::stop(void) {
-  // Disable timer and force update generation.
   CLEAR_BIT(_timer->CR1, TIM_CR1_CEN);
-  SET_BIT(_timer->EGR, TIM_EGR_UG);
 }
 
 
